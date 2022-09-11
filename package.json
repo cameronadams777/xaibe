@@ -1,7 +1,7 @@
 {
-  "name": "alerts-app",
+  "name": "gemini",
   "version": "0.0.1",
   "description": "An cross platform application for application monitoring alerts",
   "scripts": {},
-  "author": "Cameron Adams <cameron.adams@hey.com>",
+  "author": "Cameron Adams <cameron.adams@hey.com>"
 }
