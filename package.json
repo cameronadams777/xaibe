@@ -2,6 +2,9 @@
   "name": "gemini",
   "version": "0.0.1",
   "description": "An cross platform application for application monitoring alerts",
-  "scripts": {},
+  "scripts": {
+    "api": "cd api && pnpm ",
+    "client": "cd client && pnpm "
+  },
   "author": "Cameron Adams <cameron.adams@hey.com>"
 }
