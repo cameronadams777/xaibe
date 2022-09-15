@@ -1,8 +1,28 @@
 <script lang="ts" setup>
+import { useRouter } from "vue-router";
 import { ref } from "vue";
+import axios from "axios";
+
+const router = useRouter();
 
 const email = ref("");
 const password = ref("");
+
+const submitForm = async () => {
+  try {
+    const response = await axios
+      .post("http://localhost:5000/api/login", {
+        email: email.value,
+        password: password.value,
+      })
+      .then((res) => res.data);
+
+    localStorage.setItem("token", response.data.token);
+    router.push("/");
+  } catch (error) {
+    console.error(error);
+  }
+};
 </script>
 
 <template>
@@ -18,7 +38,7 @@ const password = ref("");
         v-model="password"
         id="password"
         name="password"
-        type="text"
+        type="password"
         class="p-1.5"
       />
     </div>
@@ -32,6 +52,7 @@ const password = ref("");
     </div>
     <button
       class="w-1/4 mb-2 p-2 text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none"
+      @click="submitForm"
     >
       Log In
     </button>
