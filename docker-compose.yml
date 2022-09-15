@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  database:
+    image: "postgres" # use latest official postgres version
+    restart: "no"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 5rPwU1=x9tUHyT=jiC+KL0ht
+      POSTGRES_DB: geminiapp_db
+    networks:
+      - db_network
+    volumes:
+      - database-data:/var/lib/postgres/data/ # persist data even if container shuts down
+    ports:
+      - "40300:5432"
+
+networks:
+  db_network:
+    driver: bridge
+
+volumes:
+  database-data:

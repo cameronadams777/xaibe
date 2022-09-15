@@ -31,9 +31,14 @@ const password = ref("");
       </router-link>
     </div>
     <button
-      class="w-1/4 p-2 text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none"
+      class="w-1/4 mb-2 p-2 text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none"
     >
       Log In
     </button>
+    <router-link
+      to="/register"
+      class="text-indigo-600 no-underline hover:underline"
+      >Don't have an account yet?</router-link
+    >
   </div>
 </template>
