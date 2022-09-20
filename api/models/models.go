@@ -8,6 +8,7 @@ type User struct {
 	LastName  string
 	Email     string
 	Password  string
+	IsAdmin   bool
 }
 
 type Team struct {
@@ -15,11 +16,11 @@ type Team struct {
 }
 
 type TeamUser struct {
-	TeamID  uint
-	Team    Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	UserID  uint
-	User    User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	IsAdmin bool
+	TeamID    uint
+	Team      Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	UserID    uint
+	User      User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	IsManager bool
 }
 
 type Application struct {
