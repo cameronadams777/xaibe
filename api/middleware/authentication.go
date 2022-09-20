@@ -30,7 +30,7 @@ func Protected() gin.HandlerFunc {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
 
-			return []byte(config.Config("AUTH_TOKEN_SECRET")), nil
+			return []byte(config.Get("AUTH_TOKEN_SECRET")), nil
 		})
 
 		claims := token.Claims.(jwt.MapClaims)

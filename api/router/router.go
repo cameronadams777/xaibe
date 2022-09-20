@@ -17,6 +17,12 @@ func SetupRouter(app *gin.Engine) {
 
 	api.POST("/webhook", controllers.WebHook)
 
+	users := api.Group("/users", middleware.Protected())
+	users.GET("/", middleware.IsAdmin(), controllers.GetAllUsers)
+	users.GET("/:user_id", controllers.GetUserById)
+	users.PUT("/:user_id", controllers.UpdateUser)
+	users.DELETE("/:user_id", middleware.IsAdmin(), controllers.DeleteUser)
+
 	tokens := api.Group("/service_tokens", middleware.Protected())
 	tokens.GET("/:team_id", controllers.GetServiceTokensByTeam)
 	tokens.GET("/:application_id", controllers.GetServiceTokenByApplication)
