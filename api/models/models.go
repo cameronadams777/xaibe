@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type User struct {
 	gorm.Model
@@ -27,4 +31,14 @@ type Application struct {
 	gorm.Model
 	TeamID uint
 	Team   Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+}
+
+type ServiceToken struct {
+	gorm.Model
+	Token         string
+	TeamID        uint
+	Team          Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	ApplicationID uint
+	Application   Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	ExpiresAt     time.Time
 }

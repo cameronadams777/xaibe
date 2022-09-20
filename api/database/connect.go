@@ -21,6 +21,6 @@ func ConnectDB() {
 	DB = database
 
 	fmt.Println("Connection Opened to Database")
-	DB.AutoMigrate(&models.User{}, &models.Team{}, &models.Application{}, &models.TeamUser{})
+	DB.AutoMigrate(&models.User{}, &models.Team{}, &models.Application{}, &models.TeamUser{}, &models.ServiceToken{})
 	fmt.Println("Database Migrated")
 }
