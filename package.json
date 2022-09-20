@@ -6,7 +6,7 @@
     "api": "cd api && pnpm ",
     "client": "cd client && pnpm ",
     "dev:db:down": "docker-compose down",
-    "dev:db:reset": "pnpm dev:db:down && pnpm dev:db:up && pnpm api migration:latest",
+    "dev:db:reset": "pnpm dev:db:down && pnpm dev:db:up",
     "dev:db:up": "docker-compose up -d"
   },
   "author": "Cameron Adams <cameron.adams@hey.com>"

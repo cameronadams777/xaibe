@@ -52,7 +52,7 @@ func Login(c *gin.Context) {
 		ExpiresAt: expirationTime.Unix(),
 	})
 
-	token, err := claims.SignedString([]byte(config.Config("AUTH_TOKEN_SECRET")))
+	token, err := claims.SignedString([]byte(config.Get("AUTH_TOKEN_SECRET")))
 
 	if err != nil {
 		fmt.Println(err)
@@ -115,7 +115,7 @@ func Register(c *gin.Context) {
 		ExpiresAt: expirationTime.Unix(),
 	})
 
-	token, err := claims.SignedString([]byte(config.Config("AUTH_TOKEN_SECRET")))
+	token, err := claims.SignedString([]byte(config.Get("AUTH_TOKEN_SECRET")))
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Error on register request.", "data": err})
