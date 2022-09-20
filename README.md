@@ -1,3 +1,3 @@
-# Gemini
+# Galata
 
-An cross platform application for application monitoring alerts
+An cross platform application for application monitoring alerts🗼

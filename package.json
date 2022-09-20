@@ -1,7 +1,8 @@
 {
-  "name": "gemini",
+  "name": "galata",
   "version": "0.0.1",
   "description": "An cross platform application for application monitoring alerts",
+  "homepage": "https://galata.app",
   "scripts": {
     "api": "cd api && pnpm ",
     "client": "cd client && pnpm ",
