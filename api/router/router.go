@@ -23,6 +23,12 @@ func SetupRouter(app *gin.Engine) {
 	users.PUT("/:user_id", controllers.UpdateUser)
 	users.DELETE("/:user_id", middleware.IsAdmin(), controllers.DeleteUser)
 
+	teams := api.Group("/teams", middleware.Protected())
+	teams.GET("/", middleware.IsAdmin(), controllers.GetAllTeams)
+	teams.GET("/:team_id", controllers.GetTeamById)
+	teams.POST("/", controllers.CreateNewTeam)
+	teams.DELETE("/:team_id", controllers.DeleteTeam)
+
 	tokens := api.Group("/service_tokens", middleware.Protected())
 	tokens.GET("/:team_id", controllers.GetServiceTokensByTeam)
 	tokens.GET("/:application_id", controllers.GetServiceTokenByApplication)
