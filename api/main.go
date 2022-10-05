@@ -2,6 +2,7 @@ package main
 
 import (
 	"api/cache"
+	"api/config"
 	"api/database"
 	"api/router"
 
@@ -21,7 +22,11 @@ func main() {
 
 	app := gin.Default()
 
-	app.Use(cors.Default())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{config.Get("APP_HOST_NAME")},
+		AllowHeaders:     []string{"*"},
+		AllowCredentials: true,
+	}))
 
 	app.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

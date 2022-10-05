@@ -3,6 +3,7 @@ package middleware
 import (
 	"api/database"
 	"api/models"
+	"api/structs"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +12,7 @@ import (
 func IsAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		data, _ := c.Get("authScope")
-		authScope := data.(models.AuthScope)
+		authScope := data.(structs.AuthScope)
 
 		var user models.User
 		database.DB.First(&user, authScope.UserID)

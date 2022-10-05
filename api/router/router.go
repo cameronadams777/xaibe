@@ -17,6 +17,9 @@ func SetupRouter(app *gin.Engine) {
 
 	api.POST("/webhook", controllers.WebHook)
 
+	email := api.Group("/email")
+	email.POST("/subscribe", controllers.SubscribeNewUser)
+
 	users := api.Group("/users", middleware.Protected())
 	users.GET("/", middleware.IsAdmin(), controllers.GetAllUsers)
 	users.GET("/:user_id", controllers.GetUserById)
