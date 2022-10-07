@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"api/models"
-	"api/services/user_service"
+	"api/services/users_service"
 	"api/structs"
 	"fmt"
 	"net/http"
@@ -13,13 +13,15 @@ import (
 	"gorm.io/gorm"
 )
 
+// TODO: Write helper function that returns a JSON response but filters out sensitive data
+
 type UpdateUserInput struct {
 	UserId  int         `json:"user_id" binding:"required"`
 	Updates models.User `json:"user" binding:"-"`
 }
 
 func GetAllUsers(c *gin.Context) {
-	users := user_service.GetAllUsers()
+	users := users_service.GetAllUsers()
 	c.JSON(http.StatusOK, gin.H{"status": "error", "message": "", "data": gin.H{"users": users}})
 }
 
@@ -35,14 +37,14 @@ func GetUserById(c *gin.Context) {
 	data, _ := c.Get("authScope")
 	authScope := data.(structs.AuthScope)
 
-	_, current_user_err := user_service.GetUserById(authScope.UserID)
+	_, current_user_err := users_service.GetUserById(authScope.UserID)
 
 	if current_user_err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An unknown error occurred.", "data": nil})
 		return
 	}
 
-	user, err := user_service.GetUserById(user_id)
+	user, err := users_service.GetUserById(user_id)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "User not found.", "data": nil})
@@ -64,7 +66,7 @@ func UpdateUser(c *gin.Context) {
 	data, _ := c.Get("authScope")
 	authScope := data.(structs.AuthScope)
 
-	current_user, current_user_err := user_service.GetUserById(authScope.UserID)
+	current_user, current_user_err := users_service.GetUserById(authScope.UserID)
 
 	if current_user_err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An unknown error occurred.", "data": nil})
@@ -76,7 +78,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	updated_user, err := user_service.UpdateUser(input.UserId, input.Updates)
+	updated_user, err := users_service.UpdateUser(input.UserId, input.Updates)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "User not found.", "data": nil})
@@ -99,7 +101,7 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	user_to_delete, err := user_service.GetUserById(user_id)
+	user_to_delete, err := users_service.GetUserById(user_id)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "User not found.", "data": nil})
@@ -111,7 +113,7 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	deleted_user, _ := user_service.UpdateUser(user_id, models.User{Model: gorm.Model{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
+	deleted_user, _ := users_service.UpdateUser(user_id, models.User{Model: gorm.Model{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
 
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User successfully deleted.", "data": gin.H{"user": deleted_user}})
 }
