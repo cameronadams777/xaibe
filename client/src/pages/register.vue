@@ -81,14 +81,14 @@ const submitForm = async () => {
       />
     </div>
     <button
-      class="w-1/4 p-2 text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none mb-2"
+      class="w-1/4 p-2 text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none mb-2 cursor-pointer"
       @click="submitForm"
     >
       Register
     </button>
     <router-link
       to="/login"
-      class="text-indigo-600 no-underline hover:underline"
+      class="text-indigo-600 no-underline hover:underline cursor-pointer"
       >Already have an account?</router-link
     >
   </div>

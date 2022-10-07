@@ -8,11 +8,12 @@ import (
 
 type User struct {
 	gorm.Model
-	FirstName string
-	LastName  string
-	Email     string
-	Password  string
-	IsAdmin   bool
+	FirstName  string
+	LastName   string
+	Email      string
+	Password   string
+	IsAdmin    bool
+	IsVerified bool
 }
 
 type Team struct {

@@ -45,20 +45,20 @@ const submitForm = async () => {
     <div class="w-1/4 flex justify-end mb-3">
       <router-link
         to="/forgot-password"
-        class="font-bold bg-transparent text-indigo-600 no-underline hover:underline border-none"
+        class="font-bold bg-transparent text-indigo-600 no-underline hover:underline border-none cursor-pointer"
       >
         Forgot Password?
       </router-link>
     </div>
     <button
-      class="w-1/4 mb-2 p-2 text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none"
+      class="w-1/4 mb-2 p-2 text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none cursor-pointer"
       @click="submitForm"
     >
       Log In
     </button>
     <router-link
       to="/register"
-      class="text-indigo-600 no-underline hover:underline"
+      class="text-indigo-600 no-underline hover:underline cursor-pointer"
       >Don't have an account yet?</router-link
     >
   </div>
