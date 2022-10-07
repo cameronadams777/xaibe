@@ -28,6 +28,7 @@ func CreateTeam(name string) error {
 	if err != nil {
 		return err
 	}
+	return nil
 }
 
 func UpdateTeam(team_id int, updates models.Team) (*models.Team, error) {

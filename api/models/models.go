@@ -6,19 +6,28 @@ import (
 	"gorm.io/gorm"
 )
 
+type Organization struct {
+	gorm.Model
+	Name  string
+	Teams []Team
+}
+
 type User struct {
 	gorm.Model
-	FirstName  string
-	LastName   string
-	Email      string
-	Password   string
-	IsAdmin    bool
-	IsVerified bool
+	FirstName    string
+	LastName     string
+	Email        string
+	Password     string
+	IsAdmin      bool
+	IsVerified   bool
+	IsSystemUser bool
 }
 
 type Team struct {
 	gorm.Model
-	Name string
+	Name           string
+	OrganizationId uint
+	Organization   Organization `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type TeamUser struct {

@@ -20,6 +20,11 @@ func SetupRouter(app *gin.Engine) {
 	email := api.Group("/email")
 	email.POST("/subscribe", controllers.SubscribeNewUser)
 
+	organizations := api.Group("/organizations", middleware.Protected(), middleware.IsSystemUser())
+	organizations.GET("/", controllers.GetAllOrganizations)
+	organizations.GET("/:organization_id", controllers.GetOrganizationById)
+	organizations.DELETE("/:organization_id", controllers.DeleteOrganization)
+
 	users := api.Group("/users", middleware.Protected())
 	users.GET("/", middleware.IsAdmin(), controllers.GetAllUsers)
 	users.PATCH("/", controllers.UpdateUser)

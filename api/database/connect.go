@@ -1,6 +1,7 @@
 package database
 
 import (
+	"api/config"
 	"api/models"
 	"fmt"
 
@@ -21,6 +22,12 @@ func ConnectDB() {
 	DB = database
 
 	fmt.Println("Connection Opened to Database")
+
 	DB.AutoMigrate(&models.User{}, &models.Team{}, &models.Application{}, &models.TeamUser{}, &models.ServiceToken{})
+
+	if config.Get("ORGANIZATIONS_ENABLED") == "true" {
+		DB.AutoMigrate(&models.Organization{})
+	}
+
 	fmt.Println("Database Migrated")
 }

@@ -71,9 +71,7 @@ func CreateNewTeam(c *gin.Context) {
 }
 
 func DeleteTeam(c *gin.Context) {
-
 	// Update deleted at property on team
-
 	team_input_param := c.Param("team_id")
 	team_id, conv_err := strconv.Atoi(team_input_param)
 
@@ -100,5 +98,5 @@ func DeleteTeam(c *gin.Context) {
 
 	deleted_team, _ := teams_service.UpdateTeam(team_id, models.Team{Model: gorm.Model{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User successfully deleted.", "data": gin.H{"user": deleted_team}})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Team successfully deleted.", "data": gin.H{"team": deleted_team}})
 }
