@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"api/models"
+	"api/services/applications_service"
 	"api/services/teams_service"
 	"fmt"
 	"net/http"
@@ -63,7 +64,7 @@ func CreateNewTeam(c *gin.Context) {
 
 	if creation_err != nil {
 		fmt.Println(creation_err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An unknown error occurred while creating the requested team.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred while creating the requested team.", "data": nil})
 		return
 	}
 
@@ -71,7 +72,6 @@ func CreateNewTeam(c *gin.Context) {
 }
 
 func DeleteTeam(c *gin.Context) {
-	// Update deleted at property on team
 	team_input_param := c.Param("team_id")
 	team_id, conv_err := strconv.Atoi(team_input_param)
 
@@ -99,4 +99,22 @@ func DeleteTeam(c *gin.Context) {
 	deleted_team, _ := teams_service.UpdateTeam(team_id, models.Team{Model: gorm.Model{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
 
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Team successfully deleted.", "data": gin.H{"team": deleted_team}})
+}
+
+func GetAllTeamApplications(c *gin.Context) {
+	team_input_param := c.Param("team_id")
+	team_id, conv_err := strconv.Atoi(team_input_param)
+
+	if conv_err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting team by id.", "data": nil})
+		return
+	}
+
+	// TODO: ADD BELOW LOGIC
+	// If user is not within the team, is not of type manager on
+	// the current team or is not an admin, throw an error
+
+	applications := applications_service.GetAllApplications(models.Application{TeamID: uint(team_id)})
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Successfully retrieved applications for team.", "data": gin.H{"applications": applications}})
 }

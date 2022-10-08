@@ -6,42 +6,39 @@ import (
 	"gorm.io/gorm"
 )
 
-type Organization struct {
-	gorm.Model
-	Name  string
-	Teams []Team
-}
-
 type User struct {
 	gorm.Model
-	FirstName    string
-	LastName     string
-	Email        string
-	Password     string
-	IsAdmin      bool
-	IsVerified   bool
-	IsSystemUser bool
+	FirstName  string
+	LastName   string
+	Email      string
+	Password   string
+	IsAdmin    bool
+	IsVerified bool
 }
 
 type Team struct {
 	gorm.Model
 	Name           string
 	OrganizationId uint
-	Organization   Organization `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 type TeamUser struct {
-	TeamID    uint
-	Team      Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	UserID    uint
-	User      User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	IsManager bool
+	TeamID        uint
+	Team          Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	UserID        uint
+	User          User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	IsManager     bool
+	ServiceTokens []ServiceToken
 }
 
 type Application struct {
 	gorm.Model
-	TeamID uint
-	Team   Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Name          string
+	TeamID        uint `gorm:"-"`
+	Team          Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	UserID        uint `gorm:"-"`
+	User          User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	ServiceTokens []ServiceToken
 }
 
 type ServiceToken struct {

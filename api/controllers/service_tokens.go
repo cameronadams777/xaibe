@@ -1,16 +1,18 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
-func GetServiceTokensByTeam(c *gin.Context) {
-	// Get team id from params
-	// Get team by id
-	// Check to see if user is in team
-	// If not, throw error
-	// If so, check to see if user is manager of team
-	// If not, throw error
-	// If so, retrieve all non-expired/non-deleted tokens for given team and return them
-}
+// func GetServiceTokensByTeam(c *gin.Context) {
+// Get team id from params
+// Get team by id
+// Check to see if user is in team
+// If not, throw error
+// If so, check to see if user is manager of team
+// If not, throw error
+// If so, retrieve all non-expired/non-deleted tokens for given team and return them
+// }
 
 func GetServiceTokenByApplication(c *gin.Context) {
 	// Get application id from params
