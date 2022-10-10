@@ -3,6 +3,7 @@ package controllers
 import (
 	"api/models"
 	"api/services/applications_service"
+	"api/services/service_tokens_service"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -37,7 +38,7 @@ func CreateNewApplication(c *gin.Context) {
 
 	if creation_err != nil {
 		fmt.Println(creation_err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred while creating the requested team.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred while creating the requested application.", "data": nil})
 		return
 	}
 
@@ -71,5 +72,25 @@ func DeleteApplication(c *gin.Context) {
 
 	deleted_application, _ := applications_service.UpdateApplication(application_id, models.Application{Model: gorm.Model{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Team successfully deleted.", "data": gin.H{"team": deleted_application}})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Application successfully deleted.", "data": gin.H{"application": deleted_application}})
+}
+
+func GetApplicationServiceTokens(c *gin.Context) {
+	application_input_param := c.Param("application_id")
+	application_id, conv_err := strconv.Atoi(application_input_param)
+
+	if conv_err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting application by id.", "data": nil})
+		return
+	}
+
+	_, err := applications_service.GetApplicationById(application_id)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Application not found when requesting service tokens.", "data": nil})
+		return
+	}
+
+	service_tokens := service_tokens_service.GetAllServiceTokensByApplicationId(application_id)
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Tokens found.", "data": gin.H{"tokens": service_tokens}})
 }

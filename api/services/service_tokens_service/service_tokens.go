@@ -1,4 +1,4 @@
-package service_tokens
+package service_tokens_service
 
 import (
 	"api/database"
@@ -10,7 +10,7 @@ import (
 
 func GetAllServiceTokens() []models.ServiceToken {
 	var tokens []models.ServiceToken
-	database.DB.Find(&tokens)
+	database.DB.Preload("Application").Find(&tokens)
 	return tokens
 }
 
@@ -23,10 +23,17 @@ func GetServiceTokenById(token_id int) (*models.ServiceToken, error) {
 	return &token, nil
 }
 
-func CreateServiceToken(team_id int, application_id int, expires_at time.Time) (*models.ServiceToken, error) {
+// TODO: Refactor this so that we can just use `GetAllServiceTokens` rather than
+// having a completely separate function
+func GetAllServiceTokensByApplicationId(application_id int) []models.ServiceToken {
+	var tokens []models.ServiceToken
+	database.DB.Find(&tokens, models.ServiceToken{ApplicationID: uint(application_id)})
+	return tokens
+}
+
+func CreateServiceToken(application_id int) (*models.ServiceToken, error) {
 	new_token := models.ServiceToken{
 		Token:         uuid.New().String(),
-		TeamID:        uint(team_id),
 		ApplicationID: uint(application_id),
 		ExpiresAt:     time.Now().AddDate(1, 0, 0),
 	}

@@ -44,8 +44,6 @@ type Application struct {
 type ServiceToken struct {
 	gorm.Model
 	Token         string
-	TeamID        uint
-	Team          Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	ApplicationID uint
 	Application   Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	ExpiresAt     time.Time
