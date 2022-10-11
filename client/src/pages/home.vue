@@ -3,5 +3,5 @@ import NoAlerts from "../components/no-alerts.vue";
 </script>
 
 <template>
-  <NoAlerts />
+  <!-- <NoAlerts /> -->
 </template>
