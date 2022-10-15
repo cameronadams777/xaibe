@@ -4,7 +4,7 @@ import Register from "../pages/register.vue";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
 const authenticatedRoutes = ["/"];
-// const nonAuthenticatedRoutes = ["/login", "/register"];
+const nonAuthenticatedRoutes = ["/login", "/register"];
 
 const routes: RouteRecordRaw[] = [
   { path: "/", component: Home },
@@ -22,6 +22,8 @@ router.beforeEach((to, from) => {
   const token = localStorage.getItem("token");
   if (authenticatedRoutes.includes(to.path) && !token) {
     return "/login";
+  } else if (nonAuthenticatedRoutes.includes(to.path) && token != null) {
+    return "/";
   }
 });
 

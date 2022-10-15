@@ -1,11 +1,5 @@
-<script lang="ts" setup>
-import TheMainLayout from "./layouts/the-main-layout.vue";
-</script>
-
 <template>
-  <the-main-layout>
-    <router-view />
-  </the-main-layout>
+  <router-view />
 </template>
 
 <style>

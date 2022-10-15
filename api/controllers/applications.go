@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"api/cache"
 	"api/models"
 	"api/services/applications_service"
 	"api/services/service_tokens_service"
@@ -10,6 +11,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -29,9 +32,10 @@ func CreateNewApplication(c *gin.Context) {
 	}
 
 	new_application := models.Application{
-		TeamID: uint(input.TeamId),
-		UserID: uint(input.UserId),
-		Name:   input.Name,
+		TeamID:   uint(input.TeamId),
+		UserID:   uint(input.UserId),
+		UniqueId: uuid.NewString(),
+		Name:     input.Name,
 	}
 
 	creation_err := applications_service.CreateApplication(new_application)
@@ -93,4 +97,39 @@ func GetApplicationServiceTokens(c *gin.Context) {
 
 	service_tokens := service_tokens_service.GetAllServiceTokensByApplicationId(application_id)
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Tokens found.", "data": gin.H{"tokens": service_tokens}})
+}
+
+func GetApplicationAlerts(c *gin.Context) {
+	application_input_param := c.Param("application_id")
+	application_id, conv_err := strconv.Atoi(application_input_param)
+
+	if conv_err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting application by id.", "data": nil})
+		return
+	}
+
+	application, err := applications_service.GetApplicationById(application_id)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Application not found when requesting alerts.", "data": nil})
+		return
+	}
+
+	// TODO: ADD BELOW LOGIC
+	// Check to see if user either owns or is a member of the application
+	// or if the user is an admin
+	// If not, throw error
+
+	// TODO: Append owner type plus id to the front of the cache key
+	// to ensure security and no data overlap
+	cache_key := application_input_param + "_" + "application" + ":" + application.UniqueId
+
+	alerts := cache.RedisClient.Get(cache_key)
+
+	if alerts.String() == redis.Nil.Error() {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Alerts not found.", "data": nil})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Alerts retrieved.", "data": gin.H{"alerts": alerts}})
 }

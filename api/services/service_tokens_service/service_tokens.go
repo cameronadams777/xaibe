@@ -33,7 +33,7 @@ func GetAllServiceTokensByApplicationId(application_id int) []models.ServiceToke
 
 func CreateServiceToken(application_id int) (*models.ServiceToken, error) {
 	new_token := models.ServiceToken{
-		Token:         uuid.New().String(),
+		Token:         uuid.NewString(),
 		ApplicationID: uint(application_id),
 		ExpiresAt:     time.Now().AddDate(1, 0, 0),
 	}

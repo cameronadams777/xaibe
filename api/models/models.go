@@ -38,6 +38,7 @@ type Application struct {
 	Team          Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	UserID        uint `gorm:"-"`
 	User          User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	UniqueId      string
 	ServiceTokens []ServiceToken
 }
 
