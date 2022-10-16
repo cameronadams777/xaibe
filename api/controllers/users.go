@@ -20,6 +20,27 @@ type UpdateUserInput struct {
 	Updates models.User `json:"user" binding:"-"`
 }
 
+func GetUserDetails(c *gin.Context) {
+	data, _ := c.Get("authScope")
+	authScope := data.(structs.AuthScope)
+
+	_, current_user_err := users_service.GetUserById(authScope.UserID)
+
+	if current_user_err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An unknown error occurred.", "data": nil})
+		return
+	}
+
+	user, err := users_service.GetUserById(authScope.UserID)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "User not found.", "data": nil})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User found.", "data": gin.H{"user": user}})
+}
+
 func GetAllUsers(c *gin.Context) {
 	users := users_service.GetAllUsers()
 	c.JSON(http.StatusOK, gin.H{"status": "error", "message": "", "data": gin.H{"users": users}})

@@ -8,27 +8,28 @@ import (
 
 type User struct {
 	gorm.Model
-	FirstName  string
-	LastName   string
-	Email      string
-	Password   string
-	IsAdmin    bool
-	IsVerified bool
+	FirstName    string
+	LastName     string
+	Email        string
+	Password     string
+	IsAdmin      bool
+	IsVerified   bool
+	Applications []Application
 }
 
 type Team struct {
 	gorm.Model
 	Name           string
 	OrganizationId uint
+	Applications   []Application
 }
 
 type TeamUser struct {
-	TeamID        uint
-	Team          Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	UserID        uint
-	User          User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	IsManager     bool
-	ServiceTokens []ServiceToken
+	TeamID    uint
+	Team      Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	UserID    uint
+	User      User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	IsManager bool
 }
 
 type Application struct {

@@ -21,6 +21,7 @@ func SetupRouter(app *gin.Engine) {
 	email.POST("/subscribe", controllers.SubscribeNewUser)
 
 	users := api.Group("/users", middleware.Protected())
+	users.GET("/me", controllers.GetUserDetails)
 	users.GET("/", middleware.IsAdmin(), controllers.GetAllUsers)
 	users.PATCH("/", controllers.UpdateUser)
 	users.GET("/:user_id", controllers.GetUserById)

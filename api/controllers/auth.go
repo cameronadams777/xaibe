@@ -62,7 +62,7 @@ func Login(c *gin.Context) {
 
 	c.SetCookie("ucid", token, int(expirationTime.Unix()), "", "", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User logged in.", "data": token})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User logged in.", "data": gin.H{"token": token}})
 }
 
 func Register(c *gin.Context) {
