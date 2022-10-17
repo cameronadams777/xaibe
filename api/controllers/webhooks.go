@@ -3,6 +3,7 @@ package controllers
 import (
 	"api/cache"
 	"api/services/applications_service"
+	"encoding/json"
 	"io"
 	"log"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 )
 
 func WebHook(c *gin.Context) {
@@ -28,7 +30,10 @@ func WebHook(c *gin.Context) {
 		return
 	}
 
-	body := string(body_as_byte_array)
+	body_as_string := string(body_as_byte_array)
+
+	var body_as_json map[string]interface{}
+	json.Unmarshal([]byte(body_as_string), &body_as_json)
 
 	application, retrieve_app_error := applications_service.GetApplicationById(application_id)
 
@@ -52,11 +57,32 @@ func WebHook(c *gin.Context) {
 
 	cache_key := owner_id + ":" + "application_" + application_input_param + ":" + application.UniqueId
 
+	alerts := cache.RedisClient.Get(cache_key)
+
+	var alerts_to_post []map[string]interface{}
+
+	if alerts.Val() == redis.Nil.Error() {
+		alerts_to_post = append(alerts_to_post, body_as_json)
+	} else {
+		var alerts_as_json []map[string]interface{}
+		json.Unmarshal([]byte(alerts.Val()), &alerts_as_json)
+
+		alerts_to_post = append(alerts_as_json, body_as_json)
+	}
+
 	// TODO: Publish alert to socket connection collection in pool identified by cache_key
 
 	// Take body data and push to redis under cache key
 	one_month_expiration := time.Hour * 24 * 30
-	redis_err := cache.RedisClient.HSet(cache_key, body, time.Duration(one_month_expiration)).Err()
+	alerts_to_post_bytes, marshal_err := json.Marshal(&alerts_to_post)
+
+	if marshal_err != nil {
+		log.Println(marshal_err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred persisting alert.", "data": nil})
+		return
+	}
+
+	redis_err := cache.RedisClient.Set(cache_key, string(alerts_to_post_bytes), time.Duration(one_month_expiration)).Err()
 
 	if redis_err != nil {
 		log.Println(redis_err)

@@ -141,12 +141,14 @@ func GetApplicationAlerts(c *gin.Context) {
 
 	alerts := cache.RedisClient.Get(cache_key)
 
+	log.Println(alerts.Val())
+
 	if alerts.Val() == redis.Nil.Error() {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Alerts not found.", "data": nil})
 		return
 	}
 
-	var alerts_as_json map[string]interface{}
+	var alerts_as_json []map[string]interface{}
 	json.Unmarshal([]byte(alerts.Val()), &alerts_as_json)
 
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Alerts retrieved.", "data": gin.H{"alerts": alerts_as_json}})
