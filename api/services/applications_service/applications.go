@@ -13,7 +13,7 @@ func GetAllApplications(filters models.Application) []models.Application {
 
 func GetApplicationById(application_id int) (*models.Application, error) {
 	var application models.Application
-	err := database.DB.Find(&application).Error
+	err := database.DB.Find(&application, application_id).Error
 	if err != nil {
 		return nil, err
 	}

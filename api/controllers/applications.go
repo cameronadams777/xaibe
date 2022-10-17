@@ -5,7 +5,9 @@ import (
 	"api/models"
 	"api/services/applications_service"
 	"api/services/service_tokens_service"
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -119,17 +121,33 @@ func GetApplicationAlerts(c *gin.Context) {
 	// Check to see if user either owns or is a member of the application
 	// or if the user is an admin
 	// If not, throw error
+	var owner_id string
 
-	// TODO: Append owner type plus id to the front of the cache key
-	// to ensure security and no data overlap
-	cache_key := application_input_param + "_" + "application" + ":" + application.UniqueId
+	if application.TeamID != 0 {
+		team_id := strconv.Itoa(int(application.TeamID))
+		owner_id = "team_" + team_id
+	} else if application.UserID != 0 {
+		user_id := strconv.Itoa(int(application.UserID))
+		owner_id = "user_" + user_id
+	} else {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred posting alert to application.", "data": nil})
+		return
+	}
+
+	cache_key := owner_id + ":" + "application_" + application_input_param + ":" + application.UniqueId
+
+	// user_1:application_1:46a084e7-9c5d-4cae-b72d-7788098d477a
+	log.Println(cache_key)
 
 	alerts := cache.RedisClient.Get(cache_key)
 
-	if alerts.String() == redis.Nil.Error() {
+	if alerts.Val() == redis.Nil.Error() {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Alerts not found.", "data": nil})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Alerts retrieved.", "data": gin.H{"alerts": alerts}})
+	var alerts_as_json map[string]interface{}
+	json.Unmarshal([]byte(alerts.Val()), &alerts_as_json)
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Alerts retrieved.", "data": gin.H{"alerts": alerts_as_json}})
 }

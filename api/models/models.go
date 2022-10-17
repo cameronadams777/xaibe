@@ -35,9 +35,9 @@ type TeamUser struct {
 type Application struct {
 	gorm.Model
 	Name          string
-	TeamID        uint `gorm:"-"`
+	TeamID        uint
 	Team          Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	UserID        uint `gorm:"-"`
+	UserID        uint
 	User          User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	UniqueId      string
 	ServiceTokens []ServiceToken
