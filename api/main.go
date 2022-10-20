@@ -1,8 +1,9 @@
 package main
 
 import (
-	"api/cache"
-	"api/database"
+	"api/initializers/application_rooms"
+	"api/initializers/cache"
+	"api/initializers/database"
 	"api/router"
 
 	"net/http"
@@ -18,6 +19,9 @@ func main() {
 
 	// Connect to Redis cache
 	cache.ConnectRedis()
+
+	// Create rooms
+	application_rooms.Create()
 
 	app := gin.Default()
 

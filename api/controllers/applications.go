@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"api/cache"
+	"api/initializers/cache"
 	"api/models"
 	"api/services/applications_service"
 	"api/services/service_tokens_service"

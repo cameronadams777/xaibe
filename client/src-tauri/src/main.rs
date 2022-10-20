@@ -3,8 +3,6 @@
   windows_subsystem = "windows"
 )]
 
-use serde_json::Value;
-
 #[tokio::main]
 async fn main() {
   tauri::Builder::default()

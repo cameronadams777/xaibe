@@ -1,7 +1,7 @@
 package applications_service
 
 import (
-	"api/database"
+	"api/initializers/database"
 	"api/models"
 )
 

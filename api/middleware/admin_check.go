@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"api/database"
+	"api/initializers/database"
 	"api/models"
 	"api/structs"
 	"net/http"

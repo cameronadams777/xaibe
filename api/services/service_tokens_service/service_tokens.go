@@ -1,7 +1,7 @@
 package service_tokens_service
 
 import (
-	"api/database"
+	"api/initializers/database"
 	"api/models"
 	"time"
 

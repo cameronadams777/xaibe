@@ -12,8 +12,11 @@ export const useAlertsStore = defineStore("alerts", {
   },
   actions: {
     async getAlerts({ applicationId, serviceToken }: IGetAlertsInput) {
-      const alerts = await fetchCachedAlerts({ applicationId, serviceToken });
-      this.alerts = alerts;
+      const fetchedAlerts = await fetchCachedAlerts({
+        applicationId,
+        serviceToken,
+      });
+      this.alerts = fetchedAlerts;
     },
   },
 });

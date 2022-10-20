@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"api/config"
-	"api/database"
+	"api/initializers/database"
 	"api/models"
 	"fmt"
 

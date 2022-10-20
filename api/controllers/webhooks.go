@@ -1,7 +1,8 @@
 package controllers
 
 import (
-	"api/cache"
+	"api/initializers/application_rooms"
+	"api/initializers/cache"
 	"api/services/applications_service"
 	"encoding/json"
 	"io"
@@ -14,6 +15,7 @@ import (
 	"github.com/go-redis/redis"
 )
 
+// TODO: Look into cleaning up this function
 func WebHook(c *gin.Context) {
 	application_input_param := c.Query("application_id")
 	application_id, conv_err := strconv.Atoi(application_input_param)
@@ -70,7 +72,7 @@ func WebHook(c *gin.Context) {
 		alerts_to_post = append(alerts_as_json, body_as_json)
 	}
 
-	// TODO: Publish alert to socket connection collection in pool identified by cache_key
+	application_rooms.ApplicationRooms[cache_key].Broadcast <- &body_as_string
 
 	// Take body data and push to redis under cache key
 	one_month_expiration := time.Hour * 24 * 30
