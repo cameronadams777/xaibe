@@ -1,10 +1,33 @@
 <script lang="ts" setup>
-import TheMainLayout from "../layouts/the-main-layout.vue";
 import { ref } from "vue";
+import TheMainLayout from "../layouts/the-main-layout.vue";
+import { useActiveUserStore } from "../state/active-user";
+import { createNewApplication } from "../api/applications";
+import { storeToRefs } from "pinia";
+
+const activeUserStore = useActiveUserStore();
+const { activeUser } = storeToRefs(activeUserStore);
 
 const applicationName = ref("");
+// const teamId = ref("");
+const isSubmitting = ref(false);
 
-const submitForm = () => {};
+const submitForm = async () => {
+  if (!activeUser?.value) {
+    // TODO: Handle with toast message here
+    console.error(
+      "Galata Error: An unknown error occurred. Please try again later."
+    );
+    return;
+  }
+  isSubmitting.value = true;
+  await createNewApplication({
+    applicationName: applicationName.value,
+    teamId: undefined,
+    userId: activeUser.value.id,
+  });
+  isSubmitting.value = false;
+};
 </script>
 
 <template>
@@ -23,8 +46,11 @@ const submitForm = () => {};
           class="p-1"
         />
       </div>
+      {{ /* TODO: Add a select field here to select from teams you're apart of */}}
       <button
-        class="w-1/4 mb-2 p-2 text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none cursor-pointer"
+        class="w-1/4 mb-2 p-2 text-white font-bold bg-indigo-600 hover:bg-indigo-800 disabled:opacity-50 rounded-md border-none cursor-pointer"
+        :disabled="isSubmitting"
+        :aria-disabled="isSubmitting"
         @click="submitForm"
       >
         Create

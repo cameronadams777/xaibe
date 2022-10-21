@@ -15,10 +15,7 @@ async fn main() {
 }
 
 #[tauri::command]
-async fn fetch_cached_alerts(
-  application_id: i32,
-  auth_token: &str,
-) -> Result<String, ()> {
+async fn fetch_cached_alerts(application_id: i32, auth_token: &str) -> Result<String, ()> {
   let client = reqwest::Client::new();
   let url = format!(
     "http://localhost:5000/api/applications/{}/alerts",
