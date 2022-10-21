@@ -1,15 +1,17 @@
-import Home from "../pages/home.vue";
-import Login from "../pages/login.vue";
-import Register from "../pages/register.vue";
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 
 const authenticatedRoutes = ["/"];
 const nonAuthenticatedRoutes = ["/login", "/register"];
 
 const routes: RouteRecordRaw[] = [
-  { path: "/", component: Home },
-  { path: "/login", component: Login },
-  { path: "/register", component: Register },
+  { path: "/", component: () => import("../pages/home.vue") },
+  { path: "/login", component: () => import("../pages/login.vue") },
+  { path: "/register", component: () => import("../pages/register.vue") },
+  { path: "/teams/new", component: () => import("../pages/new-team.vue") },
+  {
+    path: "/applications/new",
+    component: () => import("../pages/new-application.vue"),
+  },
   { path: "/:pathMatch(.*)*", redirect: "/login" },
 ];
 
@@ -18,7 +20,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach((to, _) => {
   const token = localStorage.getItem("token");
   if (authenticatedRoutes.includes(to.path) && !token) {
     return "/login";

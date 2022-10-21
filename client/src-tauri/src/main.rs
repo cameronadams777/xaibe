@@ -18,7 +18,6 @@ async fn main() {
 async fn fetch_cached_alerts(
   application_id: i32,
   auth_token: &str,
-  service_token: &str,
 ) -> Result<String, ()> {
   let client = reqwest::Client::new();
   let url = format!(

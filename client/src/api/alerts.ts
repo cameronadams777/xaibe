@@ -13,14 +13,12 @@ interface IFetchCacheAlertsResponse {
 
 export const fetchCachedAlerts = async ({
   applicationId,
-  serviceToken,
 }: IFetchCachedAlertsInput): Promise<Record<string, any>> => {
   try {
     const authToken = localStorage.getItem("token");
     const responseString = await invoke<string>("fetch_cached_alerts", {
       authToken,
       applicationId,
-      serviceToken,
     });
     const response: IFetchCacheAlertsResponse = JSON.parse(responseString);
     return response.data.alerts;

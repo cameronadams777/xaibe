@@ -1,5 +1,10 @@
+<script lang="ts" setup>
+import TheGlobalModal from "./components/the-global-modal.vue";
+</script>
+
 <template>
   <router-view />
+  <the-global-modal />
 </template>
 
 <style>
