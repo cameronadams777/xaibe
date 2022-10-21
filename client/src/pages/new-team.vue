@@ -1,10 +1,23 @@
 <script lang="ts" setup>
 import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { createNewTeam } from "../api/teams";
 import TheMainLayout from "../layouts/the-main-layout.vue";
 
-const teamName = ref("");
+const router = useRouter();
 
-const submitForm = () => {};
+const teamName = ref("");
+const isSubmitting = ref(false);
+
+// Ensure that the user is allowed to create teams
+// onMounted(() => {})
+
+const submitForm = async () => {
+  isSubmitting.value = true;
+  await createNewTeam({ teamName: teamName.value });
+  isSubmitting.value = false;
+  router.push("/");
+};
 </script>
 
 <template>

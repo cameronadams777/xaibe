@@ -4,7 +4,9 @@ import TheMainLayout from "../layouts/the-main-layout.vue";
 import { useActiveUserStore } from "../state/active-user";
 import { createNewApplication } from "../api/applications";
 import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
 
+const router = useRouter();
 const activeUserStore = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);
 
@@ -27,6 +29,7 @@ const submitForm = async () => {
     userId: activeUser.value.id,
   });
   isSubmitting.value = false;
+  router.push("/");
 };
 </script>
 

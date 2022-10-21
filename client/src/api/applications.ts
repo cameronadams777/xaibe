@@ -12,20 +12,27 @@ export const createNewApplication = async ({
   userId,
   applicationName,
 }: ICreateNewApplicationInput): Promise<IApplication | undefined> => {
-  let body: Record<string, any> = {
-    applicationName,
-  };
-  if (teamId != null) body.teamId = teamId;
-  else if (teamId != null) body.userId = userId;
-  else {
+  try {
+    let body: Record<string, any> = {
+      applicationName,
+    };
+    if (teamId != null) body.teamId = teamId;
+    else if (teamId != null) body.userId = userId;
+    else {
+      // TODO: Handle with error toast as we need one of these provided
+      console.error(
+        "Galata Error: A teamId or userId must be provided when creating an application."
+      );
+      return;
+    }
+    const application = await invoke<IApplication>("create_new_application", {
+      ...body,
+    });
+    return application;
+  } catch (error) {
     // TODO: Handle with error toast as we need one of these provided
     console.error(
-      "Galata Error: A teamId or userId must be provided when creating an application."
+      "Galata Error: An unknown error occurred when trying to create a new application."
     );
-    return;
   }
-  const application = await invoke<IApplication>("create_new_application", {
-    ...body,
-  });
-  return application;
 };
