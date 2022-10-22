@@ -1,7 +1,11 @@
+#![allow(non_snake_case)]
 #![cfg_attr(
   all(not(debug_assertions), target_os = "windows"),
   windows_subsystem = "windows"
 )]
+
+use chrono::Utc;
+use serde::{Deserialize, Serialize};
 
 #[tokio::main]
 async fn main() {
@@ -9,6 +13,8 @@ async fn main() {
     .invoke_handler(tauri::generate_handler![
       fetch_cached_alerts,
       fetch_active_user,
+      create_new_application,
+      create_new_team
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
@@ -21,11 +27,10 @@ async fn fetch_cached_alerts(application_id: i32, auth_token: &str) -> Result<St
     "http://localhost:5000/api/applications/{}/alerts",
     application_id
   );
-  let bearer_token = format!("Bearer {}", auth_token);
 
   let result = client
     .get(url)
-    .header("Authorization", bearer_token)
+    .bearer_auth(auth_token)
     .send()
     .await
     .unwrap()
@@ -40,11 +45,10 @@ async fn fetch_cached_alerts(application_id: i32, auth_token: &str) -> Result<St
 async fn fetch_active_user(auth_token: &str) -> Result<String, ()> {
   let client = reqwest::Client::new();
   let url = format!("http://localhost:5000/api/users/me");
-  let bearer_token = format!("Bearer {}", auth_token);
 
   let result = client
     .get(url)
-    .header("Authorization", bearer_token)
+    .bearer_auth(auth_token)
     .send()
     .await
     .unwrap()
@@ -53,4 +57,112 @@ async fn fetch_active_user(auth_token: &str) -> Result<String, ()> {
     .unwrap();
 
   Ok(result)
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct NewApplicationPayload {
+  applicationName: String,
+  teamId: Option<i32>,
+  userId: Option<i32>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Application {
+  ID: i32,
+  CreatedAt: chrono::DateTime<Utc>,
+  UpdatedAt: Option<chrono::DateTime<Utc>>,
+  DeletedAt: Option<chrono::DateTime<Utc>>,
+  TeamId: Option<i32>,
+  UserId: Option<i32>,
+  UniqueId: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct NewApplicationResponse {
+  status: String,
+  message: String,
+  data: Application,
+}
+
+#[tauri::command]
+async fn create_new_application(
+  auth_token: String,
+  application_name: String,
+  team_id: Option<i32>,
+  user_id: Option<i32>,
+) -> Result<NewApplicationResponse, ()> {
+  let client = reqwest::Client::new();
+  let url = "http://localhost:5000/api/applications";
+
+  let mut payload = NewApplicationPayload {
+    applicationName: application_name,
+    teamId: None,
+    userId: None,
+  };
+
+  // TODO: Add else clause that will throw an error if team_id or user_id is not found
+  if team_id != None {
+    payload.teamId = team_id;
+  } else if user_id != None {
+    payload.userId = user_id;
+  }
+
+  let result = client
+    .post(url)
+    .bearer_auth(auth_token)
+    .json::<NewApplicationPayload>(&payload)
+    .send()
+    .await
+    .unwrap()
+    .json::<NewApplicationResponse>()
+    .await
+    .unwrap();
+
+  Ok(result)
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct Team {
+  ID: i32,
+  CreatedAt: chrono::DateTime<Utc>,
+  UpdatedAt: Option<chrono::DateTime<Utc>>,
+  DeletedAt: Option<chrono::DateTime<Utc>>,
+  Name: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct NewTeamPayload {
+  team_name: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct NewTeamResponse {
+  status: String,
+  message: String,
+  data: Team,
+}
+
+#[tauri::command]
+async fn create_new_team(auth_token: String, team_name: String) -> Result<NewTeamResponse, String> {
+  let client = reqwest::Client::new();
+  let url = format!("http://localhost:5000/api/teams");
+
+  let payload = NewTeamPayload {
+    team_name: team_name,
+  };
+
+  let result = client
+    .post(url)
+    .bearer_auth(auth_token)
+    .json::<NewTeamPayload>(&payload)
+    .send()
+    .await
+    .unwrap()
+    .json()
+    .await;
+
+  match result {
+    Ok(res) => Ok(res),
+    Err(e) => Err(format!("An error occurred {}", e)),
+  }
 }

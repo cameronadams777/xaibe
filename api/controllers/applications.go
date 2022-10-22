@@ -40,7 +40,7 @@ func CreateNewApplication(c *gin.Context) {
 		Name:     input.Name,
 	}
 
-	creation_err := applications_service.CreateApplication(new_application)
+	created_application, creation_err := applications_service.CreateApplication(new_application)
 
 	if creation_err != nil {
 		fmt.Println(creation_err)
@@ -48,7 +48,7 @@ func CreateNewApplication(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"status": "success", "message": "Application created.", "data": nil})
+	c.JSON(http.StatusCreated, gin.H{"status": "success", "message": "Application created.", "data": created_application})
 }
 
 func DeleteApplication(c *gin.Context) {

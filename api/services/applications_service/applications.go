@@ -20,12 +20,12 @@ func GetApplicationById(application_id int) (*models.Application, error) {
 	return &application, err
 }
 
-func CreateApplication(new_application models.Application) error {
+func CreateApplication(new_application models.Application) (*models.Application, error) {
 	err := database.DB.Create(&new_application).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &new_application, nil
 }
 
 func UpdateApplication(application_id int, updates models.Application) (*models.Application, error) {

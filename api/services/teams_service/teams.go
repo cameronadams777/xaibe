@@ -20,15 +20,15 @@ func GetTeamById(team_id int) (*models.Team, error) {
 	return &team, nil
 }
 
-func CreateTeam(name string) error {
+func CreateTeam(name string) (*models.Team, error) {
 	team := models.Team{
 		Name: name,
 	}
 	err := database.DB.Create(&team).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &team, nil
 }
 
 func UpdateTeam(team_id int, updates models.Team) (*models.Team, error) {

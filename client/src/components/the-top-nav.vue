@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 import { Bars3Icon } from "@heroicons/vue/24/solid";
-import { UserIcon } from "@heroicons/vue/24/outline";
+import { UserIcon, PlusIcon } from "@heroicons/vue/24/outline";
+import { useModalStore } from "../state/modals";
 
 const emits = defineEmits<{ (event: "onMenuClick"): void }>();
+
+const { setIsNewElementModalShown } = useModalStore();
 </script>
 
 <template>
@@ -14,11 +17,16 @@ const emits = defineEmits<{ (event: "onMenuClick"): void }>();
       >
         <bars-3-icon class="h-full w-6" />
       </button>
-      <h2 class="m-0 p-0">Galata</h2>
     </div>
     <div class="flex justify-end">
       <button
-        class="w-8 h-8 bg-gray-800 flex justify-center items-center text-white border-none rounded-full cursor-pointer hover:shadow-md"
+        class="w-8 h-8 mr-4 bg-white text-gray-800 flex justify-center items-center text-white border-none rounded-full cursor-pointer hover:shadow-md transition-all duration-500"
+        @click="setIsNewElementModalShown(true)"
+      >
+        <plus-icon class="w-8" />
+      </button>
+      <button
+        class="w-8 h-8 bg-gray-800 flex justify-center items-center text-white border-none rounded-full cursor-pointer hover:shadow-md transition-all duration-500"
       >
         <user-icon class="w-4" />
       </button>

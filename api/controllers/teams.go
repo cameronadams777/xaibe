@@ -60,7 +60,7 @@ func CreateNewTeam(c *gin.Context) {
 		return
 	}
 
-	creation_err := teams_service.CreateTeam(input.Name)
+	created_team, creation_err := teams_service.CreateTeam(input.Name)
 
 	if creation_err != nil {
 		fmt.Println(creation_err)
@@ -68,7 +68,9 @@ func CreateNewTeam(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"status": "success", "message": "Team created.", "data": nil})
+	fmt.Println(created_team)
+
+	c.JSON(http.StatusCreated, gin.H{"status": "success", "message": "Team created.", "data": created_team})
 }
 
 func DeleteTeam(c *gin.Context) {

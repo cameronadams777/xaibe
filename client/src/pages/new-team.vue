@@ -13,10 +13,19 @@ const isSubmitting = ref(false);
 // onMounted(() => {})
 
 const submitForm = async () => {
-  isSubmitting.value = true;
-  await createNewTeam({ teamName: teamName.value });
-  isSubmitting.value = false;
-  router.push("/");
+  try {
+    isSubmitting.value = true;
+    await createNewTeam({ teamName: teamName.value });
+    isSubmitting.value = false;
+    router.push("/");
+  } catch (error) {
+    // TODO: Add toast message for better UX
+    console.error(
+      "Galata Error: An error occurred while attempting to create a new team:",
+      error
+    );
+    isSubmitting.value = false;
+  }
 };
 </script>
 

@@ -19,9 +19,8 @@ type User struct {
 
 type Team struct {
 	gorm.Model
-	Name           string
-	OrganizationId uint
-	Applications   []Application
+	Name         string
+	Applications []Application
 }
 
 type TeamUser struct {

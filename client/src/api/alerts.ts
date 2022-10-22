@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api";
+import { TauriEvents } from ".";
 
 interface IFetchCachedAlertsInput {
   applicationId: number;
@@ -16,10 +17,13 @@ export const fetchCachedAlerts = async ({
 }: IFetchCachedAlertsInput): Promise<Record<string, any>> => {
   try {
     const authToken = localStorage.getItem("token");
-    const responseString = await invoke<string>("fetch_cached_alerts", {
-      authToken,
-      applicationId,
-    });
+    const responseString = await invoke<string>(
+      TauriEvents.FETCH_CACHED_ALERTS,
+      {
+        authToken,
+        applicationId,
+      }
+    );
     const response: IFetchCacheAlertsResponse = JSON.parse(responseString);
     return response.data.alerts;
   } catch (error) {

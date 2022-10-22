@@ -12,6 +12,10 @@ const routes: RouteRecordRaw[] = [
     path: "/applications/new",
     component: () => import("../pages/new-application.vue"),
   },
+  {
+    path: "/applications/:applicationId",
+    component: () => import("../pages/application-details.vue"),
+  },
   { path: "/:pathMatch(.*)*", redirect: "/login" },
 ];
 

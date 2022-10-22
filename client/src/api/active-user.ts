@@ -1,16 +1,21 @@
 import { invoke } from "@tauri-apps/api";
-import { IApplication, IUser } from "../types";
+import { camelizeKeys } from "humps";
+import { TauriEvents } from ".";
+import { IUser } from "../types";
 
 export const fetchActiveUser = async (): Promise<IUser | undefined> => {
   try {
     const authToken = localStorage.getItem("token");
-    const responseString = await invoke<string>("fetch_active_user", {
+    const responseString = await invoke<string>(TauriEvents.FETCH_ACTIVE_USER, {
       authToken,
     });
-    const response = JSON.parse(responseString);
+    const response = camelizeKeys(JSON.parse(responseString));
     return response.data.user;
   } catch (error) {
-    console.error("An error occurred while retrieving active user.");
+    console.error(
+      "Galata Error: An error occurred while retrieving active user:",
+      error
+    );
     return undefined;
   }
 };

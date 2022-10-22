@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import TheMainLayout from "../layouts/the-main-layout.vue";
+
 import { useActiveUserStore } from "../state/active-user";
 import { createNewApplication } from "../api/applications";
 import { storeToRefs } from "pinia";
@@ -15,21 +16,30 @@ const applicationName = ref("");
 const isSubmitting = ref(false);
 
 const submitForm = async () => {
-  if (!activeUser?.value) {
-    // TODO: Handle with toast message here
+  try {
+    if (!activeUser?.value) {
+      // TODO: Handle with toast message here
+      console.error(
+        "Galata Error: An unknown error occurred. Please try again later."
+      );
+      return;
+    }
+    isSubmitting.value = true;
+    await createNewApplication({
+      applicationName: applicationName.value,
+      teamId: undefined,
+      userId: activeUser.value.id,
+    });
+    isSubmitting.value = false;
+    router.push("/");
+  } catch (error) {
+    // TODO: Add toast message for better UX
     console.error(
-      "Galata Error: An unknown error occurred. Please try again later."
+      "Galata Error: An error occurred while attempting to create a new application:",
+      error
     );
-    return;
+    isSubmitting.value = false;
   }
-  isSubmitting.value = true;
-  await createNewApplication({
-    applicationName: applicationName.value,
-    teamId: undefined,
-    userId: activeUser.value.id,
-  });
-  isSubmitting.value = false;
-  router.push("/");
 };
 </script>
 
