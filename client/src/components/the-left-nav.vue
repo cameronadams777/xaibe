@@ -15,6 +15,13 @@ const { activeUser } = storeToRefs(activeUserStore);
     class="h-full hidden border-r-1 border-gray-300"
     :class="{ 'flex flex-col w-full md:w-1/4 lg:w-1/5 xl:w-1/8': isOpen }"
   >
+    <router-link
+      class="px-6 py-4 flex items-center justify-between font-bold text-md capitalize no-underline bg-white hover:bg-gray-200 text-gray-800 text-left border-x-0 border-t-0 border-b-1 border-gray-300 cursor-pointer"
+      to="/"
+    >
+      <span>All Applications</span>
+      <chevron-right-icon class="h-full w-4" />
+    </router-link>
     <h3 class="text-gray-700 py-4 pl-6 m-0">My Applications</h3>
     <router-link
       v-if="activeUser?.Applications?.length"
