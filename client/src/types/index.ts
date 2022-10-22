@@ -1,29 +1,29 @@
 export interface IUser {
-  id: number;
-  createAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
-  firstName: string;
-  lastName: string;
-  email: string;
-  isAdmin: boolean;
-  isVerified: boolean;
-  applications: IApplication[];
+  ID: number;
+  CreateAt: Date;
+  UpdatedAt: Date;
+  DeletedAt: Date;
+  FirstName: string;
+  LastName: string;
+  Email: string;
+  IsAdmin: boolean;
+  IsVerified: boolean;
+  Applications: IApplication[];
 }
 
 export interface ITeam {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
-  name: string;
-  applications: IApplication[];
+  ID: number;
+  CreatedAt: Date;
+  UpdatedAt: Date;
+  DeletedAt: Date;
+  Name: string;
+  Applications: IApplication[];
 }
 
 export interface IApplication {
-  id: number;
-  name: string;
-  teamId?: number;
-  userId?: number;
-  uniqueId: string;
+  ID: number;
+  Name: string;
+  TeamId?: number;
+  UserId?: number;
+  UniqueId: string;
 }

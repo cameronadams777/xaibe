@@ -5,6 +5,7 @@ import (
 	"api/models"
 	"api/services/applications_service"
 	"api/services/service_tokens_service"
+	"api/structs"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -22,6 +23,35 @@ type CreateNewApplicationInput struct {
 	TeamId int    `json:"team_id" binding:"required_without=UserId"`
 	UserId int    `json:"user_id" binding:"required_without=TeamId"`
 	Name   string `json:"application_name" binding:"required"`
+}
+
+func GetApplicationById(c *gin.Context) {
+	application_input_param := c.Param("application_id")
+	application_id, conv_err := strconv.Atoi(application_input_param)
+
+	if conv_err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting application by id.", "data": nil})
+		return
+	}
+
+	application, fetch_err := applications_service.GetApplicationById(application_id)
+
+	if fetch_err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Application not found.", "data": nil})
+		return
+	}
+
+	data, _ := c.Get("authScope")
+	authScope := data.(structs.AuthScope)
+
+	// TODO: Need to add additional logic for checking if user is a member of a team
+	// that this application belongs to in the event it doesn't belong to a specific user
+	if application.UserID != uint(authScope.UserID) {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Application not found.", "data": nil})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Application found.", "data": application})
 }
 
 func CreateNewApplication(c *gin.Context) {

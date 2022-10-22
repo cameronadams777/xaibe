@@ -25,6 +25,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, _) => {
+  console.log(to);
   const token = localStorage.getItem("token");
   if (authenticatedRoutes.includes(to.path) && !token) {
     return "/login";

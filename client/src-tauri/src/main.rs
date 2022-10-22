@@ -11,10 +11,11 @@ use serde::{Deserialize, Serialize};
 async fn main() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
-      fetch_cached_alerts,
-      fetch_active_user,
       create_new_application,
-      create_new_team
+      create_new_team,
+      fetch_active_user,
+      fetch_application_by_id,
+      fetch_cached_alerts,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
@@ -69,12 +70,13 @@ struct NewApplicationPayload {
 #[derive(Debug, Serialize, Deserialize)]
 struct Application {
   ID: i32,
+  Name: String,
+  UniqueId: String,
   CreatedAt: chrono::DateTime<Utc>,
   UpdatedAt: Option<chrono::DateTime<Utc>>,
   DeletedAt: Option<chrono::DateTime<Utc>>,
   TeamId: Option<i32>,
   UserId: Option<i32>,
-  UniqueId: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -164,5 +166,38 @@ async fn create_new_team(auth_token: String, team_name: String) -> Result<NewTea
   match result {
     Ok(res) => Ok(res),
     Err(e) => Err(format!("An error occurred {}", e)),
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct FetchApplicationByPayload {
+  status: String,
+  message: String,
+  data: Application,
+}
+
+#[tauri::command]
+async fn fetch_application_by_id(
+  auth_token: &str,
+  application_id: i32,
+) -> Result<FetchApplicationByPayload, String> {
+  let client = reqwest::Client::new();
+  let url = format!("http://localhost:5000/api/applications/{}", application_id);
+
+  let result = client
+    .get(url)
+    .bearer_auth(auth_token)
+    .send()
+    .await
+    .unwrap()
+    .json::<FetchApplicationByPayload>()
+    .await;
+
+  match result {
+    Ok(res) => Ok(res),
+    Err(err) => Err(format!(
+      "An error occurred while fetching application {}",
+      err.to_string()
+    )),
   }
 }

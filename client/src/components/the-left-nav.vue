@@ -17,13 +17,13 @@ const { activeUser } = storeToRefs(activeUserStore);
   >
     <h3 class="text-gray-700 py-4 pl-6 m-0">My Applications</h3>
     <router-link
-      v-if="activeUser?.applications?.length"
-      v-for="(application, index) in activeUser.applications"
+      v-if="activeUser?.Applications?.length"
+      v-for="(application, index) in activeUser.Applications"
       class="px-6 py-4 flex items-center justify-between font-bold text-md capitalize no-underline bg-white hover:bg-gray-200 text-gray-800 text-left border-x-0 border-t-1 border-b-1 border-gray-300 cursor-pointer"
       :class="{ 'border-t-0': index === 0 }"
-      to="/applications/:applicationId"
+      :to="`/applications/${application.ID}`"
     >
-      <span>{{ application.name }}</span>
+      <span>{{ application.Name }}</span>
       <chevron-right-icon class="h-full w-4" />
     </router-link>
     <div
@@ -40,7 +40,7 @@ const { activeUser } = storeToRefs(activeUserStore);
       :class="{ 'border-t-0': index === 0 }"
     >
       <ChevronDownIcon class="h-full w-4 mr-2" />
-      <span class="font-bold">{{ team.name }}</span>
+      <span class="font-bold">{{ team.Name }}</span>
     </button>
     <div
       v-else

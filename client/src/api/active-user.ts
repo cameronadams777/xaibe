@@ -1,5 +1,4 @@
 import { invoke } from "@tauri-apps/api";
-import { camelizeKeys } from "humps";
 import { TauriEvents } from ".";
 import { IUser } from "../types";
 
@@ -9,7 +8,7 @@ export const fetchActiveUser = async (): Promise<IUser | undefined> => {
     const responseString = await invoke<string>(TauriEvents.FETCH_ACTIVE_USER, {
       authToken,
     });
-    const response = camelizeKeys(JSON.parse(responseString));
+    const response = JSON.parse(responseString);
     return response.data.user;
   } catch (error) {
     console.error(

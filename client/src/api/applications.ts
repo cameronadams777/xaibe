@@ -2,6 +2,30 @@ import { invoke } from "@tauri-apps/api";
 import { TauriEvents } from ".";
 import { IApplication } from "../types";
 
+interface IFetchApplicationByIdInput {
+  applicationId: number;
+}
+
+interface IFetchApplicationByIdResponse {
+  status: string;
+  message: string;
+  data: IApplication;
+}
+
+export const fetchApplicationById = async ({
+  applicationId,
+}: IFetchApplicationByIdInput): Promise<IApplication | undefined> => {
+  const authToken = localStorage.getItem("token");
+  const response = await invoke<IFetchApplicationByIdResponse>(
+    TauriEvents.FETCH_APPLICATION_BY_ID,
+    {
+      authToken,
+      applicationId,
+    }
+  );
+  return response.data;
+};
+
 interface ICreateNewApplicationInput {
   applicationName: string;
   teamId?: number;
@@ -21,11 +45,9 @@ export const createNewApplication = async ({
   if (teamId != null) body.teamId = teamId;
   else if (teamId != null) body.userId = userId;
   else {
-    // TODO: Handle with error toast as we need one of these provided
-    console.error(
-      "Galata Error: A teamId or userId must be provided when creating an application."
+    throw new Error(
+      "A teamId or userId must be provided when creating an application."
     );
-    return;
   }
   const application = await invoke<IApplication>(
     TauriEvents.CREATE_NEW_APPLICATION,
