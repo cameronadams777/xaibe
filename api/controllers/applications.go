@@ -11,12 +11,10 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type CreateNewApplicationInput struct {
@@ -106,9 +104,9 @@ func DeleteApplication(c *gin.Context) {
 	// If user is not within the application and is not of type manager on
 	// the current application or is not an admin, throw an error
 
-	deleted_application, _ := applications_service.UpdateApplication(application_id, models.Application{Model: gorm.Model{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
+	deleted_application, _ := applications_service.DeleteApplication(application_id)
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Application successfully deleted.", "data": gin.H{"application": deleted_application}})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Application successfully deleted.", "data": deleted_application})
 }
 
 func GetApplicationServiceTokens(c *gin.Context) {

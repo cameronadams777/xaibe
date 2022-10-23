@@ -57,3 +57,20 @@ export const createNewApplication = async ({
   );
   return application;
 };
+
+interface IDeleteApplicationInput {
+  applicationId: number;
+}
+
+export const deleteApplication = async ({
+  applicationId,
+}: IDeleteApplicationInput): Promise<void> => {
+  const authToken = localStorage.getItem("token");
+  let body: Record<string, any> = {
+    applicationId,
+    authToken,
+  };
+  await invoke<IApplication>(TauriEvents.DELETE_APPLICATION, {
+    ...body,
+  });
+};

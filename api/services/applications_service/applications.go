@@ -40,3 +40,16 @@ func UpdateApplication(application_id int, updates models.Application) (*models.
 
 	return &application_to_update, nil
 }
+
+func DeleteApplication(application_id int) (*models.Application, error) {
+	var application_to_delete models.Application
+	err := database.DB.First(&application_to_delete, application_id).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	database.DB.Delete(&application_to_delete)
+
+	return &application_to_delete, nil
+}

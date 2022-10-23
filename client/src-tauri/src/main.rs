@@ -13,6 +13,7 @@ async fn main() {
     .invoke_handler(tauri::generate_handler![
       create_new_application,
       create_new_team,
+      delete_application,
       fetch_active_user,
       fetch_application_by_id,
       fetch_cached_alerts,
@@ -191,6 +192,38 @@ async fn fetch_application_by_id(
     .await
     .unwrap()
     .json::<FetchApplicationByPayload>()
+    .await;
+
+  match result {
+    Ok(res) => Ok(res),
+    Err(err) => Err(format!(
+      "An error occurred while fetching application {}",
+      err.to_string()
+    )),
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct DeleteApplicationPayload {
+  status: String,
+  message: String,
+}
+
+#[tauri::command]
+async fn delete_application(
+  auth_token: &str,
+  application_id: i32,
+) -> Result<DeleteApplicationPayload, String> {
+  let client = reqwest::Client::new();
+  let url = format!("http://localhost:5000/api/applications/{}", application_id);
+
+  let result = client
+    .delete(url)
+    .bearer_auth(auth_token)
+    .send()
+    .await
+    .unwrap()
+    .json::<DeleteApplicationPayload>()
     .await;
 
   match result {
