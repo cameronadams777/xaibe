@@ -32,6 +32,12 @@ export interface ICreateNewApplicationInput {
   userId?: number;
 }
 
+interface ICreateNewApplicationResponse {
+  status: string;
+  message: string;
+  data?: IApplication;
+}
+
 export const createNewApplication = async ({
   teamId,
   userId,
@@ -49,13 +55,13 @@ export const createNewApplication = async ({
       "A teamId or userId must be provided when creating an application."
     );
   }
-  const application = await invoke<IApplication>(
+  const response = await invoke<ICreateNewApplicationResponse>(
     TauriEvents.CREATE_NEW_APPLICATION,
     {
       ...body,
     }
   );
-  return application;
+  return response.data;
 };
 
 interface IDeleteApplicationInput {

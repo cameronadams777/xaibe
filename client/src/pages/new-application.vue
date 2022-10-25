@@ -29,6 +29,7 @@ const submitForm = async () => {
     if (!application)
       throw new Error("Galata Error: Application not generated.");
     cacheApplication(application);
+    console.log(application.ID);
     router.push(`/applications/${application.ID}`);
     isSubmitting.value = false;
   } catch (error) {
