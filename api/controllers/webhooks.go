@@ -46,11 +46,11 @@ func WebHook(c *gin.Context) {
 
 	var owner_id string
 
-	if application.TeamID != 0 {
-		team_id := strconv.Itoa(int(application.TeamID))
+	if application.TeamID != nil {
+		team_id := strconv.Itoa(int(*application.TeamID))
 		owner_id = "team_" + team_id
-	} else if application.UserID != 0 {
-		user_id := strconv.Itoa(int(application.UserID))
+	} else if application.UserID != nil {
+		user_id := strconv.Itoa(int(*application.UserID))
 		owner_id = "user_" + user_id
 	} else {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred posting alert to application.", "data": nil})

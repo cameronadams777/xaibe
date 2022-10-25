@@ -63,9 +63,9 @@ async fn fetch_active_user(auth_token: &str) -> Result<String, ()> {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct NewApplicationPayload {
-  applicationName: String,
-  teamId: Option<i32>,
-  userId: Option<i32>,
+  application_name: String,
+  team_id: Option<i32>,
+  user_id: Option<i32>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -93,21 +93,21 @@ async fn create_new_application(
   application_name: String,
   team_id: Option<i32>,
   user_id: Option<i32>,
-) -> Result<NewApplicationResponse, ()> {
+) -> Result<NewApplicationResponse, String> {
   let client = reqwest::Client::new();
   let url = "http://localhost:5000/api/applications";
 
   let mut payload = NewApplicationPayload {
-    applicationName: application_name,
-    teamId: None,
-    userId: None,
+    application_name: application_name,
+    team_id: None,
+    user_id: None,
   };
 
   // TODO: Add else clause that will throw an error if team_id or user_id is not found
   if team_id != None {
-    payload.teamId = team_id;
+    payload.team_id = team_id;
   } else if user_id != None {
-    payload.userId = user_id;
+    payload.user_id = user_id;
   }
 
   let result = client
@@ -118,10 +118,12 @@ async fn create_new_application(
     .await
     .unwrap()
     .json::<NewApplicationResponse>()
-    .await
-    .unwrap();
+    .await;
 
-  Ok(result)
+  match result {
+    Ok(res) => Ok(res),
+    Err(e) => Err(format!("An error occurred {}", e)),
+  }
 }
 
 #[derive(Debug, Serialize, Deserialize)]

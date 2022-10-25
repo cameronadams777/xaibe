@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"api/models"
-	"api/services/applications_service"
 	"api/services/teams_service"
 	"fmt"
 	"net/http"
@@ -103,20 +102,20 @@ func DeleteTeam(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Team successfully deleted.", "data": gin.H{"team": deleted_team}})
 }
 
-func GetAllTeamApplications(c *gin.Context) {
-	team_input_param := c.Param("team_id")
-	team_id, conv_err := strconv.Atoi(team_input_param)
+// func GetAllTeamApplications(c *gin.Context) {
+// 	team_input_param := c.Param("team_id")
+// 	team_id, conv_err := strconv.Atoi(team_input_param)
 
-	if conv_err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting team by id.", "data": nil})
-		return
-	}
+// 	if conv_err != nil {
+// 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting team by id.", "data": nil})
+// 		return
+// 	}
 
-	// TODO: ADD BELOW LOGIC
-	// If user is not within the team, is not of type manager on
-	// the current team or is not an admin, throw an error
+// 	// TODO: ADD BELOW LOGIC
+// 	// If user is not within the team, is not of type manager on
+// 	// the current team or is not an admin, throw an error
 
-	applications := applications_service.GetAllApplications(models.Application{TeamID: uint(team_id)})
+// 	applications := applications_service.GetAllApplications(models.Application{TeamID: uint(team_id)})
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Successfully retrieved applications for team.", "data": gin.H{"applications": applications}})
-}
+// 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Successfully retrieved applications for team.", "data": gin.H{"applications": applications}})
+// }

@@ -18,8 +18,8 @@ import (
 )
 
 type CreateNewApplicationInput struct {
-	TeamId int    `json:"team_id" binding:"required_without=UserId"`
-	UserId int    `json:"user_id" binding:"required_without=TeamId"`
+	TeamId *uint  `json:"team_id" binding:"required_without=UserId"`
+	UserId *uint  `json:"user_id" binding:"required_without=TeamId"`
 	Name   string `json:"application_name" binding:"required"`
 }
 
@@ -44,7 +44,7 @@ func GetApplicationById(c *gin.Context) {
 
 	// TODO: Need to add additional logic for checking if user is a member of a team
 	// that this application belongs to in the event it doesn't belong to a specific user
-	if application.UserID != uint(authScope.UserID) {
+	if *application.UserID != uint(authScope.UserID) {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Application not found.", "data": nil})
 		return
 	}
@@ -62,8 +62,8 @@ func CreateNewApplication(c *gin.Context) {
 	}
 
 	new_application := models.Application{
-		TeamID:   uint(input.TeamId),
-		UserID:   uint(input.UserId),
+		UserID:   input.UserId,
+		TeamID:   input.TeamId,
 		UniqueId: uuid.NewString(),
 		Name:     input.Name,
 	}
@@ -151,11 +151,11 @@ func GetApplicationAlerts(c *gin.Context) {
 	// If not, throw error
 	var owner_id string
 
-	if application.TeamID != 0 {
-		team_id := strconv.Itoa(int(application.TeamID))
+	if application.TeamID != nil {
+		team_id := strconv.Itoa(int(*application.TeamID))
 		owner_id = "team_" + team_id
-	} else if application.UserID != 0 {
-		user_id := strconv.Itoa(int(application.UserID))
+	} else if application.UserID != nil {
+		user_id := strconv.Itoa(int(*application.UserID))
 		owner_id = "user_" + user_id
 	} else {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred posting alert to application.", "data": nil})

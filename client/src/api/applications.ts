@@ -26,7 +26,7 @@ export const fetchApplicationById = async ({
   return response.data;
 };
 
-interface ICreateNewApplicationInput {
+export interface ICreateNewApplicationInput {
   applicationName: string;
   teamId?: number;
   userId?: number;
@@ -43,7 +43,7 @@ export const createNewApplication = async ({
     authToken,
   };
   if (teamId != null) body.teamId = teamId;
-  else if (teamId != null) body.userId = userId;
+  else if (userId != null) body.userId = userId;
   else {
     throw new Error(
       "A teamId or userId must be provided when creating an application."
