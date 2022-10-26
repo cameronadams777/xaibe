@@ -26,4 +26,12 @@ export interface IApplication {
   TeamId?: number;
   UserId?: number;
   UniqueId: string;
+  HasReceivedAlerts: boolean;
+}
+
+export interface IAlert {
+  ID: number;
+  Title: string;
+  Description: string;
+  Link: string;
 }

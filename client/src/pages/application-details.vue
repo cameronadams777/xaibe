@@ -5,22 +5,27 @@ import { TrashIcon } from "@heroicons/vue/24/outline";
 import { useApplicationsStore } from "../state/applications";
 import { useModalStore } from "../state/modals";
 import TheMainLayout from "../layouts/the-main-layout.vue";
-import { IApplication } from "../types";
+import { IAlert, IApplication } from "../types";
 import { fetchApplicationById } from "../api/applications";
+import ApplicationAlerts from "../components/application-alerts.vue";
 
 const { getCachedApplication, cacheApplication } = useApplicationsStore();
 const { setIsDeleteApplicationConfirmationModalShown } = useModalStore();
 
 const activeApplication = ref<IApplication | undefined>(undefined);
+const applicationAlerts = ref<IAlert[]>([]);
+const applicationUrl = ref("");
 
 const router = useRouter();
 const route = useRoute();
 
 onMounted(async () => {
+  console.log("here");
   const applicationId = parseInt(route.params.applicationId as string);
   const cachedApplication = getCachedApplication(applicationId);
   if (cachedApplication != null) {
     activeApplication.value = cachedApplication;
+    applicationUrl.value = `http://localhost:5000/api/webhook?application_id=${applicationId}`;
     return;
   }
   try {
@@ -31,6 +36,7 @@ onMounted(async () => {
     }
     cacheApplication(application);
     activeApplication.value = application;
+    applicationUrl.value = `http://localhost:5000/api/webhook?application_id=${applicationId}`;
   } catch (error) {
     console.error(
       "Galata Error: An error occurred trying to fetch the application you wanted:",
@@ -55,13 +61,14 @@ onMounted(async () => {
           <trash-icon class="w-5 h-5" />
         </button>
       </div>
-      <div class="w-full h-full flex">
-        <div class="w-2/3 h-full">
-          <h5 class="p-0 m-0 mb-1">Alerts</h5>
-          <div
-            class="w-full h-full mr-4 border-1 border-gray-300 rounded-lg overflow-y-auto"
-          ></div>
-        </div>
+      <application-alerts
+        v-if="activeApplication?.HasReceivedAlerts"
+        :alerts="applicationAlerts"
+      />
+      <div v-else>
+        <h3>Let's Get Started!</h3>
+        <p>Utilize the following url to begin receiving applications:</p>
+        <p>{{ applicationUrl }}</p>
       </div>
     </div>
   </the-main-layout>

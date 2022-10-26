@@ -26,8 +26,8 @@ const { activeUser } = storeToRefs(activeUserStore);
     <router-link
       v-if="activeUser?.Applications?.length"
       v-for="(application, index) in activeUser.Applications"
-      class="px-6 py-4 flex items-center justify-between font-bold text-md capitalize no-underline bg-white hover:bg-gray-200 text-gray-800 text-left border-x-0 border-t-1 border-b-1 border-gray-300 cursor-pointer"
-      :class="{ 'border-t-0': index === 0 }"
+      class="px-6 py-4 flex items-center justify-between font-bold text-md capitalize no-underline bg-white hover:bg-gray-200 text-gray-800 text-left border-x-0 border-b-1 border-gray-300 cursor-pointer"
+      :class="{ 'border-t-0': index !== 0, 'border-t-1': index === 0 }"
       :to="`/applications/${application.ID}`"
     >
       <span>{{ application.Name }}</span>

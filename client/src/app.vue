@@ -1,9 +1,12 @@
 <script lang="ts" setup>
+import { useRoute } from "vue-router";
 import TheGlobalModal from "./components/the-global-modal.vue";
+
+const route = useRoute();
 </script>
 
 <template>
-  <router-view />
+  <router-view :key="route.fullPath" />
   <the-global-modal />
 </template>
 
