@@ -24,6 +24,10 @@ const routes: RouteRecordRaw[] = [
     path: "/settings",
     component: () => import("../pages/settings.vue"),
   },
+  {
+    path: "/404",
+    component: () => import("../pages/404.vue"),
+  },
   { path: "/:pathMatch(.*)*", redirect: "/login" },
 ];
 

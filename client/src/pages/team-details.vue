@@ -2,10 +2,11 @@
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { TrashIcon } from "@heroicons/vue/24/outline";
-import { fetchTeamById } from "../api/teams";
 import TheMainLayout from "../layouts/the-main-layout.vue";
+import ApplicationsList from "../components/applications-list.vue";
+import { fetchTeamById } from "../api/teams";
 import { useModalStore } from "../state/modals";
-import { ITeam } from "../types";
+import { IApplication, ITeam } from "../types";
 
 const route = useRoute();
 const router = useRouter();
@@ -45,6 +46,11 @@ onMounted(async () => {
         >
           <trash-icon class="w-5 h-5" />
         </button>
+      </div>
+      <div class="flex">
+        <applications-list
+          :applications="(activeTeam?.Applications as IApplication[])"
+        />
       </div>
     </div>
   </the-main-layout>
