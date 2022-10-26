@@ -11,7 +11,7 @@ import { useApplicationsStore } from "../state/applications";
 
 const router = useRouter();
 const { cacheApplication } = useApplicationsStore();
-const activeUserStore = useActiveUserStore();
+const { getActiveUser, ...activeUserStore } = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);
 
 const applicationName = ref("");
@@ -29,6 +29,7 @@ const submitForm = async () => {
     if (!application)
       throw new Error("Galata Error: Application not generated.");
     cacheApplication(application);
+    await getActiveUser();
     router.push(`/applications/${application.ID}`);
     isSubmitting.value = false;
   } catch (error) {

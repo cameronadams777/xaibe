@@ -3,8 +3,10 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { createNewTeam } from "../api/teams";
 import TheMainLayout from "../layouts/the-main-layout.vue";
+import { useActiveUserStore } from "../state/active-user";
 
 const router = useRouter();
+const { getActiveUser } = useActiveUserStore();
 
 const teamName = ref("");
 const isSubmitting = ref(false);
@@ -17,6 +19,7 @@ const submitForm = async () => {
     isSubmitting.value = true;
     const team = await createNewTeam({ teamName: teamName.value });
     if (!team) throw new Error("Galata Error: Team not generated.");
+    await getActiveUser();
     isSubmitting.value = false;
     router.push(`/teams/${team.ID}`);
   } catch (error) {
