@@ -15,20 +15,14 @@ type User struct {
 	IsAdmin      bool
 	IsVerified   bool
 	Applications []Application
+	Teams        []*Team `gorm:"many2many:team_users;"`
 }
 
 type Team struct {
 	gorm.Model
 	Name         string
+	Users        []*User `gorm:"many2many:team_users;"`
 	Applications []Application
-}
-
-type TeamUser struct {
-	TeamID    uint
-	Team      Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	UserID    uint
-	User      User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	IsManager bool
 }
 
 type Application struct {

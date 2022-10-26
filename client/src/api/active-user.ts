@@ -9,6 +9,7 @@ export const fetchActiveUser = async (): Promise<IUser | undefined> => {
       authToken,
     });
     const response = JSON.parse(responseString);
+    console.log(response);
     return response.data.user;
   } catch (error) {
     console.error(

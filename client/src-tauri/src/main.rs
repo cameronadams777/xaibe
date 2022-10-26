@@ -17,6 +17,7 @@ async fn main() {
       fetch_active_user,
       fetch_application_by_id,
       fetch_cached_alerts,
+      fetch_team_by_id,
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
@@ -169,6 +170,36 @@ async fn create_new_team(auth_token: String, team_name: String) -> Result<NewTea
   match result {
     Ok(res) => Ok(res),
     Err(e) => Err(format!("An error occurred {}", e)),
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct FetchTeamByPayload {
+  status: String,
+  message: String,
+  data: Team,
+}
+
+#[tauri::command]
+async fn fetch_team_by_id(auth_token: &str, team_id: i32) -> Result<FetchTeamByPayload, String> {
+  let client = reqwest::Client::new();
+  let url = format!("http://localhost:5000/api/teams/{}", team_id);
+
+  let result = client
+    .get(url)
+    .bearer_auth(auth_token)
+    .send()
+    .await
+    .unwrap()
+    .json::<FetchTeamByPayload>()
+    .await;
+
+  match result {
+    Ok(res) => Ok(res),
+    Err(err) => Err(format!(
+      "An error occurred while fetching team {}",
+      err.to_string()
+    )),
   }
 }
 

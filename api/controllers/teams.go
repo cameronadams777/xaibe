@@ -3,6 +3,8 @@ package controllers
 import (
 	"api/models"
 	"api/services/teams_service"
+	"api/services/users_service"
+	"api/structs"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -59,15 +61,23 @@ func CreateNewTeam(c *gin.Context) {
 		return
 	}
 
-	created_team, creation_err := teams_service.CreateTeam(input.Name)
+	data, _ := c.Get("authScope")
+	authScope := data.(structs.AuthScope)
+
+	current_user, current_user_err := users_service.GetUserById(authScope.UserID)
+
+	if current_user_err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An unknown error occurred.", "data": nil})
+		return
+	}
+
+	created_team, creation_err := teams_service.CreateTeam(input.Name, *current_user)
 
 	if creation_err != nil {
 		fmt.Println(creation_err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred while creating the requested team.", "data": nil})
 		return
 	}
-
-	fmt.Println(created_team)
 
 	c.JSON(http.StatusCreated, gin.H{"status": "success", "message": "Team created.", "data": created_team})
 }

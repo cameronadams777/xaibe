@@ -7,22 +7,23 @@ import (
 
 func GetAllTeams() []models.Team {
 	var teams []models.Team
-	database.DB.Find(&teams)
+	database.DB.Preload("Users").Preload("Applications").Find(&teams)
 	return teams
 }
 
 func GetTeamById(team_id int) (*models.Team, error) {
 	var team models.Team
-	err := database.DB.First(&team, team_id).Error
+	err := database.DB.Preload("Users").Preload("Applications").First(&team, team_id).Error
 	if err != nil {
 		return nil, err
 	}
 	return &team, nil
 }
 
-func CreateTeam(name string) (*models.Team, error) {
+func CreateTeam(name string, creating_user models.User) (*models.Team, error) {
 	team := models.Team{
-		Name: name,
+		Name:  name,
+		Users: []*models.User{&creating_user},
 	}
 	err := database.DB.Create(&team).Error
 	if err != nil {

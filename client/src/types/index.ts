@@ -8,6 +8,7 @@ export interface IUser {
   Email: string;
   IsAdmin: boolean;
   IsVerified: boolean;
+  Teams: ITeam[];
   Applications: IApplication[];
 }
 

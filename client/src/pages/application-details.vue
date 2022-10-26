@@ -20,7 +20,6 @@ const router = useRouter();
 const route = useRoute();
 
 onMounted(async () => {
-  console.log("here");
   const applicationId = parseInt(route.params.applicationId as string);
   const cachedApplication = getCachedApplication(applicationId);
   if (cachedApplication != null) {

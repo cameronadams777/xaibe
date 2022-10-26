@@ -37,10 +37,10 @@ const userNavigation = [
     </div>
     <div class="flex justify-end">
       <button
-        class="w-8 h-8 mr-2 bg-white text-gray-800 flex justify-center items-center text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 border-none rounded-full cursor-pointer hover:shadow-md transition-all duration-500"
+        class="w-8 h-8 mr-2 bg-white flex justify-center items-center text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 border-none rounded-full cursor-pointer hover:shadow-md transition-all duration-500"
         @click="setIsNewElementModalShown(true)"
       >
-        <plus-icon class="w-8" />
+        <plus-icon class="w-8 text-gray-800" />
       </button>
       <Menu as="div" class="relative ml-3">
         <div>

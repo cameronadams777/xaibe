@@ -15,9 +15,10 @@ const isSubmitting = ref(false);
 const submitForm = async () => {
   try {
     isSubmitting.value = true;
-    await createNewTeam({ teamName: teamName.value });
+    const team = await createNewTeam({ teamName: teamName.value });
+    if (!team) throw new Error("Galata Error: Team not generated.");
     isSubmitting.value = false;
-    router.push("/");
+    router.push(`/teams/${team.ID}`);
   } catch (error) {
     // TODO: Add toast message for better UX
     console.error(
@@ -44,7 +45,7 @@ const submitForm = async () => {
         />
       </div>
       <button
-        class="w-1/4 mb-2 p-2 text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none cursor-pointer"
+        class="w-1/4 mb-2 p-2 text-lg text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none cursor-pointer"
         @click="submitForm"
       >
         Create
