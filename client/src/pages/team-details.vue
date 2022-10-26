@@ -1,12 +1,16 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { TrashIcon } from "@heroicons/vue/24/outline";
 import { fetchTeamById } from "../api/teams";
 import TheMainLayout from "../layouts/the-main-layout.vue";
+import { useModalStore } from "../state/modals";
 import { ITeam } from "../types";
 
 const route = useRoute();
 const router = useRouter();
+const { setIsDeleteTeamConfirmationModalShown } = useModalStore();
+
 const activeTeam = ref<ITeam | undefined>(undefined);
 
 onMounted(async () => {
@@ -33,6 +37,14 @@ onMounted(async () => {
     <div class="w-full h-full p-4">
       <div class="flex justify-between items-center">
         <h2 class="capitalize">{{ activeTeam?.Name }}</h2>
+        <button
+          role="button"
+          class="w-8 h-8 p-0 m-0 bg-white text-red-500 hover:shadow-md rounded-full border-none transition-all duration-500 cursor-pointer"
+          aria-label="Delete Team"
+          @click="setIsDeleteTeamConfirmationModalShown(true)"
+        >
+          <trash-icon class="w-5 h-5" />
+        </button>
       </div>
     </div>
   </the-main-layout>

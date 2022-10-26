@@ -3,6 +3,7 @@ import { defineStore } from "pinia";
 interface ModalStoreState {
   isNewElementModalShown: boolean;
   isDeleteApplicationConfirmationModalShown: boolean;
+  isDeleteTeamConfirmationModalShown: boolean;
 }
 
 export const useModalStore = defineStore("modals", {
@@ -10,6 +11,7 @@ export const useModalStore = defineStore("modals", {
     return {
       isNewElementModalShown: false,
       isDeleteApplicationConfirmationModalShown: false,
+      isDeleteTeamConfirmationModalShown: false,
     };
   },
   actions: {
@@ -18,6 +20,9 @@ export const useModalStore = defineStore("modals", {
     },
     setIsDeleteApplicationConfirmationModalShown(newValue: boolean): void {
       this.isDeleteApplicationConfirmationModalShown = newValue;
+    },
+    setIsDeleteTeamConfirmationModalShown(newValue: boolean): void {
+      this.isDeleteTeamConfirmationModalShown = newValue;
     },
   },
 });

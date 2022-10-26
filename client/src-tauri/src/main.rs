@@ -14,6 +14,7 @@ async fn main() {
       create_new_application,
       create_new_team,
       delete_application,
+      delete_team,
       fetch_active_user,
       fetch_application_by_id,
       fetch_cached_alerts,
@@ -198,6 +199,35 @@ async fn fetch_team_by_id(auth_token: &str, team_id: i32) -> Result<FetchTeamByP
     Ok(res) => Ok(res),
     Err(err) => Err(format!(
       "An error occurred while fetching team {}",
+      err.to_string()
+    )),
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct DeleteTeamPayload {
+  status: String,
+  message: String,
+}
+
+#[tauri::command]
+async fn delete_team(auth_token: &str, team_id: i32) -> Result<DeleteTeamPayload, String> {
+  let client = reqwest::Client::new();
+  let url = format!("http://localhost:5000/api/teams/{}", team_id);
+
+  let result = client
+    .delete(url)
+    .bearer_auth(auth_token)
+    .send()
+    .await
+    .unwrap()
+    .json::<DeleteTeamPayload>()
+    .await;
+
+  match result {
+    Ok(res) => Ok(res),
+    Err(err) => Err(format!(
+      "An error occurred while fetching application {}",
       err.to_string()
     )),
   }

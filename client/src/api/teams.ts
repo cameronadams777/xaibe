@@ -49,3 +49,21 @@ export const fetchTeamById = async ({
   );
   return response.data;
 };
+
+interface IDeleteTeamInput {
+  teamId: number;
+}
+
+export const deleteTeam = async ({
+  teamId,
+}: IDeleteTeamInput): Promise<void> => {
+  const authToken = localStorage.getItem("token");
+  let body: Record<string, any> = {
+    teamId,
+    authToken,
+  };
+  await invoke<ITeam>(TauriEvents.DELETE_TEAM, {
+    authToken,
+    teamId,
+  });
+};

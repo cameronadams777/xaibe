@@ -1,17 +1,14 @@
 package controllers
 
 import (
-	"api/models"
 	"api/services/teams_service"
 	"api/services/users_service"
 	"api/structs"
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type CreateNewTeamInput struct {
@@ -107,9 +104,9 @@ func DeleteTeam(c *gin.Context) {
 	// If user is not within the team, is not of type manager on
 	// the current team or is not an admin, throw an error
 
-	deleted_team, _ := teams_service.UpdateTeam(team_id, models.Team{Model: gorm.Model{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
+	deleted_team, _ := teams_service.DeleteTeam(team_id)
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Team successfully deleted.", "data": gin.H{"team": deleted_team}})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Team successfully deleted.", "data": deleted_team})
 }
 
 // func GetAllTeamApplications(c *gin.Context) {

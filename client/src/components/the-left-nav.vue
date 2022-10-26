@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/vue/24/solid";
+import { ChevronRightIcon } from "@heroicons/vue/24/solid";
 import { storeToRefs } from "pinia";
 import { useActiveUserStore } from "../state/active-user";
-import { ITeam } from "../types";
 
 defineProps<{ isOpen: boolean }>();
 

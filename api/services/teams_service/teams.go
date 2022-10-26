@@ -44,3 +44,16 @@ func UpdateTeam(team_id int, updates models.Team) (*models.Team, error) {
 
 	return &team_to_update, nil
 }
+
+func DeleteTeam(team_id int) (*models.Team, error) {
+	var team_to_delete models.Team
+	err := database.DB.First(&team_to_delete, team_id).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	database.DB.Delete(&team_to_delete)
+
+	return &team_to_delete, nil
+}
