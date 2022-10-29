@@ -27,12 +27,15 @@ export interface IApplication {
   TeamId?: number;
   UserId?: number;
   UniqueId: string;
-  HasReceivedAlerts: boolean;
+  AlertSchema: IAlertSchema;
 }
 
-export interface IAlert {
+export interface IAlert extends IAlertSchema {
+  Link: string;
+}
+
+export interface IAlertSchema {
   ID: number;
   Title: string;
   Description: string;
-  Link: string;
 }

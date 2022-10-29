@@ -61,13 +61,19 @@ onMounted(async () => {
         </button>
       </div>
       <application-alerts
-        v-if="activeApplication?.HasReceivedAlerts"
+        v-if="activeApplication?.AlertSchema != null"
         :alerts="applicationAlerts"
       />
       <div v-else>
         <h3>Let's Get Started!</h3>
         <p>Utilize the following url to begin receiving applications:</p>
         <p>{{ applicationUrl }}</p>
+        <p>
+          Need more information? Checkout our docs
+          <a href="https://galata.app/docs/applications/setup" target="_blank"
+            >here</a
+          >.
+        </p>
       </div>
     </div>
   </the-main-layout>

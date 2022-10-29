@@ -110,10 +110,6 @@ func UpdateUser(c *gin.Context) {
 }
 
 func DeleteUser(c *gin.Context) {
-	// Find user by id
-	// Check to see if the user is not already deleted
-	// Update user's deleted_at field
-	// Return user with updated deleted_at field
 	user_input_param := c.Param("user_id")
 	user_id, conv_err := strconv.Atoi(user_input_param)
 

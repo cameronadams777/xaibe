@@ -27,14 +27,15 @@ type Team struct {
 
 type Application struct {
 	gorm.Model
-	Name              string
-	TeamID            *uint
-	Team              *Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	UserID            *uint
-	User              *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	UniqueId          string
-	HasReceivedAlerts bool
-	ServiceTokens     []ServiceToken
+	Name          string
+	TeamID        *uint
+	Team          *Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	UserID        *uint
+	User          *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	UniqueId      string
+	AlertSchemaID *uint
+	AlertSchema   *AlertSchema `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	ServiceTokens []ServiceToken
 }
 
 type ServiceToken struct {
@@ -43,4 +44,11 @@ type ServiceToken struct {
 	ApplicationID uint
 	Application   Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	ExpiresAt     time.Time
+}
+
+type AlertSchema struct {
+	gorm.Model
+	ApplicationID uint
+	Title         string
+	Description   string
 }
