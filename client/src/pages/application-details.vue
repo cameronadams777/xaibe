@@ -2,13 +2,11 @@
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { TrashIcon } from "@heroicons/vue/24/outline";
-import { useApplicationsStore } from "../state/applications";
-import { useModalStore } from "../state/modals";
+import { useAlertsStore, useApplicationsStore, useModalStore } from "../state";
 import TheMainLayout from "../layouts/the-main-layout.vue";
 import { IAlert, IApplication } from "../types";
 import { fetchApplicationById } from "../api/applications";
 import ApplicationAlerts from "../components/application-alerts.vue";
-import { useAlertsStore } from "../state/alerts";
 
 const { getCachedApplication, cacheApplication } = useApplicationsStore();
 const { getCachedApplicationAlerts } = useAlertsStore();

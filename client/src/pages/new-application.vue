@@ -3,9 +3,10 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { createNewApplication } from "../api/applications";
-import { useActiveUserStore } from "../state/active-user";
+import { useActiveUserStore, useApplicationsStore } from "../state";
 import TheMainLayout from "../layouts/the-main-layout.vue";
-import { useApplicationsStore } from "../state/applications";
+import BaseButton from "../components/base-button.vue";
+import { ButtonTextSize } from "../types";
 
 // TODO: Allow users to create team application as well
 
@@ -22,6 +23,7 @@ const submitForm = async () => {
     isSubmitting.value = true;
     if (!activeUser?.value)
       throw new Error("Galata Error: User data not available.");
+    // TODO: Move this logic to application state
     const application = await createNewApplication({
       userId: activeUser.value.ID,
       applicationName: applicationName.value,
@@ -57,14 +59,14 @@ const submitForm = async () => {
           class="p-1.5"
         />
       </div>
-      <button
-        class="w-1/4 mb-2 p-2 text-white text-lg font-bold bg-indigo-600 hover:bg-indigo-800 disabled:opacity-50 rounded-md border-none cursor-pointer"
+      <base-button
+        text="Create"
+        :text-size="ButtonTextSize.LARGE"
+        :show-spinner="isSubmitting"
         :disabled="isSubmitting"
         :aria-disabled="isSubmitting"
         @click="submitForm"
-      >
-        Create
-      </button>
+      />
     </div>
   </the-main-layout>
 </template>

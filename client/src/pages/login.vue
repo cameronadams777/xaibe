@@ -2,14 +2,17 @@
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import axios from "axios";
+import BaseButton from "../components/base-button.vue";
 
 const router = useRouter();
 
 const email = ref("");
 const password = ref("");
+const isSubmitting = ref(false);
 
 const submitForm = async () => {
   try {
+    isSubmitting.value = true;
     const response = await axios
       .post("http://localhost:5000/api/login", {
         email: email.value,
@@ -18,9 +21,11 @@ const submitForm = async () => {
       .then((res) => res.data);
 
     localStorage.setItem("token", response.data.token);
+    isSubmitting.value = false;
     router.push("/");
   } catch (error) {
     console.error(error);
+    isSubmitting.value = false;
   }
 };
 </script>
@@ -50,12 +55,13 @@ const submitForm = async () => {
         Forgot Password?
       </router-link>
     </div>
-    <button
-      class="w-1/4 mb-2 p-2 text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none cursor-pointer"
+    <base-button
+      text="Log In"
+      :disabled="isSubmitting"
+      :aria-disabled="isSubmitting"
+      :show-spinner="isSubmitting"
       @click="submitForm"
-    >
-      Log In
-    </button>
+    />
     <router-link
       to="/register"
       class="text-indigo-600 no-underline hover:underline cursor-pointer"

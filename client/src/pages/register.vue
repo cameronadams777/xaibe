@@ -10,9 +10,11 @@ const lastName = ref("");
 const email = ref("");
 const password = ref("");
 const confirmPassword = ref("");
+const isSubmitting = ref(false);
 
 const submitForm = async () => {
   try {
+    isSubmitting.value = true;
     const response = await axios
       .post("http://localhost:5000/api/register", {
         firstName: firstName.value,
@@ -24,8 +26,10 @@ const submitForm = async () => {
       .then((res) => res.data);
 
     localStorage.setItem("token", response.data.token);
+    isSubmitting.value = false;
     router.push("/");
   } catch (error) {
+    isSubmitting.value = false;\
     console.error(error);
   }
 };
@@ -80,12 +84,13 @@ const submitForm = async () => {
         class="p-1.5"
       />
     </div>
-    <button
-      class="w-1/4 p-2 text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none mb-2 cursor-pointer"
+    <base-button
+      text="Register"
+      :disabled="isSubmitting"
+      :aria-disabled="isSubmitting"
+      :show-spinner="isSubmitting"
       @click="submitForm"
-    >
-      Register
-    </button>
+    />
     <router-link
       to="/login"
       class="text-indigo-600 no-underline hover:underline cursor-pointer"

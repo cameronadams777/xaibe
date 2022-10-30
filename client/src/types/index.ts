@@ -1,3 +1,5 @@
+export * from "./button";
+
 export interface IUser {
   ID: number;
   CreateAt: Date;

@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import { createNewTeam } from "../api/teams";
 import TheMainLayout from "../layouts/the-main-layout.vue";
 import { useActiveUserStore } from "../state/active-user";
+import { ButtonTextSize } from "../types";
 
 const router = useRouter();
 const { getActiveUser } = useActiveUserStore();
@@ -11,7 +12,7 @@ const { getActiveUser } = useActiveUserStore();
 const teamName = ref("");
 const isSubmitting = ref(false);
 
-// Ensure that the user is allowed to create teams
+// TODO: Ensure that the user is allowed to create teams
 // onMounted(() => {})
 
 const submitForm = async () => {
@@ -47,12 +48,14 @@ const submitForm = async () => {
           class="p-1"
         />
       </div>
-      <button
-        class="w-1/4 mb-2 p-2 text-lg text-white font-bold bg-indigo-600 hover:bg-indigo-800 rounded-md border-none cursor-pointer"
+      <base-button
+        text="Create"
+        :text-size="ButtonTextSize.LARGE"
+        :show-spinner="isSubmitting"
+        :disabled="isSubmitting"
+        :aria-disabled="isSubmitting"
         @click="submitForm"
-      >
-        Create
-      </button>
+      />
     </div>
   </the-main-layout>
 </template>

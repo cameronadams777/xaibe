@@ -18,6 +18,7 @@ onMounted(async () => {
   try {
     const teamId = parseInt(route.params.teamId as string);
     const team = await fetchTeamById({ teamId });
+    console.log(team);
     if (!team) {
       router.push("/404");
       return;
@@ -49,7 +50,7 @@ onMounted(async () => {
       </div>
       <div class="flex">
         <applications-list
-          :applications="(activeTeam?.Applications as IApplication[])"
+          :applications="(activeTeam?.Applications as IApplication[] || [])"
         />
       </div>
     </div>

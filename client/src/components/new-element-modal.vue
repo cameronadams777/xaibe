@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 import { useRouter } from "vue-router";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
+import BaseButton from "./base-button.vue";
+import BaseFabButton from "./base-fab-button.vue";
 import BaseModal from "./base-modal.vue";
 import { useModalStore } from "../state/modals";
+import { ButtonVariant } from "../types";
 
 defineProps<{ isOpen: boolean }>();
 const router = useRouter();
@@ -22,24 +25,22 @@ const navigateToNewTeamPage = () => {
 <template>
   <base-modal :is-open="isOpen">
     <div class="relative h-full flex flex-col justify-center items-center">
-      <button
-        class="absolute top-2 right-2 w-8 h-8 text-black hover:text-gray-200 bg-transparent border-none cursor-pointer"
+      <base-fab-button
+        class="absolute top-2 right-2"
         @click="setIsNewElementModalShown(false)"
       >
-        <x-mark-icon />
-      </button>
-      <button
-        class="w-1/2 mb-2 p-2 bg-white text-black no-underline border-gray-300 border-1 rounded-md text-center hover:bg-gray-600 hover:text-white transition-colors duration-500 cursor-pointer"
+        <x-mark-icon class="w-8 h-8" />
+      </base-fab-button>
+      <base-button
+        text="Create New Application"
+        :variant="ButtonVariant.WHITE"
         @click="navigateToNewAppPage"
-      >
-        Create New Application
-      </button>
-      <button
-        class="w-1/2 mb-2 p-2 bg-white text-black no-underline border-gray-300 border-1 rounded-md text-center hover:bg-gray-600 hover:text-white transition-colors duration-500 cursor-pointer"
+      />
+      <base-button
+        text="Create New Team"
+        :variant="ButtonVariant.WHITE"
         @click="navigateToNewTeamPage"
-      >
-        Create New Team
-      </button>
+      />
     </div>
   </base-modal>
 </template>
