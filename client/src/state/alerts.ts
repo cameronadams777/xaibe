@@ -1,22 +1,30 @@
 import { defineStore } from "pinia";
-import { fetchCachedAlerts } from "../api/alerts";
+import { fetchCachedApplicationAlerts } from "../api/alerts";
+import { IAlert } from "../types";
 
-interface IGetAlertsInput {
+interface IAlertStoreState {
+  localCacheAlerts: Record<string, IAlert[]>;
+}
+
+interface IGetApplicationAlertsInput {
   applicationId: number;
-  serviceToken: string;
 }
 
 export const useAlertsStore = defineStore("alerts", {
-  state: () => {
-    return { alerts: {} };
+  state: (): IAlertStoreState => {
+    return { localCacheAlerts: {} };
   },
   actions: {
-    async getAlerts({ applicationId, serviceToken }: IGetAlertsInput) {
-      const fetchedAlerts = await fetchCachedAlerts({
-        applicationId,
-        serviceToken,
-      });
-      this.alerts = fetchedAlerts;
+    getLocalCacheAlerts(applicationId: number): IAlert[] | undefined {
+      return this.localCacheAlerts[`application_${applicationId}`];
+    },
+    async getCachedApplicationAlerts({
+      applicationId,
+    }: IGetApplicationAlertsInput): Promise<IAlert[]> {
+      let alerts = this.getLocalCacheAlerts(applicationId);
+      if (!alerts)
+        alerts = await fetchCachedApplicationAlerts({ applicationId });
+      return alerts || [];
     },
   },
 });

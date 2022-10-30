@@ -8,7 +8,6 @@ import (
 	"api/structs"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -162,22 +161,23 @@ func GetApplicationAlerts(c *gin.Context) {
 		return
 	}
 
-	cache_key := owner_id + ":" + "application_" + application_input_param + ":" + application.UniqueId
+	var alerts_as_json []map[string]interface{}
 
-	// user_1:application_1:46a084e7-9c5d-4cae-b72d-7788098d477a
-	log.Println(cache_key)
+	scan_key := owner_id + ":" + "application_" + application_input_param + ":" + application.UniqueId + ":*"
 
-	alerts := cache.RedisClient.Get(cache_key)
-
-	log.Println(alerts.Val())
-
-	if alerts.Val() == redis.Nil.Error() {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Alerts not found.", "data": nil})
-		return
+	iter := cache.RedisClient.Scan(0, scan_key, 0).Iterator()
+	for iter.Next() {
+		var alert map[string]interface{}
+		alert_trx := cache.RedisClient.Get(iter.Val())
+		alert_string := alert_trx.Val()
+		if alert_string != redis.Nil.Error() {
+			json.Unmarshal([]byte(alert_trx.Val()), &alert)
+			alerts_as_json = append(alerts_as_json, alert)
+		}
+	}
+	if iter_err := iter.Err(); iter_err != nil {
+		panic(iter_err)
 	}
 
-	var alerts_as_json []map[string]interface{}
-	json.Unmarshal([]byte(alerts.Val()), &alerts_as_json)
-
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Alerts retrieved.", "data": gin.H{"alerts": alerts_as_json}})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Alerts retrieved.", "data": alerts_as_json})
 }

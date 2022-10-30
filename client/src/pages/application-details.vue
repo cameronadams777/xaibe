@@ -8,8 +8,10 @@ import TheMainLayout from "../layouts/the-main-layout.vue";
 import { IAlert, IApplication } from "../types";
 import { fetchApplicationById } from "../api/applications";
 import ApplicationAlerts from "../components/application-alerts.vue";
+import { useAlertsStore } from "../state/alerts";
 
 const { getCachedApplication, cacheApplication } = useApplicationsStore();
+const { getCachedApplicationAlerts } = useAlertsStore();
 const { setIsDeleteApplicationConfirmationModalShown } = useModalStore();
 
 const activeApplication = ref<IApplication | undefined>(undefined);
@@ -19,8 +21,8 @@ const applicationUrl = ref("");
 const router = useRouter();
 const route = useRoute();
 
-onMounted(async () => {
-  const applicationId = parseInt(route.params.applicationId as string);
+const getActiveApplication = async (applicationId: number) => {
+  // TODO: Refactor this into state
   const cachedApplication = getCachedApplication(applicationId);
   if (cachedApplication != null) {
     activeApplication.value = cachedApplication;
@@ -38,11 +40,33 @@ onMounted(async () => {
     applicationUrl.value = `http://localhost:5000/api/webhook?application_id=${applicationId}`;
   } catch (error) {
     console.error(
-      "Galata Error: An error occurred trying to fetch the application you wanted:",
+      "Galata Error: An error occurred trying to fetch the requested application:",
       error
     );
     router.push("/");
   }
+};
+
+const getApplicationAlerts = async (applicationId: number) => {
+  try {
+    const cachedAlerts = await getCachedApplicationAlerts({
+      applicationId,
+    });
+    applicationAlerts.value = cachedAlerts;
+  } catch (error) {
+    console.error(
+      "Galata Error: An error occurred fetching alerts for the specified application.",
+      error
+    );
+    return;
+  }
+};
+
+onMounted(async () => {
+  const applicationId = parseInt(route.params.applicationId as string);
+  // TODO: Introduce loading component for while data is being fetched and then Promise.all these requests
+  await getActiveApplication(applicationId);
+  await getApplicationAlerts(applicationId);
 });
 </script>
 

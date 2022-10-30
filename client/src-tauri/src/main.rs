@@ -24,8 +24,26 @@ async fn main() {
     .expect("error while running tauri application");
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct Alert {
+  Title: String,
+  Description: String,
+  Link: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+
+struct CachedAlertsResponse {
+  status: String,
+  message: String,
+  data: Option<Vec<Alert>>,
+}
+
 #[tauri::command]
-async fn fetch_cached_alerts(application_id: i32, auth_token: &str) -> Result<String, ()> {
+async fn fetch_cached_alerts(
+  application_id: i32,
+  auth_token: &str,
+) -> Result<CachedAlertsResponse, String> {
   let client = reqwest::Client::new();
   let url = format!(
     "http://localhost:5000/api/applications/{}/alerts",
@@ -38,11 +56,16 @@ async fn fetch_cached_alerts(application_id: i32, auth_token: &str) -> Result<St
     .send()
     .await
     .unwrap()
-    .text()
-    .await
-    .unwrap();
+    .json::<CachedAlertsResponse>()
+    .await;
 
-  Ok(result)
+  match result {
+    Ok(res) => Ok(res),
+    Err(err) => Err(format!(
+      "An error occurred while fetching alerts {}",
+      err.to_string()
+    )),
+  }
 }
 
 #[tauri::command]

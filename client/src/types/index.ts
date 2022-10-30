@@ -30,7 +30,7 @@ export interface IApplication {
   AlertSchema: IAlertSchema;
 }
 
-export interface IAlert extends IAlertSchema {
+export interface IAlert extends Omit<IAlertSchema, "ID"> {
   Link: string;
 }
 
