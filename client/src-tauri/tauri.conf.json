@@ -49,8 +49,15 @@
     "security": {
       "csp": null
     },
+    "systemTray": {
+      "iconPath": "icons/tray-icon.png",
+      "iconAsTemplate": true
+    },
     "updater": {
-      "active": false
+      "active": false,
+      "endpoints": ["https://api.galata.io/{{target}}/{{current_version}}"],
+      "dialog": true,
+      "pubkey": "YOUR_UPDATER_SIGNATURE_PUBKEY_HERE"
     },
     "windows": [
       {

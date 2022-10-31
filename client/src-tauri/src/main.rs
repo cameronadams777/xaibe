@@ -6,9 +6,20 @@
 
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
+use tauri::{
+  CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
+};
 
 #[tokio::main]
 async fn main() {
+  let dashboard = CustomMenuItem::new("dashboard".to_string(), "Dashboard");
+  let download_update = CustomMenuItem::new("download_update".to_string(), "Download Update");
+  let quit = CustomMenuItem::new("quit".to_string(), "Quit");
+  let tray_menu = SystemTrayMenu::new()
+    .add_item(dashboard)
+    .add_item(download_update)
+    .add_native_item(SystemTrayMenuItem::Separator)
+    .add_item(quit);
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
       create_new_application,
@@ -20,8 +31,40 @@ async fn main() {
       fetch_cached_alerts,
       fetch_team_by_id,
     ])
+    .system_tray(SystemTray::new().with_menu(tray_menu))
+    .on_system_tray_event(|app, event| match event {
+      SystemTrayEvent::MenuItemClick { id, .. } => {
+        // get a handle to the clicked menu item
+        // note that `tray_handle` can be called anywhere,
+        // just get a `AppHandle` instance with `app.handle()` on the setup hook
+        // and move it to another function or thread
+        let window = app.get_window("main").unwrap();
+        match id.as_str() {
+          "dashboard" => {
+            window.show().unwrap();
+          }
+          "download_update" => {
+            // let window = app.get_window("main").unwrap();
+            // window.emit("tauri://update", None);
+            // Attempt to download new update. Display alert if one is not available.
+          }
+          "quit" => {
+            window.close().unwrap();
+          }
+          _ => {}
+        }
+      }
+      _ => {}
+    })
+    .on_window_event(|event| match event.event() {
+      tauri::WindowEvent::CloseRequested { api, .. } => {
+        event.window().hide().unwrap();
+        api.prevent_close();
+      }
+      _ => {}
+    })
     .run(tauri::generate_context!())
-    .expect("error while running tauri application");
+    .expect("error while building tauri application");
 }
 
 #[derive(Debug, Serialize, Deserialize)]
