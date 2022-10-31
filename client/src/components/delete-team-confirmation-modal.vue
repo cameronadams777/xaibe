@@ -2,6 +2,7 @@
 import { useRoute, useRouter } from "vue-router";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import BaseButton from "./base-button.vue";
+import BaseFabButton from "./base-fab-button.vue";
 import BaseModal from "./base-modal.vue";
 import { useModalStore } from "../state/modals";
 import { deleteTeam } from "../api/teams";
@@ -28,7 +29,7 @@ const attemptToDeleteTeam = async () => {
 </script>
 
 <template>
-  <base-modal :is-open="isOpen">
+  <base-modal :is-open="isOpen" class="w-7/12">
     <div class="relative h-full flex flex-col justify-center items-center">
       <base-fab-button
         class="absolute top-2 right-2"

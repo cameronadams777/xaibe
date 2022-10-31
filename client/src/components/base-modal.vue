@@ -1,11 +1,16 @@
 <script lang="ts" setup>
+import { useAttrs } from "vue";
+
 defineProps<{ isOpen: boolean }>();
+
+const attrs = useAttrs();
 </script>
 
 <template>
   <div
     v-if="isOpen"
     class="absolute bg-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/4 h-1/4 shadow-md rounded-lg z-10"
+    :class="attrs.class"
   >
     <slot />
   </div>

@@ -29,7 +29,7 @@ const attemptToDeleteApplication = async () => {
 </script>
 
 <template>
-  <base-modal :is-open="isOpen">
+  <base-modal :is-open="isOpen" class="w-7/12">
     <div
       class="relative w-full h-full flex flex-col justify-center items-center"
     >

@@ -2,6 +2,7 @@
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { TrashIcon } from "@heroicons/vue/24/outline";
+import BaseFabButton from "../components/base-fab-button.vue";
 import TheMainLayout from "../layouts/the-main-layout.vue";
 import ApplicationsList from "../components/applications-list.vue";
 import { fetchTeamById } from "../api/teams";
@@ -18,7 +19,6 @@ onMounted(async () => {
   try {
     const teamId = parseInt(route.params.teamId as string);
     const team = await fetchTeamById({ teamId });
-    console.log(team);
     if (!team) {
       router.push("/404");
       return;
@@ -39,14 +39,12 @@ onMounted(async () => {
     <div class="w-full h-full p-4">
       <div class="flex justify-between items-center">
         <h2 class="capitalize">{{ activeTeam?.Name }}</h2>
-        <button
-          role="button"
-          class="w-8 h-8 p-0 m-0 bg-white text-red-500 hover:shadow-md rounded-full border-none transition-all duration-500 cursor-pointer"
+        <base-fab-button
           aria-label="Delete Team"
           @click="setIsDeleteTeamConfirmationModalShown(true)"
         >
-          <trash-icon class="w-5 h-5" />
-        </button>
+          <trash-icon class="w-5 h-5 text-red-500" />
+        </base-fab-button>
       </div>
       <div class="flex">
         <applications-list

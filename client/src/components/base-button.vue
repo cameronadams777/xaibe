@@ -12,6 +12,7 @@ const { variant = ButtonVariant.PRIMARY, textSize = ButtonTextSize.MEDIUM } =
 
 <template>
   <button
+    role="button"
     class="mb-2 p-2 flex justify-center items-center font-bold disabled:opacity-50 rounded-md border-none cursor-pointer transition-all duration-500"
     :class="{
       'bg-indigo-600 hover:bg-indigo-800 text-white':

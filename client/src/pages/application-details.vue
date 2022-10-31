@@ -3,6 +3,7 @@ import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { TrashIcon } from "@heroicons/vue/24/outline";
 import { useAlertsStore, useApplicationsStore, useModalStore } from "../state";
+import BaseFabButton from "../components/base-fab-button.vue";
 import TheMainLayout from "../layouts/the-main-layout.vue";
 import { IAlert, IApplication } from "../types";
 import { fetchApplicationById } from "../api/applications";
@@ -73,14 +74,12 @@ onMounted(async () => {
     <div class="w-full h-full p-4">
       <div class="flex justify-between items-center">
         <h2 class="capitalize">{{ activeApplication?.Name }}</h2>
-        <button
-          role="button"
-          class="w-8 h-8 p-0 m-0 bg-white text-red-500 hover:shadow-md rounded-full border-none transition-all duration-500 cursor-pointer"
+        <base-fab-button
           aria-label="Delete Application"
           @click="setIsDeleteApplicationConfirmationModalShown(true)"
         >
-          <trash-icon class="w-5 h-5" />
-        </button>
+          <trash-icon class="w-5 h-5 text-red-500" />
+        </base-fab-button>
       </div>
       <application-alerts
         v-if="activeApplication?.AlertSchema != null"
