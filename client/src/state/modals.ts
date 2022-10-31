@@ -1,13 +1,13 @@
 import { defineStore } from "pinia";
 
-interface ModalStoreState {
+interface IModalStoreState {
   isNewElementModalShown: boolean;
   isDeleteApplicationConfirmationModalShown: boolean;
   isDeleteTeamConfirmationModalShown: boolean;
 }
 
 export const useModalStore = defineStore("modals", {
-  state: (): ModalStoreState => {
+  state: (): IModalStoreState => {
     return {
       isNewElementModalShown: false,
       isDeleteApplicationConfirmationModalShown: false,

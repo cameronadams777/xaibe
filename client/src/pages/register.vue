@@ -2,8 +2,11 @@
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { ref } from "vue";
+import { ToastType } from "../types";
+import { useToastStore } from "../state";
 
 const router = useRouter();
+const { setActiveToast } = useToastStore();
 
 const firstName = ref("");
 const lastName = ref("");
@@ -29,8 +32,12 @@ const submitForm = async () => {
     isSubmitting.value = false;
     router.push("/");
   } catch (error) {
-    isSubmitting.value = false;\
-    console.error(error);
+    isSubmitting.value = false;
+    setActiveToast({
+      message:
+        "An error occurred while trying to create your account. Please try again later.",
+      type: ToastType.ERROR,
+    });
   }
 };
 </script>

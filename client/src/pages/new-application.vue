@@ -3,10 +3,14 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 import { createNewApplication } from "../api/applications";
-import { useActiveUserStore, useApplicationsStore } from "../state";
+import {
+  useActiveUserStore,
+  useApplicationsStore,
+  useToastStore,
+} from "../state";
 import TheMainLayout from "../layouts/the-main-layout.vue";
 import BaseButton from "../components/base-button.vue";
-import { ButtonTextSize } from "../types";
+import { ButtonTextSize, ToastType } from "../types";
 
 // TODO: Allow users to create team application as well
 
@@ -14,6 +18,7 @@ const router = useRouter();
 const { cacheApplication } = useApplicationsStore();
 const { getActiveUser, ...activeUserStore } = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);
+const { setActiveToast } = useToastStore();
 
 const applicationName = ref("");
 const isSubmitting = ref(false);
@@ -35,8 +40,11 @@ const submitForm = async () => {
     router.push(`/applications/${application.ID}`);
     isSubmitting.value = false;
   } catch (error) {
-    console.error(error);
-    // TODO: Add toast message for better UX
+    setActiveToast({
+      message:
+        "An error occurred while creating your new application. Please try again later.",
+      type: ToastType.ERROR,
+    });
     isSubmitting.value = false;
   }
 };

@@ -7,11 +7,13 @@ import TheMainLayout from "../layouts/the-main-layout.vue";
 import ApplicationsList from "../components/applications-list.vue";
 import { fetchTeamById } from "../api/teams";
 import { useModalStore } from "../state/modals";
-import { IApplication, ITeam } from "../types";
+import { IApplication, ITeam, ToastType } from "../types";
+import { useToastStore } from "../state";
 
 const route = useRoute();
 const router = useRouter();
 const { setIsDeleteTeamConfirmationModalShown } = useModalStore();
+const { setActiveToast } = useToastStore();
 
 const activeTeam = ref<ITeam | undefined>(undefined);
 
@@ -25,10 +27,10 @@ onMounted(async () => {
     }
     activeTeam.value = team;
   } catch (error) {
-    console.error(
-      "Galata Error: An error occurred trying to fetch the team you wanted:",
-      error
-    );
+    setActiveToast({
+      message: "An error occurred trying to fetch the team you wanted.",
+      type: ToastType.ERROR,
+    });
     router.push("/");
   }
 });

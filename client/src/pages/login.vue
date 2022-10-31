@@ -3,8 +3,11 @@ import { useRouter } from "vue-router";
 import { ref } from "vue";
 import axios from "axios";
 import BaseButton from "../components/base-button.vue";
+import { useToastStore } from "../state";
+import { ToastType } from "../types";
 
 const router = useRouter();
+const { setActiveToast } = useToastStore();
 
 const email = ref("");
 const password = ref("");
@@ -24,7 +27,10 @@ const submitForm = async () => {
     isSubmitting.value = false;
     router.push("/");
   } catch (error) {
-    console.error(error);
+    setActiveToast({
+      message: "An error occurred while attempting to log in.",
+      type: ToastType.ERROR,
+    });
     isSubmitting.value = false;
   }
 };

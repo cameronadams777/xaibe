@@ -3,11 +3,13 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { createNewTeam } from "../api/teams";
 import TheMainLayout from "../layouts/the-main-layout.vue";
+import { useToastStore } from "../state";
 import { useActiveUserStore } from "../state/active-user";
-import { ButtonTextSize } from "../types";
+import { ButtonTextSize, ToastType } from "../types";
 
 const router = useRouter();
 const { getActiveUser } = useActiveUserStore();
+const { setActiveToast } = useToastStore();
 
 const teamName = ref("");
 const isSubmitting = ref(false);
@@ -24,11 +26,10 @@ const submitForm = async () => {
     isSubmitting.value = false;
     router.push(`/teams/${team.ID}`);
   } catch (error) {
-    // TODO: Add toast message for better UX
-    console.error(
-      "Galata Error: An error occurred while attempting to create a new team:",
-      error
-    );
+    setActiveToast({
+      message: "An error occurred while creating your new team.",
+      type: ToastType.ERROR,
+    });
     isSubmitting.value = false;
   }
 };

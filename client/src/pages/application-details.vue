@@ -2,16 +2,22 @@
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { TrashIcon } from "@heroicons/vue/24/outline";
-import { useAlertsStore, useApplicationsStore, useModalStore } from "../state";
+import {
+  useAlertsStore,
+  useApplicationsStore,
+  useModalStore,
+  useToastStore,
+} from "../state";
 import BaseFabButton from "../components/base-fab-button.vue";
 import TheMainLayout from "../layouts/the-main-layout.vue";
-import { IAlert, IApplication } from "../types";
+import { IAlert, IApplication, ToastType } from "../types";
 import { fetchApplicationById } from "../api/applications";
 import ApplicationAlerts from "../components/application-alerts.vue";
 
 const { getCachedApplication, cacheApplication } = useApplicationsStore();
 const { getCachedApplicationAlerts } = useAlertsStore();
 const { setIsDeleteApplicationConfirmationModalShown } = useModalStore();
+const { setActiveToast } = useToastStore();
 
 const activeApplication = ref<IApplication | undefined>(undefined);
 const applicationAlerts = ref<IAlert[]>([]);
@@ -38,10 +44,10 @@ const getActiveApplication = async (applicationId: number) => {
     activeApplication.value = application;
     applicationUrl.value = `http://localhost:5000/api/webhook?application_id=${applicationId}`;
   } catch (error) {
-    console.error(
-      "Galata Error: An error occurred trying to fetch the requested application:",
-      error
-    );
+    setActiveToast({
+      message: "An error occurred trying to fetch the requested application.",
+      type: ToastType.ERROR,
+    });
     router.push("/");
   }
 };
@@ -53,10 +59,11 @@ const getApplicationAlerts = async (applicationId: number) => {
     });
     applicationAlerts.value = cachedAlerts;
   } catch (error) {
-    console.error(
-      "Galata Error: An error occurred fetching alerts for the specified application.",
-      error
-    );
+    setActiveToast({
+      message:
+        "An error occurred fetching alerts for the specified application.",
+      type: ToastType.ERROR,
+    });
     return;
   }
 };

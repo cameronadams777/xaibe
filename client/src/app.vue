@@ -1,6 +1,8 @@
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
 import TheGlobalModal from "./components/the-global-modal.vue";
+import TheToastMessage from "./components/the-toast-message.vue";
+import { useToastStore } from "./state";
 
 const route = useRoute();
 </script>
@@ -8,6 +10,7 @@ const route = useRoute();
 <template>
   <router-view :key="route.fullPath" />
   <the-global-modal />
+  <the-toast-message />
 </template>
 
 <style>
