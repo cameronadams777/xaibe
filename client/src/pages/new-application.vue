@@ -9,7 +9,6 @@ import {
   useToastStore,
 } from "../state";
 import TheMainLayout from "../layouts/the-main-layout.vue";
-import BaseButton from "../components/base-button.vue";
 import { ButtonTextSize, ToastType } from "../types";
 
 // TODO: Allow users to create team application as well

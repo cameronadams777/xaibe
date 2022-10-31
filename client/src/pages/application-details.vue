@@ -8,7 +8,6 @@ import {
   useModalStore,
   useToastStore,
 } from "../state";
-import BaseFabButton from "../components/base-fab-button.vue";
 import TheMainLayout from "../layouts/the-main-layout.vue";
 import { IAlert, IApplication, ToastType } from "../types";
 import { fetchApplicationById } from "../api/applications";

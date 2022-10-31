@@ -2,7 +2,6 @@
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { TrashIcon } from "@heroicons/vue/24/outline";
-import BaseFabButton from "../components/base-fab-button.vue";
 import TheMainLayout from "../layouts/the-main-layout.vue";
 import ApplicationsList from "../components/applications-list.vue";
 import { fetchTeamById } from "../api/teams";
@@ -22,6 +21,10 @@ onMounted(async () => {
     const teamId = parseInt(route.params.teamId as string);
     const team = await fetchTeamById({ teamId });
     if (!team) {
+      setActiveToast({
+        message: "The team you are trying to view does not exist.",
+        type: ToastType.ERROR,
+      });
       router.push("/404");
       return;
     }

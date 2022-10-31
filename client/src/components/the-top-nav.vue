@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { Bars3Icon } from "@heroicons/vue/24/solid";
 import { PlusIcon } from "@heroicons/vue/24/outline";
-import BaseFabButton from "./base-fab-button.vue";
 import TheTopNavMenu from "./the-top-nav-menu.vue";
 import { useModalStore } from "../state/modals";
 

@@ -1,9 +1,6 @@
 <script lang="ts" setup>
 import { useRouter } from "vue-router";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
-import BaseButton from "./base-button.vue";
-import BaseFabButton from "./base-fab-button.vue";
-import BaseModal from "./base-modal.vue";
 import { useModalStore } from "../state/modals";
 import { ButtonVariant } from "../types";
 
