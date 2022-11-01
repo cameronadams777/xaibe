@@ -62,6 +62,7 @@ const submitForm = async () => {
     </div>
     <base-button
       text="Log In"
+      class="w-1/4"
       :disabled="isSubmitting"
       :aria-disabled="isSubmitting"
       :show-spinner="isSubmitting"

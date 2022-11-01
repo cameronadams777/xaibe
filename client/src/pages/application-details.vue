@@ -9,9 +9,10 @@ import {
   useToastStore,
 } from "../state";
 import TheMainLayout from "../layouts/the-main-layout.vue";
+import AlertSchemaForm from "../components/alert-schema-form.vue";
+import ApplicationAlerts from "../components/application-alerts.vue";
 import { IAlert, IApplication, ToastType } from "../types";
 import { fetchApplicationById } from "../api/applications";
-import ApplicationAlerts from "../components/application-alerts.vue";
 
 const { getCachedApplication, cacheApplication } = useApplicationsStore();
 const { getCachedApplicationAlerts } = useAlertsStore();
@@ -91,6 +92,7 @@ onMounted(async () => {
         v-if="activeApplication?.AlertSchema != null"
         :alerts="applicationAlerts"
       />
+      <alert-schema-form v-if="true" />
       <div v-else>
         <h3>Let's Get Started!</h3>
         <p>Utilize the following url to begin receiving applications:</p>
