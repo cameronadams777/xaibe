@@ -63,17 +63,17 @@ const submitForm = async () => {
           name="applicationName"
           type="applicationName"
           placeholder="Airbrake"
-          class="p-1.5"
+          class="p-1.5 mb-4"
+        />
+        <base-button
+          text="Create"
+          :text-size="ButtonTextSize.LARGE"
+          :show-spinner="isSubmitting"
+          :disabled="isSubmitting"
+          :aria-disabled="isSubmitting"
+          @click="submitForm"
         />
       </div>
-      <base-button
-        text="Create"
-        :text-size="ButtonTextSize.LARGE"
-        :show-spinner="isSubmitting"
-        :disabled="isSubmitting"
-        :aria-disabled="isSubmitting"
-        @click="submitForm"
-      />
     </div>
   </the-main-layout>
 </template>

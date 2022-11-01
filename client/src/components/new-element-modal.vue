@@ -31,11 +31,13 @@ const navigateToNewTeamPage = () => {
       <base-button
         text="Create New Application"
         :variant="ButtonVariant.WHITE"
+        class="w-1/2"
         @click="navigateToNewAppPage"
       />
       <base-button
         text="Create New Team"
         :variant="ButtonVariant.WHITE"
+        class="w-1/2"
         @click="navigateToNewTeamPage"
       />
     </div>
