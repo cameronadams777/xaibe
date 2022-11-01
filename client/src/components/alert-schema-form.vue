@@ -39,11 +39,17 @@ const obj: Record<string, any> = {
     times_occurred: 118,
   },
 };
+
+const sendSchemaObject = (key: string) => console.log(key);
 </script>
 
 <template>
   <div>
     <p>Below what you sent us for this application!</p>
-    <alert-schema-tree-builder :schema-object="obj" />
+    <alert-schema-tree-builder
+      :schema-object="obj"
+      root-key=""
+      @on-element-select="sendSchemaObject"
+    />
   </div>
 </template>

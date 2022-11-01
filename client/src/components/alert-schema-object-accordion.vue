@@ -3,9 +3,19 @@ import { ref } from "vue";
 import { ChevronUpIcon } from "@heroicons/vue/24/solid";
 import AlertSchemaTreeBuilder from "./alert-schema-tree-builder.vue";
 
-defineProps<{ title: string; schemaObject: Record<any, any> }>();
+defineProps<{
+  rootKey: string;
+  title: string;
+  schemaObject: Record<any, any>;
+}>();
+
+const emits = defineEmits<{
+  (event: "onElementSelect", newKey: string): void;
+}>();
 
 const isOpen = ref(true);
+
+const choose = (newKey: string) => emits("onElementSelect", newKey);
 </script>
 
 <template>
@@ -23,7 +33,12 @@ const isOpen = ref(true);
         :class="{ 'rotate-180': isOpen }"
       />
     </button>
-    <alert-schema-tree-builder :schema-object="schemaObject" indent />
+    <alert-schema-tree-builder
+      indent
+      :root-key="title"
+      :schema-object="schemaObject"
+      @on-element-select="choose"
+    />
   </div>
 </template>
 

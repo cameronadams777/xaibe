@@ -2,7 +2,20 @@
 import AlertSchemaKeyElement from "./alert-schema-key-element.vue";
 import AlertSchemaObjectAccordion from "./alert-schema-object-accordion.vue";
 
-defineProps<{ schemaObject: Record<any, any>; indent?: boolean }>();
+const props = defineProps<{
+  schemaObject: Record<any, any>;
+  rootKey: string;
+  indent?: boolean;
+}>();
+
+const emits = defineEmits<{
+  (event: "onElementSelect", newKey: string): void;
+}>();
+
+const choose = (key: string) => {
+  let newKey = props.rootKey.length ? `${props.rootKey}_${key}` : key;
+  emits("onElementSelect", newKey);
+};
 </script>
 
 <template>
@@ -13,13 +26,17 @@ defineProps<{ schemaObject: Record<any, any>; indent?: boolean }>();
   >
     <alert-schema-key-element
       v-if="typeof schemaObject[key] !== 'object' || schemaObject[key] == null"
+      :root-key="rootKey"
       :label="key"
       :value="schemaObject[key]"
+      @on-element-select="choose"
     />
     <alert-schema-object-accordion
       v-else
+      :root-key="rootKey"
       :title="key"
       :schema-object="schemaObject[key]"
+      @on-element-select="choose"
     />
   </div>
 </template>

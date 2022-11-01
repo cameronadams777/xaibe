@@ -92,7 +92,7 @@ onMounted(async () => {
         v-if="activeApplication?.AlertSchema != null"
         :alerts="applicationAlerts"
       />
-      <alert-schema-form v-if="true" />
+      <alert-schema-form v-else-if="applicationAlerts?.length" />
       <div v-else>
         <h3>Let's Get Started!</h3>
         <p>Utilize the following url to begin receiving applications:</p>
