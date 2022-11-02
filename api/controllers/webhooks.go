@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"api/initializers/application_rooms"
 	"api/initializers/cache"
 	"api/services/applications_service"
 	"encoding/json"
@@ -58,7 +57,7 @@ func WebHook(c *gin.Context) {
 
 	cache_key := owner_id + ":" + "application_" + application_input_param + ":" + application.UniqueId + ":" + time.Now().Local().String()
 
-	application_rooms.ApplicationRooms[cache_key].Broadcast <- &body_as_string
+	// application_rooms.ApplicationRooms[cache_key].Broadcast <- &body_as_string
 
 	// Take body data and push to redis under cache key
 	one_month_expiration := time.Hour * 24 * 30

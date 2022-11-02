@@ -5,7 +5,9 @@
 )]
 
 use chrono::Utc;
+use notify_rust::Notification;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use tauri::{
   CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
 };
@@ -30,6 +32,7 @@ async fn main() {
       fetch_application_by_id,
       fetch_cached_alerts,
       fetch_team_by_id,
+      notify_user
     ])
     .system_tray(SystemTray::new().with_menu(tray_menu))
     .on_system_tray_event(|app, event| match event {
@@ -79,7 +82,7 @@ struct Alert {
 struct CachedAlertsResponse {
   status: String,
   message: String,
-  data: Option<Vec<Alert>>,
+  data: Option<Vec<Value>>,
 }
 
 #[tauri::command]
@@ -362,4 +365,13 @@ async fn delete_application(
       err.to_string()
     )),
   }
+}
+
+#[tauri::command]
+fn notify_user(title: &str, body: &str) {
+  Notification::new()
+    .summary(title)
+    .body(body)
+    .show()
+    .unwrap();
 }

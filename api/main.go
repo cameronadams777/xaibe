@@ -1,27 +1,52 @@
 package main
 
 import (
-	"api/initializers/application_rooms"
 	"api/initializers/cache"
 	"api/initializers/database"
 	"api/router"
+	"fmt"
+	"log"
 
 	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
+	socketio "github.com/googollee/go-socket.io"
 )
 
 func main() {
+
+	server := socketio.NewServer(nil)
+
+	server.OnConnect("/", func(s socketio.Conn) error {
+		s.SetContext("")
+		fmt.Println("Connected:", s.ID())
+		return nil
+	})
+
+	server.OnEvent("/", "msg", func(s socketio.Conn, msg string) string {
+		fmt.Println("Receive Message : " + msg)
+		s.Emit("reply", "OK")
+		return "recv " + msg
+	})
+
+	server.OnError("/", func(s socketio.Conn, e error) {
+		log.Println("meet error:", e)
+	})
+
+	server.OnDisconnect("/", func(s socketio.Conn, msg string) {
+		fmt.Println("Somebody just close the connection ")
+	})
+
+	go server.Serve()
+	defer server.Close()
 
 	// Connect to postgres database
 	database.ConnectDB()
 
 	// Connect to Redis cache
 	cache.ConnectRedis()
-
-	// Create rooms
-	application_rooms.Create()
 
 	app := gin.Default()
 
@@ -32,6 +57,8 @@ func main() {
 			"health": "I am health! 💪",
 		})
 	})
+
+	app.GET("/socket.io/", gin.WrapH(server))
 
 	router.SetupRouter(app)
 

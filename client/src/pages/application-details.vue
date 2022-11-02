@@ -59,6 +59,7 @@ const getApplicationAlerts = async (applicationId: number) => {
     });
     applicationAlerts.value = cachedAlerts;
   } catch (error) {
+    console.error(error);
     setActiveToast({
       message:
         "An error occurred fetching alerts for the specified application.",
@@ -92,7 +93,10 @@ onMounted(async () => {
         v-if="activeApplication?.AlertSchema != null"
         :alerts="applicationAlerts"
       />
-      <alert-schema-form v-else-if="applicationAlerts?.length" />
+      <alert-schema-form
+        v-else-if="applicationAlerts?.length"
+        :base-object="applicationAlerts[0]"
+      />
       <div v-else>
         <h3>Let's Get Started!</h3>
         <p>Utilize the following url to begin receiving applications:</p>

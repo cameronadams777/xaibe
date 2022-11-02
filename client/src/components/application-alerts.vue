@@ -14,8 +14,8 @@ defineProps<{ alerts: IAlert[] }>();
       >
         <div
           v-if="alerts.length"
-          v-for="alert in alerts"
-          :key="alert.ID"
+          v-for="(alert, index) of alerts"
+          :key="index"
           class="p-4 flex justify-between items-center border-b border-gray-300"
         >
           <div>

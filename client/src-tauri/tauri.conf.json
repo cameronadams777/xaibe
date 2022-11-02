@@ -6,12 +6,15 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "alerts-app",
+    "productName": "Galata",
     "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "all": true,
+      "notification": {
+        "all": true
+      }
     },
     "bundle": {
       "active": true,
@@ -28,7 +31,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "app.galata.desktop",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

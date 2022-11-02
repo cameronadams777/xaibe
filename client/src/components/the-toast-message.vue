@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { storeToRefs } from "pinia";
 import { useToastStore } from "../state";
+import { ToastType } from "../types";
 
 const toastStore = useToastStore();
 const { activeToast, toastTitleByType } = storeToRefs(toastStore);
@@ -13,7 +14,16 @@ const { activeToast, toastTitleByType } = storeToRefs(toastStore);
       class="absolute top-5 right-5 p-4 bg-white rounded-md shadow-md"
     >
       <div class="relative">
-        <h3 class="m-0 text-indigo-500">{{ toastTitleByType }}</h3>
+        <h3
+          class="m-0"
+          :class="{
+            'text-indigo-500': activeToast.type === ToastType.INFO,
+            'text-red-500': activeToast.type === ToastType.ERROR,
+            'text-green-500': activeToast.type === ToastType.SUCCESS,
+          }"
+        >
+          {{ toastTitleByType }}
+        </h3>
         <p class="m-0">{{ activeToast?.message }}</p>
       </div>
     </div>
