@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"api/assertions"
 	"api/initializers/cache"
 	"api/models"
 	"api/services/applications_service"
@@ -41,10 +42,11 @@ func GetApplicationById(c *gin.Context) {
 	data, _ := c.Get("authScope")
 	authScope := data.(structs.AuthScope)
 
-	// TODO: Need to add additional logic for checking if user is a member of a team
-	// that this application belongs to in the event it doesn't belong to a specific user
-	if *application.UserID != uint(authScope.UserID) {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Application not found.", "data": nil})
+	user_ownership_error := assertions.UserOwnsApplication(application.ID, uint(authScope.UserID))
+	team_membership_error := assertions.UserIsMemberOfTeamApplication(application.ID, uint(authScope.UserID))
+
+	if user_ownership_error != nil && team_membership_error != nil {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
 		return
 	}
 
@@ -99,9 +101,16 @@ func DeleteApplication(c *gin.Context) {
 		return
 	}
 
-	// TODO: ADD BELOW LOGIC
-	// If user is not within the application and is not of type manager on
-	// the current application or is not an admin, throw an error
+	data, _ := c.Get("authScope")
+	authScope := data.(structs.AuthScope)
+
+	user_ownership_error := assertions.UserOwnsApplication(application_to_delete.ID, uint(authScope.UserID))
+	team_manager_error := assertions.UserIsManagerOfTeamApplication(application_to_delete.ID, uint(authScope.UserID))
+
+	if user_ownership_error != nil && team_manager_error != nil {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
+		return
+	}
 
 	deleted_application, _ := applications_service.DeleteApplication(application_id)
 
@@ -144,10 +153,6 @@ func GetApplicationAlerts(c *gin.Context) {
 		return
 	}
 
-	// TODO: ADD BELOW LOGIC
-	// Check to see if user either owns or is a member of the application
-	// or if the user is an admin
-	// If not, throw error
 	var owner_id string
 
 	if application.TeamID != nil {
@@ -158,6 +163,17 @@ func GetApplicationAlerts(c *gin.Context) {
 		owner_id = "user_" + user_id
 	} else {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred posting alert to application.", "data": nil})
+		return
+	}
+
+	data, _ := c.Get("authScope")
+	authScope := data.(structs.AuthScope)
+
+	user_ownership_error := assertions.UserOwnsApplication(application.ID, uint(authScope.UserID))
+	team_membership_error := assertions.UserIsMemberOfTeamApplication(application.ID, uint(authScope.UserID))
+
+	if user_ownership_error != nil && team_membership_error != nil {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
 		return
 	}
 

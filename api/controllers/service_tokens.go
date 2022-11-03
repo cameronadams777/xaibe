@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"api/assertions"
 	"api/models"
 	"api/services/service_tokens_service"
+	"api/structs"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -16,37 +18,6 @@ type CreateNewTokenInput struct {
 	ApplicationID int `json:"application_id" binding:"required"`
 }
 
-func GetServiceTokenById(c *gin.Context) {
-	// Get application id from params
-	// Get application by id
-	// Get ID from params
-	token_input_param := c.Param("token_id")
-	token_id, conv_err := strconv.Atoi(token_input_param)
-
-	if conv_err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting application by id.", "data": nil})
-		return
-	}
-
-	service_token, err := service_tokens_service.GetServiceTokenById(token_id)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Token not found.", "data": nil})
-		return
-	}
-
-	// TODO: ADD LOGIC BELOW
-	// Get application from service_token
-	// Get team by application
-	// Check to see if user is in team
-	// If not, throw error
-	// If so, check to see if user is manager of team
-	// If not, throw error
-
-	// If so, return non-expired/non-deleted service token
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Token found.", "data": gin.H{"token": service_token.Token, "expires_at": service_token.ExpiresAt}})
-}
-
 func CreateNewToken(c *gin.Context) {
 	// Get application id from request body
 	var input CreateNewTokenInput
@@ -57,10 +28,16 @@ func CreateNewToken(c *gin.Context) {
 		return
 	}
 
-	// TODO: ADD LOGIC BELOW
-	// Get team from application
-	// Ensure that team owns application
-	// Ensure that user is manager of team
+	data, _ := c.Get("authScope")
+	authScope := data.(structs.AuthScope)
+
+	user_ownership_error := assertions.UserOwnsApplication(uint(input.ApplicationID), uint(authScope.UserID))
+	team_manager_error := assertions.UserIsManagerOfTeamApplication(uint(input.ApplicationID), uint(authScope.UserID))
+
+	if user_ownership_error != nil && team_manager_error != nil {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
+		return
+	}
 
 	// Create token
 	new_token, creation_err := service_tokens_service.CreateServiceToken(input.ApplicationID)

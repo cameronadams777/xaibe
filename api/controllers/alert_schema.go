@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"api/assertions"
 	"api/models"
 	"api/services/alert_schemas_service"
 	"api/services/applications_service"
+	"api/structs"
 	"fmt"
 	"net/http"
 
@@ -32,11 +34,16 @@ func CreateApplicationAlertSchema(c *gin.Context) {
 		return
 	}
 
-	// TODO: Add below logic
-	// Ensure that current user is either the owner of the application
-	// or a manager of said team
-	// If not, throw error
-	// If so, store schema and return 200 response
+	data, _ := c.Get("authScope")
+	authScope := data.(structs.AuthScope)
+
+	user_ownership_error := assertions.UserOwnsApplication(uint(input.ApplicationID), uint(authScope.UserID))
+	team_manager_error := assertions.UserIsManagerOfTeamApplication(uint(input.ApplicationID), uint(authScope.UserID))
+
+	if user_ownership_error != nil && team_manager_error != nil {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
+		return
+	}
 
 	new_alert_schema := models.AlertSchema{
 		ApplicationID: uint(input.ApplicationID),

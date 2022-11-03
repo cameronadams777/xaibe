@@ -22,6 +22,7 @@ type Team struct {
 	gorm.Model
 	Name         string
 	Users        []*User `gorm:"many2many:team_users;"`
+	Managers     []*User `gorm:"many2many:team_managers"`
 	Applications []Application
 }
 

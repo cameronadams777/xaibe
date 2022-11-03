@@ -5,6 +5,8 @@ import (
 	"api/models"
 )
 
+// TODO: Find way to specify preloads when querying, to prevent excess queries
+
 func GetAllUsers() []models.User {
 	var users []models.User
 	database.DB.Find(&users)

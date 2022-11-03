@@ -5,6 +5,8 @@ import (
 	"api/models"
 )
 
+// TODO: Find way to specify preloads when querying, to prevent excess queries
+
 func GetAllTeams() []models.Team {
 	var teams []models.Team
 	database.DB.Preload("Users").Preload("Applications").Find(&teams)
@@ -22,8 +24,9 @@ func GetTeamById(team_id int) (*models.Team, error) {
 
 func CreateTeam(name string, creating_user models.User) (*models.Team, error) {
 	team := models.Team{
-		Name:  name,
-		Users: []*models.User{&creating_user},
+		Name:     name,
+		Users:    []*models.User{&creating_user},
+		Managers: []*models.User{&creating_user},
 	}
 	err := database.DB.Create(&team).Error
 	if err != nil {

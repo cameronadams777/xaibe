@@ -8,6 +8,8 @@ import (
 	"github.com/google/uuid"
 )
 
+// TODO: Find way to specify preloads when querying, to prevent excess queries
+
 func GetAllServiceTokens() []models.ServiceToken {
 	var tokens []models.ServiceToken
 	database.DB.Preload("Application").Find(&tokens)
