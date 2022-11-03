@@ -75,6 +75,13 @@ func CreateNewTeam(c *gin.Context) {
 		return
 	}
 
+	_, not_found_err := teams_service.GetTeamByName(input.Name)
+
+	if not_found_err == nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Team with that name already exists.", "data": nil})
+		return
+	}
+
 	created_team, creation_err := teams_service.CreateTeam(input.Name, *current_user)
 
 	if creation_err != nil {

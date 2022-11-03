@@ -17,7 +17,7 @@ const { activeToast, toastTitleByType } = storeToRefs(toastStore);
         <h3
           class="m-0"
           :class="{
-            'text-indigo-500': activeToast.type === ToastType.INFO,
+            'text-indigo-600': activeToast.type === ToastType.INFO,
             'text-red-500': activeToast.type === ToastType.ERROR,
             'text-green-500': activeToast.type === ToastType.SUCCESS,
           }"

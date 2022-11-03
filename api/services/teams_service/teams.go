@@ -13,6 +13,15 @@ func GetAllTeams() []models.Team {
 	return teams
 }
 
+func GetTeamByName(name string) (*models.Team, error) {
+	var team models.Team
+	err := database.DB.First(&team, name).Error
+	if err != nil {
+		return nil, err
+	}
+	return &team, nil
+}
+
 func GetTeamById(team_id int) (*models.Team, error) {
 	var team models.Team
 	err := database.DB.Preload("Users").Preload("Applications").First(&team, team_id).Error

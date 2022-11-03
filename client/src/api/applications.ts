@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { TauriEvents } from ".";
-import { IApplication } from "../types";
+import { IAlertSchema, IApplication } from "src/types";
 
 interface IFetchApplicationByIdInput {
   applicationId: number;
@@ -28,6 +28,7 @@ export const fetchApplicationById = async ({
 
 export interface ICreateNewApplicationInput {
   applicationName: string;
+  alertSchema?: IAlertSchema;
   teamId?: number;
   userId?: number;
 }

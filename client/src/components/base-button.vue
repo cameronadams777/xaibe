@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import TheSpinner from "./the-spinner.vue";
-import { ButtonTextSize, ButtonVariant } from "../types";
+import { ButtonTextSize, ButtonVariant } from "src/types";
 import { useAttrs } from "vue";
 
 withDefaults(
@@ -30,7 +30,7 @@ const attrs = useAttrs();
           variant === ButtonVariant.PRIMARY,
         'bg-red-500 hover:bg-red-800 text-white border-none':
           variant === ButtonVariant.DANGER,
-        'bg-white border-1 border-gray-400 hover:bg-gray-400 hover:text-white':
+        'bg-white border-1 border-gray-400 hover:bg-indigo-600 hover:border-indigo-600 hover:text-white':
           variant === ButtonVariant.WHITE,
       },
       attrs.class,

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ArrowTopRightOnSquareIcon } from "@heroicons/vue/24/outline";
-import { IAlert } from "../types";
+import { IAlert } from "src/types";
 
 defineProps<{ alerts: IAlert[] }>();
 </script>

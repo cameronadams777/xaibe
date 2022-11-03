@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { TauriEvents } from ".";
-import { IUser } from "../types";
+import { IUser } from "src/types";
 
 export const fetchActiveUser = async (): Promise<IUser | undefined> => {
   const authToken = localStorage.getItem("token");

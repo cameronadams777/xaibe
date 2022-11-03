@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from "vue-router";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
-import { useModalStore, useToastStore } from "../state";
-import { deleteTeam } from "../api/teams";
-import { ButtonVariant, ToastType } from "../types";
+import { useModalStore, useToastStore } from "src/state";
+import { deleteTeam } from "src/api/teams";
+import { ButtonVariant, ToastType } from "src/types";
 
 defineProps<{ isOpen: boolean }>();
 

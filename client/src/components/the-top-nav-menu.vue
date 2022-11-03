@@ -24,7 +24,7 @@ const userNavigation = [
   <Menu as="div" class="relative ml-3">
     <div>
       <MenuButton
-        class="w-8 h-8 flex max-w-xs items-center rounded-full bg-white text-sm border-transparent cursor-pointer hover:shadow-md transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        class="w-8 h-8 flex max-w-xs items-center rounded-full bg-white text-sm border-transparent cursor-pointer hover:shadow-md transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
       >
         <span class="sr-only">Open user menu</span>
         <user-icon class="w-4" />

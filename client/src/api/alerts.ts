@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { TauriEvents } from ".";
-import { IAlert } from "../types";
+import { IAlert } from "src/types";
 
 interface IFetchCachedAlertsInput {
   applicationId: number;

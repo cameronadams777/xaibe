@@ -1,10 +1,11 @@
 import { defineConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
 import vue from "@vitejs/plugin-vue";
 import Unocss from "unocss/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), Unocss()],
+  plugins: [vue(), Unocss(), tsconfigPaths()],
   // prevent vite from obscuring rust errors
   clearScreen: false,
   // Tauri expects a fixed port, fail if that port is not available

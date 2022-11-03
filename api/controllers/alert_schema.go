@@ -16,6 +16,7 @@ type CreateNewSchemaInput struct {
 	ApplicationID int    `json:"application_id" binding:"required"`
 	Title         string `json:"title" binding:"required"`
 	Description   string `json:"description" binding:"required"`
+	Link          string `json:"link" binding:"required"`
 }
 
 func CreateApplicationAlertSchema(c *gin.Context) {
@@ -49,6 +50,7 @@ func CreateApplicationAlertSchema(c *gin.Context) {
 		ApplicationID: uint(input.ApplicationID),
 		Title:         input.Title,
 		Description:   input.Description,
+		Link:          input.Link,
 	}
 
 	created_alert_schema, creation_err := alert_schemas_service.CreateNewAlertSchema(new_alert_schema)

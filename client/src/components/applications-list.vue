@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { IApplication } from "../types";
+import { IApplication } from "src/types";
 
 defineProps<{ applications: IApplication[] }>();
 </script>

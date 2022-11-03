@@ -52,4 +52,5 @@ type AlertSchema struct {
 	ApplicationID uint
 	Title         string
 	Description   string
+	Link          string
 }

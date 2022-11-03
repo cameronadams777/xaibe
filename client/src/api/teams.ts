@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api";
 import { TauriEvents } from ".";
-import { ITeam } from "../types";
+import { ITeam } from "src/types";
 
 interface ICreateNewTeamInput {
   teamName: string;

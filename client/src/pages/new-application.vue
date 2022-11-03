@@ -1,15 +1,39 @@
+<template>
+  <the-main-layout>
+    <div class="w-full flex flex-col justify-center items-center">
+      <h2>Create New Application</h2>
+      <choose-application-step
+        v-if="applicationType == null"
+        @on-continue="(type: ApplicationType) => applicationType = type"
+      />
+      <other-application-type-step
+        v-else
+        :application-type="applicationType"
+        :is-submitting="isSubmitting"
+        @on-submit="submitForm"
+      />
+    </div>
+  </the-main-layout>
+</template>
+
 <script lang="ts" setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
-import { createNewApplication } from "../api/applications";
+import {
+  createNewApplication,
+  ICreateNewApplicationInput,
+} from "src/api/applications";
 import {
   useActiveUserStore,
   useApplicationsStore,
   useToastStore,
-} from "../state";
-import TheMainLayout from "../layouts/the-main-layout.vue";
-import { ButtonTextSize, ToastType } from "../types";
+} from "src/state";
+import TheMainLayout from "src/layouts/the-main-layout.vue";
+import ChooseApplicationStep from "src/components/new-application-choose-application-step.vue";
+import OtherApplicationTypeStep from "src/components/new-application-other-application-type-step.vue";
+import { ToastType, ApplicationType } from "src/types";
+import { getAppSchemaByType } from "src/helpers";
 
 // TODO: Allow users to create team application as well
 
@@ -19,19 +43,29 @@ const { getActiveUser, ...activeUserStore } = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);
 const { setActiveToast } = useToastStore();
 
-const applicationName = ref("");
+const applicationType = ref<ApplicationType | undefined>(undefined);
 const isSubmitting = ref(false);
 
-const submitForm = async () => {
+const submitForm = async (applicationName: string, teamId?: number) => {
   try {
     isSubmitting.value = true;
+    // TODO: Move this logic to application state
     if (!activeUser?.value)
       throw new Error("Galata Error: User data not available.");
-    // TODO: Move this logic to application state
-    const application = await createNewApplication({
-      userId: activeUser.value.ID,
-      applicationName: applicationName.value,
-    });
+
+    if (!applicationType.value)
+      throw new Error("Galata Error: Application type not defined.");
+
+    const body: ICreateNewApplicationInput = {
+      applicationName,
+    };
+    if (teamId != null) body.teamId = teamId;
+    else body.userId = activeUser.value.ID;
+
+    if (applicationType.value !== ApplicationType.OTHER)
+      body.alertSchema = getAppSchemaByType(applicationType.value);
+
+    const application = await createNewApplication(body);
     if (!application)
       throw new Error("Galata Error: Application not generated.");
     cacheApplication(application);
@@ -48,32 +82,3 @@ const submitForm = async () => {
   }
 };
 </script>
-
-<template>
-  <the-main-layout>
-    <div class="w-full flex flex-col justify-center items-center">
-      <h2>Create new Application</h2>
-      <div class="flex flex-col w-1/4 mb-3">
-        <label for="applicationName" class="font-bold mb-2"
-          >Application Name</label
-        >
-        <input
-          v-model="applicationName"
-          id="applicationName"
-          name="applicationName"
-          type="applicationName"
-          placeholder="Airbrake"
-          class="p-1.5 mb-4"
-        />
-        <base-button
-          text="Create"
-          :text-size="ButtonTextSize.LARGE"
-          :show-spinner="isSubmitting"
-          :disabled="isSubmitting"
-          :aria-disabled="isSubmitting"
-          @click="submitForm"
-        />
-      </div>
-    </div>
-  </the-main-layout>
-</template>

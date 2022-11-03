@@ -11,7 +11,12 @@
     "isolatedModules": true,
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "allowJs": true, /* Note: Always use TS or Vue files. This is only enabled to make vite-tsconfig-paths happy as it doesn't seem to respect the .vue extension when added. */
+    "baseUrl": ".",
+    "paths": {
+      "src/*": ["src/*"],
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]

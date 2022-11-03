@@ -17,10 +17,17 @@ import (
 	"github.com/google/uuid"
 )
 
+type AlertSchemaInput struct {
+	Title       string `json:"title" binding:"required"`
+	Description string `json:"description" binding:"required"`
+	Link        string `json:"link" binding:"required"`
+}
+
 type CreateNewApplicationInput struct {
-	TeamId *uint  `json:"team_id" binding:"required_without=UserId"`
-	UserId *uint  `json:"user_id" binding:"required_without=TeamId"`
-	Name   string `json:"application_name" binding:"required"`
+	TeamId      *uint             `json:"team_id" binding:"required_without=UserId"`
+	UserId      *uint             `json:"user_id" binding:"required_without=TeamId"`
+	Name        string            `json:"application_name" binding:"required"`
+	AlertSchema *AlertSchemaInput `json:"alert_schema" binding:"-"`
 }
 
 func GetApplicationById(c *gin.Context) {
