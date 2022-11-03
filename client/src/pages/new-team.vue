@@ -14,9 +14,6 @@ const { setActiveToast } = useToastStore();
 const teamName = ref("");
 const isSubmitting = ref(false);
 
-// TODO: Ensure that the user is allowed to create teams
-// onMounted(() => {})
-
 const submitForm = async () => {
   try {
     isSubmitting.value = true;

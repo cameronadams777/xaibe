@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from "vue-router";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
-import { useApplicationsStore, useModalStore } from "../state";
-import { ButtonVariant } from "../types";
+import { useApplicationsStore, useModalStore, useToastStore } from "../state";
+import { ButtonVariant, ToastType } from "../types";
 
 defineProps<{ isOpen: boolean }>();
 
@@ -10,16 +10,24 @@ const router = useRouter();
 const route = useRoute();
 const { setIsDeleteApplicationConfirmationModalShown } = useModalStore();
 const { deleteApplication } = useApplicationsStore();
+const { setActiveToast } = useToastStore();
 
 const attemptToDeleteApplication = async () => {
   try {
     const applicationId = parseInt(route.params.applicationId as string);
     await deleteApplication(applicationId);
     setIsDeleteApplicationConfirmationModalShown(false);
-    // TODO: Display a successful toast message
+    setActiveToast({
+      type: ToastType.SUCCESS,
+      message: "Application deleted!",
+    });
     router.push("/");
   } catch (error) {
-    // TODO: Display a error toast message
+    setActiveToast({
+      type: ToastType.ERROR,
+      message:
+        "An error occurred while trying to delete the specified application.",
+    });
     setIsDeleteApplicationConfirmationModalShown(false);
   }
 };

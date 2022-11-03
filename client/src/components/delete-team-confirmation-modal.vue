@@ -1,25 +1,32 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from "vue-router";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
-import { useModalStore } from "../state/modals";
+import { useModalStore, useToastStore } from "../state";
 import { deleteTeam } from "../api/teams";
-import { ButtonVariant } from "../types";
+import { ButtonVariant, ToastType } from "../types";
 
 defineProps<{ isOpen: boolean }>();
 
 const router = useRouter();
 const route = useRoute();
 const { setIsDeleteTeamConfirmationModalShown } = useModalStore();
+const { setActiveToast } = useToastStore();
 
 const attemptToDeleteTeam = async () => {
   try {
     const teamId = parseInt(route.params.teamId as string);
     await deleteTeam({ teamId });
     setIsDeleteTeamConfirmationModalShown(false);
-    // TODO: Display a successful toast message
+    setActiveToast({
+      type: ToastType.SUCCESS,
+      message: "Team deleted!",
+    });
     router.push("/");
   } catch (error) {
-    // TODO: Display a error toast message
+    setActiveToast({
+      type: ToastType.ERROR,
+      message: "An error occurred while trying to delete the specified team.",
+    });
     setIsDeleteTeamConfirmationModalShown(false);
   }
 };
