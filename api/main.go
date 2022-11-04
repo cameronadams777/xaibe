@@ -4,6 +4,7 @@ import (
 	"api/initializers/cache"
 	"api/initializers/database"
 	"api/router"
+	"api/websockets"
 	"fmt"
 	"log"
 
@@ -16,6 +17,8 @@ import (
 )
 
 func main() {
+
+	go websockets.Pool.Run()
 
 	server := socketio.NewServer(nil)
 

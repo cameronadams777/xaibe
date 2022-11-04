@@ -16,6 +16,7 @@ func SetupRouter(app *gin.Engine) {
 	api.POST("/register", controllers.Register)
 
 	api.POST("/webhook", controllers.WebHook)
+	api.GET("/ws", controllers.ServeWS)
 
 	email := api.Group("/email")
 	email.POST("/subscribe", controllers.SubscribeNewUser)
