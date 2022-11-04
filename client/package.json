@@ -14,12 +14,14 @@
     "@julr/unocss-preset-forms": "^0.0.2",
     "@tauri-apps/api": "^1.0.2",
     "axios": "^1.1.2",
+    "humps": "^2.0.1",
     "pinia": "^2.0.23",
     "socket.io-client": "^4.5.3",
     "vue": "^3.2.37",
     "vue-router": "^4.1.5"
   },
   "devDependencies": {
+    "@types/humps": "^2.0.2",
     "@types/node": "^18.7.16",
     "@vitejs/plugin-vue": "^3.1.0",
     "typescript": "^4.6.4",

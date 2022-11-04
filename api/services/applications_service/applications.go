@@ -7,13 +7,13 @@ import (
 
 func GetAllApplications(filters models.Application) []models.Application {
 	var applications []models.Application
-	database.DB.Find(&applications, &filters)
+	database.DB.Preload("AlertSchema").Find(&applications, &filters)
 	return applications
 }
 
 func GetApplicationById(application_id int) (*models.Application, error) {
 	var application models.Application
-	err := database.DB.Find(&application, application_id).Error
+	err := database.DB.Preload("AlertSchema").Find(&application, application_id).Error
 	if err != nil {
 		return nil, err
 	}

@@ -92,6 +92,7 @@ onMounted(async () => {
       <application-alerts
         v-if="activeApplication?.AlertSchema != null"
         :alerts="applicationAlerts"
+        :alert-schema="activeApplication?.AlertSchema"
       />
       <alert-schema-form
         v-else-if="applicationAlerts?.length"

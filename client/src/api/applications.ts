@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api";
 import { TauriEvents } from ".";
 import { IAlertSchema, IApplication } from "src/types";
+import { camelizeKeys } from "humps";
 
 interface IFetchApplicationByIdInput {
   applicationId: number;
@@ -43,6 +44,7 @@ export const createNewApplication = async ({
   teamId,
   userId,
   applicationName,
+  alertSchema,
 }: ICreateNewApplicationInput): Promise<IApplication | undefined> => {
   const authToken = localStorage.getItem("token");
   let body: Record<string, any> = {
@@ -56,11 +58,14 @@ export const createNewApplication = async ({
       "A teamId or userId must be provided when creating an application."
     );
   }
+
+  if (alertSchema) {
+    body.alertSchema = camelizeKeys(alertSchema);
+  }
+
   const response = await invoke<ICreateNewApplicationResponse>(
     TauriEvents.CREATE_NEW_APPLICATION,
-    {
-      ...body,
-    }
+    body
   );
   return response.data;
 };

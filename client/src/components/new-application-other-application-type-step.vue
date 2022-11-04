@@ -3,7 +3,6 @@
     <label for="applicationName" class="font-bold mb-2">Application Name</label>
     <input
       v-model="applicationName"
-      :ref="applicationNameInput"
       id="applicationName"
       name="applicationName"
       type="applicationName"
@@ -63,7 +62,7 @@
       :show-spinner="isSubmitting"
       :disabled="isSubmitting"
       :aria-disabled="isSubmitting"
-      @click="emits('onSubmit', applicationName)"
+      @click="onCreate"
     />
   </div>
 </template>
@@ -72,7 +71,7 @@
 import { storeToRefs } from "pinia";
 import { useActiveUserStore } from "src/state";
 import { ButtonTextSize, ApplicationType, ITeam } from "src/types";
-import { nextTick, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 
 type NewApplicationApplyType = "user" | "team";
 
@@ -82,7 +81,7 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  (event: "onSubmit", applicationName: string, teamId?: number): void;
+  (event: "onCreate", applicationName: string, teamId?: number): void;
 }>();
 
 const activeUserStore = useActiveUserStore();
@@ -93,17 +92,20 @@ const applicationOwnershipMethods = [
   { id: "team", title: "Team" },
 ];
 
-const applicationNameInput = ref<HTMLInputElement | undefined>(undefined);
 const applicationName = ref("");
 const teamId = ref<number | undefined>(undefined);
 const applyType = ref<NewApplicationApplyType>("user");
 
 onMounted(() => {
   if (props.applicationType === ApplicationType.AIRBRAKE)
-    applicationName.value === "Airbrake";
+    applicationName.value = "Airbrake";
   else if (props.applicationType === ApplicationType.NEWRELIC)
     applicationName.value = "NewRelic";
   else if (props.applicationType === ApplicationType.SENTRY)
     applicationName.value = "Sentry";
 });
+
+const onCreate = () => {
+  emits("onCreate", applicationName.value, teamId.value);
+};
 </script>

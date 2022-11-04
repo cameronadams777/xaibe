@@ -16,7 +16,7 @@ func UserOwnsApplication(application_id uint, user_id uint) error {
 		return errors.New("UserOwnsApplication: Application does not belong to a specific user")
 	}
 
-	if application.UserID == &user_id {
+	if *application.UserID == user_id {
 		return nil
 	}
 

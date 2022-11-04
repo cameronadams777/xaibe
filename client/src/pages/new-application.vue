@@ -10,7 +10,7 @@
         v-else
         :application-type="applicationType"
         :is-submitting="isSubmitting"
-        @on-submit="submitForm"
+        @on-create="submitForm"
       />
     </div>
   </the-main-layout>
@@ -20,10 +20,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
-import {
-  createNewApplication,
-  ICreateNewApplicationInput,
-} from "src/api/applications";
+import { createNewApplication } from "src/api/applications";
 import {
   useActiveUserStore,
   useApplicationsStore,
@@ -56,16 +53,12 @@ const submitForm = async (applicationName: string, teamId?: number) => {
     if (!applicationType.value)
       throw new Error("Galata Error: Application type not defined.");
 
-    const body: ICreateNewApplicationInput = {
+    const application = await createNewApplication({
+      alertSchema: getAppSchemaByType(applicationType.value),
+      userId: activeUser.value.ID,
       applicationName,
-    };
-    if (teamId != null) body.teamId = teamId;
-    else body.userId = activeUser.value.ID;
-
-    if (applicationType.value !== ApplicationType.OTHER)
-      body.alertSchema = getAppSchemaByType(applicationType.value);
-
-    const application = await createNewApplication(body);
+      teamId,
+    });
     if (!application)
       throw new Error("Galata Error: Application not generated.");
     cacheApplication(application);
@@ -73,6 +66,7 @@ const submitForm = async (applicationName: string, teamId?: number) => {
     router.push(`/applications/${application.ID}`);
     isSubmitting.value = false;
   } catch (error) {
+    console.error(error);
     setActiveToast({
       message:
         "An error occurred while creating your new application. Please try again later.",

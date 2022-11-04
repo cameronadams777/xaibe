@@ -137,6 +137,21 @@ struct NewApplicationPayload {
   application_name: String,
   team_id: Option<i32>,
   user_id: Option<i32>,
+  alert_schema: Option<AlertSchemaInput>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+struct AlertSchemaInput {
+  title: String,
+  description: String,
+  link: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+struct AlertSchema {
+  Title: String,
+  Description: String,
+  Link: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -149,6 +164,7 @@ struct Application {
   DeletedAt: Option<chrono::DateTime<Utc>>,
   TeamId: Option<i32>,
   UserId: Option<i32>,
+  AlertSchema: Option<AlertSchema>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -164,11 +180,13 @@ async fn create_new_application(
   application_name: String,
   team_id: Option<i32>,
   user_id: Option<i32>,
+  alert_schema: Option<AlertSchemaInput>,
 ) -> Result<NewApplicationResponse, String> {
   let client = reqwest::Client::new();
   let url = "http://localhost:5000/api/applications";
 
   let mut payload = NewApplicationPayload {
+    alert_schema: alert_schema,
     application_name: application_name,
     team_id: None,
     user_id: None,

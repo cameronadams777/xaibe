@@ -35,7 +35,7 @@ type Application struct {
 	User          *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	UniqueId      string
 	AlertSchemaID *uint
-	AlertSchema   *AlertSchema `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	AlertSchema   AlertSchema `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	ServiceTokens []ServiceToken
 }
 

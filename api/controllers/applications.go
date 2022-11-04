@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"api/assertions"
+	"api/helpers"
 	"api/initializers/cache"
 	"api/models"
+	"api/services/alert_schemas_service"
 	"api/services/applications_service"
 	"api/services/service_tokens_service"
 	"api/structs"
@@ -24,10 +26,10 @@ type AlertSchemaInput struct {
 }
 
 type CreateNewApplicationInput struct {
-	TeamId      *uint             `json:"team_id" binding:"required_without=UserId"`
-	UserId      *uint             `json:"user_id" binding:"required_without=TeamId"`
-	Name        string            `json:"application_name" binding:"required"`
-	AlertSchema *AlertSchemaInput `json:"alert_schema" binding:"-"`
+	TeamId      *uint            `json:"team_id" binding:"required_without=UserId"`
+	UserId      *uint            `json:"user_id" binding:"required_without=TeamId"`
+	Name        string           `json:"application_name" binding:"required"`
+	AlertSchema AlertSchemaInput `json:"alert_schema" binding:"-"`
 }
 
 func GetApplicationById(c *gin.Context) {
@@ -76,6 +78,14 @@ func CreateNewApplication(c *gin.Context) {
 		Name:     input.Name,
 	}
 
+	if input.AlertSchema != (AlertSchemaInput{}) {
+		new_application.AlertSchema = models.AlertSchema{
+			Title:       input.AlertSchema.Title,
+			Description: input.AlertSchema.Description,
+			Link:        input.AlertSchema.Link,
+		}
+	}
+
 	created_application, creation_err := applications_service.CreateApplication(new_application)
 
 	if creation_err != nil {
@@ -84,7 +94,17 @@ func CreateNewApplication(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"status": "success", "message": "Application created.", "data": created_application})
+	alert_schema, find_schema_err := alert_schemas_service.GetAlertSchemaByApplicationId(int(created_application.ID))
+
+	if find_schema_err == nil {
+		applications_service.UpdateApplication(int(created_application.ID), models.Application{AlertSchemaID: &alert_schema.ID})
+	}
+
+	application_with_schema, _ := applications_service.GetApplicationById(int(created_application.ID))
+
+	fmt.Println(helpers.PrettyPrint(application_with_schema))
+
+	c.JSON(http.StatusCreated, gin.H{"status": "success", "message": "Application created.", "data": application_with_schema})
 }
 
 func DeleteApplication(c *gin.Context) {
@@ -169,7 +189,7 @@ func GetApplicationAlerts(c *gin.Context) {
 		user_id := strconv.Itoa(int(*application.UserID))
 		owner_id = "user_" + user_id
 	} else {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred posting alert to application.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred retrieving alerts for application.", "data": nil})
 		return
 	}
 

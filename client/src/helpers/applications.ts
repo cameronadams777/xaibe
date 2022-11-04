@@ -13,14 +13,14 @@ export const getAppSchemaByType = (appType: ApplicationType): IAlertSchema => {
       Link: "airbrake_error_url",
     },
     [ApplicationType.NEWRELIC]: {
-      Title: "",
-      Description: "",
-      Link: "",
+      Title: "event_type",
+      Description: "details",
+      Link: "incident_url",
     },
     [ApplicationType.SENTRY]: {
-      Title: "",
-      Description: "",
-      Link: "",
+      Title: "data.error.title",
+      Description: "data.error.metadata.value",
+      Link: "data.error.issue_url",
     },
   };
 

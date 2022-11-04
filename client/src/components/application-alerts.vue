@@ -1,8 +1,29 @@
 <script lang="ts" setup>
+import { computed } from "vue";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/vue/24/outline";
-import { IAlert } from "src/types";
+import { IAlert, IAlertSchema } from "src/types";
 
-defineProps<{ alerts: IAlert[] }>();
+const props = defineProps<{ alertSchema: IAlertSchema; alerts: IAlert[] }>();
+
+const getElByKey = (obj: Record<any, any>, keys: string[]): any => {
+  if (keys.length === 1) return obj[keys[0]];
+  return getElByKey(obj[keys[0]], keys.slice(1));
+};
+
+const applicationAlertsMappedToSchema = computed(() =>
+  props.alerts
+    .map((alert) => {
+      const titleKeys = props.alertSchema.Title.split(".");
+      const Title = getElByKey(alert, titleKeys);
+      const descriptionKeys = props.alertSchema.Description.split(".");
+      const Description = getElByKey(alert, descriptionKeys);
+      const linkKeys = props.alertSchema.Link.split(".");
+      const Link = getElByKey(alert, linkKeys);
+
+      return { Title, Description, Link } as IAlert;
+    })
+    .filter((alert) => Object.values(alert).every((value) => !!value))
+);
 </script>
 
 <template>
@@ -13,8 +34,8 @@ defineProps<{ alerts: IAlert[] }>();
         class="w-full h-full flex flex-col mr-4 border-1 border-gray-300 rounded-lg overflow-y-auto"
       >
         <div
-          v-if="alerts.length"
-          v-for="(alert, index) of alerts"
+          v-if="applicationAlertsMappedToSchema?.length"
+          v-for="(alert, index) of applicationAlertsMappedToSchema"
           :key="index"
           class="p-4 flex justify-between items-center border-b border-gray-300"
         >
@@ -30,8 +51,8 @@ defineProps<{ alerts: IAlert[] }>();
             <arrow-top-right-on-square-icon class="w-6 h-6" />
           </a>
         </div>
-        <div class="w-full h-full flex justify-center items-center">
-          <p>
+        <div v-else class="w-full h-full flex justify-center items-center">
+          <p class="w-9/10 text-center">
             There are no recent alerts to review. Remember, Galata will keep
             track of an applications most recent alerts for up to two weeks
             after it is received. Afterwards, the alert will be lost.

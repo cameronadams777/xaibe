@@ -5,9 +5,11 @@ specifiers:
   '@heroicons/vue': ^2.0.12
   '@julr/unocss-preset-forms': ^0.0.2
   '@tauri-apps/api': ^1.0.2
+  '@types/humps': ^2.0.2
   '@types/node': ^18.7.16
   '@vitejs/plugin-vue': ^3.1.0
   axios: ^1.1.2
+  humps: ^2.0.1
   pinia: ^2.0.23
   socket.io-client: ^4.5.3
   typescript: ^4.6.4
@@ -24,12 +26,14 @@ dependencies:
   '@julr/unocss-preset-forms': 0.0.2_unocss@0.45.18
   '@tauri-apps/api': 1.0.2
   axios: 1.1.2
+  humps: 2.0.1
   pinia: 2.0.23_arz4dztosvwy2ghjrlh2wdhejm
   socket.io-client: 4.5.3
   vue: 3.2.39
   vue-router: 4.1.5_vue@3.2.39
 
 devDependencies:
+  '@types/humps': 2.0.2
   '@types/node': 18.7.16
   '@vitejs/plugin-vue': 3.1.0_vite@3.1.0+vue@3.2.39
   typescript: 4.8.3
@@ -193,6 +197,10 @@ packages:
     resolution: {integrity: sha512-yuNW0oeJ1/ZA7wNF1KgxhHrSu5viPVzY/UgUczzN5ptLM8dH15Juy5rEGkoHfeXGju90Y/l22hi3BtIrp/za+w==}
     engines: {node: '>= 12.22.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
     dev: false
+
+  /@types/humps/2.0.2:
+    resolution: {integrity: sha512-FuyQoVNSW6mjSLxLVRq8YK1pi8P5zyL2pahEuCtMqlbmV4jyWYITz4eE2fZIErNovIfKU32tPbCl44VbOUaEiw==}
+    dev: true
 
   /@types/node/18.7.16:
     resolution: {integrity: sha512-EQHhixfu+mkqHMZl1R2Ovuvn47PUw18azMJOTwSZr9/fhzHNGXAJ0ma0dayRVchprpCj0Kc1K1xKoWaATWF1qg==}
@@ -992,6 +1000,10 @@ packages:
   /human-signals/2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
+
+  /humps/2.0.1:
+    resolution: {integrity: sha512-E0eIbrFWUhwfXJmsbdjRQFQPrl5pTEoKlz163j1mTqqUnU9PgR4AgB8AIITzuB3vLBdxZXyZ9TDIrwB2OASz4g==}
+    dev: false
 
   /inflight/1.0.6:
     resolution: {integrity: sha512-k92I/b08q4wvFscXCLvqfsHCrjrF7yiXsQuIVvVE7N82W3+aqpzuUdBbfhWcy/FZR3/4IgflMgKLOsvPDrGCJA==}
