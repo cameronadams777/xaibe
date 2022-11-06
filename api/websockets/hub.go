@@ -65,7 +65,6 @@ func (s Subscription) ReadPump() {
 	for {
 		_, msg, err := c.Socket.ReadMessage()
 		if err != nil {
-			log.Println(err)
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
 				log.Printf("err: %v", err)
 			}

@@ -89,11 +89,15 @@ onMounted(async () => {
           <trash-icon class="w-5 h-5 text-red-500" />
         </base-fab-button>
       </div>
-      <application-alerts
+      <div
         v-if="activeApplication?.AlertSchema != null"
-        :alerts="applicationAlerts"
-        :alert-schema="activeApplication?.AlertSchema"
-      />
+        class="w-full lg:w-1/3 h-48 lg:h-96"
+      >
+        <application-alerts
+          :alerts="applicationAlerts"
+          :alert-schema="activeApplication?.AlertSchema"
+        />
+      </div>
       <alert-schema-form
         v-else-if="applicationAlerts?.length"
         :base-object="applicationAlerts[0]"

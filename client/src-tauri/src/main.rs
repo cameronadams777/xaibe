@@ -114,8 +114,31 @@ async fn fetch_cached_alerts(
   }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+struct User {
+  ID: i32,
+  CreatedAt: chrono::DateTime<Utc>,
+  UpdatedAt: Option<chrono::DateTime<Utc>>,
+  DeletedAt: Option<chrono::DateTime<Utc>>,
+  FirstName: String,
+  LastName: String,
+  Email: String,
+  Password: String,
+  IsAdmin: bool,
+  IsVerified: bool,
+  Applications: Vec<Application>,
+  Teams: Option<Vec<Team>>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct FetchActiveUserResponse {
+  status: String,
+  message: String,
+  data: Option<User>,
+}
+
 #[tauri::command]
-async fn fetch_active_user(auth_token: &str) -> Result<String, ()> {
+async fn fetch_active_user(auth_token: &str) -> Result<FetchActiveUserResponse, String> {
   let client = reqwest::Client::new();
   let url = format!("http://localhost:5000/api/users/me");
 
@@ -125,11 +148,16 @@ async fn fetch_active_user(auth_token: &str) -> Result<String, ()> {
     .send()
     .await
     .unwrap()
-    .text()
-    .await
-    .unwrap();
+    .json::<FetchActiveUserResponse>()
+    .await;
 
-  Ok(result)
+  match result {
+    Ok(res) => Ok(res),
+    Err(err) => Err(format!(
+      "An error occurred while fetching active user {}",
+      err.to_string()
+    )),
+  }
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -281,6 +309,8 @@ async fn fetch_team_by_id(auth_token: &str, team_id: i32) -> Result<FetchTeamByP
     .unwrap()
     .json::<FetchTeamByPayload>()
     .await;
+
+  println!("{:?}", result);
 
   match result {
     Ok(res) => Ok(res),

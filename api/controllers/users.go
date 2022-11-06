@@ -38,7 +38,7 @@ func GetUserDetails(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User found.", "data": gin.H{"user": user}})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User found.", "data": user})
 }
 
 func GetAllUsers(c *gin.Context) {

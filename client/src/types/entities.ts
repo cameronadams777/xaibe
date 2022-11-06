@@ -18,6 +18,7 @@ export interface ITeam {
   UpdatedAt: Date;
   DeletedAt: Date;
   Name: string;
+  Users: IUser[];
   Applications: IApplication[];
 }
 

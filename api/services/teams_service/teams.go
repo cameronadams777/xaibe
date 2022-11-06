@@ -9,7 +9,7 @@ import (
 
 func GetAllTeams() []models.Team {
 	var teams []models.Team
-	database.DB.Preload("Users").Preload("Applications").Find(&teams)
+	database.DB.Preload("Users").Preload("Managers").Preload("Applications").Find(&teams)
 	return teams
 }
 
@@ -24,7 +24,7 @@ func GetTeamByName(name string) (*models.Team, error) {
 
 func GetTeamById(team_id int) (*models.Team, error) {
 	var team models.Team
-	err := database.DB.Preload("Users").Preload("Applications").First(&team, team_id).Error
+	err := database.DB.Preload("Users").Preload("Managers").Preload("Applications").First(&team, team_id).Error
 	if err != nil {
 		return nil, err
 	}

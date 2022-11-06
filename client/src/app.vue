@@ -1,3 +1,9 @@
+<template>
+  <router-view :key="route.fullPath" />
+  <the-global-modal />
+  <the-toast-message />
+</template>
+
 <script lang="ts" setup>
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
@@ -20,12 +26,6 @@ onMounted(async () => {
   });
 });
 </script>
-
-<template>
-  <router-view :key="route.fullPath" />
-  <the-global-modal />
-  <the-toast-message />
-</template>
 
 <style>
 html,
