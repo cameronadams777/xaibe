@@ -4,16 +4,104 @@
   windows_subsystem = "windows"
 )]
 
+use std::{collections::HashMap, fs, path::Path};
+
 use chrono::Utc;
 use notify_rust::Notification;
+use reqwest::{cookie::Jar, Url};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::{
   CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
 };
 
+const CONFIG_FILE_NAME: &str = "config.json";
+
+fn get_or_build_config_dir() -> String {
+  let home_path = home::home_dir()
+    .unwrap()
+    .into_os_string()
+    .into_string()
+    .unwrap();
+
+  let config_path = format!("{}{}", home_path, "/.config/galata/");
+
+  let config_file_path = format!("{}{}", config_path, CONFIG_FILE_NAME);
+
+  if !Path::new(&config_path).is_dir() {
+    fs::create_dir(config_path).unwrap();
+  }
+
+  if !Path::new(&config_file_path).is_file() {
+    fs::write(&config_file_path, "{}").unwrap();
+  }
+
+  return config_file_path;
+}
+
+fn get_auth_token() -> String {
+  let mut token = String::new();
+
+  let config_file_path = get_or_build_config_dir();
+
+  let config_as_string = fs::read_to_string(&config_file_path).unwrap();
+
+  let config: HashMap<&str, Value> = serde_json::from_str(config_as_string.as_str()).unwrap();
+
+  match config.get("elid") {
+    Some(res) => token = res.to_string().replace("\"", ""),
+    None => token = "".to_string(),
+  }
+
+  return token;
+}
+
+fn get_refresh_token() -> String {
+  let mut token = String::new();
+
+  let config_file_path = get_or_build_config_dir();
+
+  let config_as_string = fs::read_to_string(&config_file_path).unwrap();
+
+  let config: HashMap<&str, Value> = serde_json::from_str(config_as_string.as_str()).unwrap();
+
+  match config.get("ucid") {
+    Some(res) => token = res.to_string().replace("\"", ""),
+    None => token = "".to_string(),
+  }
+
+  return token;
+}
+
+fn set_auth_token(token: String) {
+  let config_file_path = get_or_build_config_dir();
+
+  let config_as_string = fs::read_to_string(&config_file_path).unwrap();
+
+  let mut config: HashMap<&str, Value> = serde_json::from_str(config_as_string.as_str()).unwrap();
+
+  config.insert("elid", serde_json::Value::String(token));
+
+  let config_to_write = serde_json::to_string_pretty(&config).unwrap();
+  fs::write(&config_file_path, config_to_write).unwrap();
+}
+
+fn set_refresh_token(token: String) {
+  let config_file_path = get_or_build_config_dir();
+
+  let config_as_string = fs::read_to_string(&config_file_path).unwrap();
+
+  let mut config: HashMap<&str, Value> = serde_json::from_str(config_as_string.as_str()).unwrap();
+
+  config.insert("ucid", serde_json::Value::String(token));
+
+  let config_to_write = serde_json::to_string_pretty(&config).unwrap();
+  fs::write(&config_file_path, config_to_write).unwrap();
+}
+
 #[tokio::main]
 async fn main() {
+  let _ = get_or_build_config_dir();
   let dashboard = CustomMenuItem::new("dashboard".to_string(), "Dashboard");
   let download_update = CustomMenuItem::new("download_update".to_string(), "Download Update");
   let quit = CustomMenuItem::new("quit".to_string(), "Quit");
@@ -31,8 +119,11 @@ async fn main() {
       fetch_active_user,
       fetch_application_by_id,
       fetch_cached_alerts,
+      fetch_auth_token,
       fetch_team_by_id,
-      notify_user
+      login,
+      notify_user,
+      register_user
     ])
     .system_tray(SystemTray::new().with_menu(tray_menu))
     .on_system_tray_event(|app, event| match event {
@@ -71,6 +162,132 @@ async fn main() {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+struct LoginPayload {
+  email: String,
+  password: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct LoginResponse {
+  status: String,
+  message: String,
+  data: String,
+}
+
+#[tauri::command]
+async fn login(email: String, password: String) -> Result<LoginResponse, String> {
+  let client = reqwest::Client::builder()
+    .cookie_store(true)
+    .build()
+    .unwrap();
+
+  let url = "http://localhost:5000/api/login";
+
+  let payload = LoginPayload {
+    email: email,
+    password: password,
+  };
+
+  let result = client
+    .post(url)
+    .json::<LoginPayload>(&payload)
+    .send()
+    .await
+    .unwrap();
+
+  let cookies_itr = result.cookies();
+
+  for cookie in cookies_itr {
+    if cookie.name() == "ucid" {
+      set_refresh_token(cookie.value().to_string())
+    }
+  }
+
+  let res = result.json::<LoginResponse>().await;
+
+  match res {
+    Ok(res) => {
+      let token = res.data.to_owned();
+      set_auth_token(token);
+      Ok(res)
+    }
+    Err(e) => Err(format!("An error occurred {}", e)),
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct RegisterUserPayload {
+  first_name: String,
+  last_name: String,
+  email: String,
+  password: String,
+  password_confirmation: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct RegisterUserResponse {
+  status: String,
+  message: String,
+  data: String,
+}
+
+#[tauri::command]
+async fn register_user(
+  register_user_input: RegisterUserPayload,
+) -> Result<RegisterUserResponse, String> {
+  let client = reqwest::Client::new();
+  let url = "http://localhost:5000/api/register";
+
+  let result = client
+    .post(url)
+    .json::<RegisterUserPayload>(&register_user_input)
+    .send()
+    .await
+    .unwrap()
+    .json::<RegisterUserResponse>()
+    .await;
+
+  match result {
+    Ok(res) => {
+      let token = res.data.to_owned();
+      set_auth_token(token);
+      Ok(res)
+    }
+    Err(e) => Err(format!("An error occurred {}", e)),
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct FetchAuthTokenResponse {
+  token: String,
+}
+
+#[tauri::command]
+async fn fetch_auth_token() -> Result<FetchAuthTokenResponse, String> {
+  let cookie = format!("ucid={}; Domain=localhost", get_refresh_token());
+  let url = "http://localhost:5000".parse::<Url>().unwrap();
+  let jar = Jar::default();
+  jar.add_cookie_str(cookie.as_str(), &url);
+
+  let client = reqwest::Client::builder().build().unwrap();
+
+  let url = "http://localhost:5000/api/refresh_token";
+
+  let result = client.post(url).send().await.unwrap();
+
+  let res = result.json::<FetchAuthTokenResponse>().await;
+
+  match res {
+    Ok(res) => {
+      let token = res.token.to_owned();
+      set_auth_token(token);
+      Ok(res)
+    }
+    Err(e) => Err(format!("An error occurred {}", e)),
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 struct Alert {
   Title: String,
   Description: String,
@@ -86,15 +303,13 @@ struct CachedAlertsResponse {
 }
 
 #[tauri::command]
-async fn fetch_cached_alerts(
-  application_id: i32,
-  auth_token: &str,
-) -> Result<CachedAlertsResponse, String> {
+async fn fetch_cached_alerts(application_id: i32) -> Result<CachedAlertsResponse, String> {
   let client = reqwest::Client::new();
   let url = format!(
     "http://localhost:5000/api/applications/{}/alerts",
     application_id
   );
+  let auth_token = get_auth_token();
 
   let result = client
     .get(url)
@@ -138,9 +353,10 @@ struct FetchActiveUserResponse {
 }
 
 #[tauri::command]
-async fn fetch_active_user(auth_token: &str) -> Result<FetchActiveUserResponse, String> {
+async fn fetch_active_user() -> Result<FetchActiveUserResponse, String> {
   let client = reqwest::Client::new();
   let url = format!("http://localhost:5000/api/users/me");
+  let auth_token = get_auth_token();
 
   let result = client
     .get(url)
@@ -204,7 +420,6 @@ struct NewApplicationResponse {
 
 #[tauri::command]
 async fn create_new_application(
-  auth_token: String,
   application_name: String,
   team_id: Option<i32>,
   user_id: Option<i32>,
@@ -212,6 +427,7 @@ async fn create_new_application(
 ) -> Result<NewApplicationResponse, String> {
   let client = reqwest::Client::new();
   let url = "http://localhost:5000/api/applications";
+  let auth_token = get_auth_token();
 
   let mut payload = NewApplicationPayload {
     alert_schema: alert_schema,
@@ -265,9 +481,10 @@ struct NewTeamResponse {
 }
 
 #[tauri::command]
-async fn create_new_team(auth_token: String, team_name: String) -> Result<NewTeamResponse, String> {
+async fn create_new_team(team_name: String) -> Result<NewTeamResponse, String> {
   let client = reqwest::Client::new();
   let url = format!("http://localhost:5000/api/teams");
+  let auth_token = get_auth_token();
 
   let payload = NewTeamPayload {
     team_name: team_name,
@@ -297,9 +514,10 @@ struct FetchTeamByPayload {
 }
 
 #[tauri::command]
-async fn fetch_team_by_id(auth_token: &str, team_id: i32) -> Result<FetchTeamByPayload, String> {
+async fn fetch_team_by_id(team_id: i32) -> Result<FetchTeamByPayload, String> {
   let client = reqwest::Client::new();
   let url = format!("http://localhost:5000/api/teams/{}", team_id);
+  let auth_token = get_auth_token();
 
   let result = client
     .get(url)
@@ -328,9 +546,10 @@ struct DeleteTeamPayload {
 }
 
 #[tauri::command]
-async fn delete_team(auth_token: &str, team_id: i32) -> Result<DeleteTeamPayload, String> {
+async fn delete_team(team_id: i32) -> Result<DeleteTeamPayload, String> {
   let client = reqwest::Client::new();
   let url = format!("http://localhost:5000/api/teams/{}", team_id);
+  let auth_token = get_auth_token();
 
   let result = client
     .delete(url)
@@ -358,12 +577,10 @@ struct FetchApplicationByPayload {
 }
 
 #[tauri::command]
-async fn fetch_application_by_id(
-  auth_token: &str,
-  application_id: i32,
-) -> Result<FetchApplicationByPayload, String> {
+async fn fetch_application_by_id(application_id: i32) -> Result<FetchApplicationByPayload, String> {
   let client = reqwest::Client::new();
   let url = format!("http://localhost:5000/api/applications/{}", application_id);
+  let auth_token = get_auth_token();
 
   let result = client
     .get(url)
@@ -390,12 +607,10 @@ struct DeleteApplicationPayload {
 }
 
 #[tauri::command]
-async fn delete_application(
-  auth_token: &str,
-  application_id: i32,
-) -> Result<DeleteApplicationPayload, String> {
+async fn delete_application(application_id: i32) -> Result<DeleteApplicationPayload, String> {
   let client = reqwest::Client::new();
   let url = format!("http://localhost:5000/api/applications/{}", application_id);
+  let auth_token = get_auth_token();
 
   let result = client
     .delete(url)

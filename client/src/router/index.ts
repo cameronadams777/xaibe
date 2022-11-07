@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
+import { useAuthStore } from "src/state";
+import { storeToRefs } from "pinia";
 
 const authenticatedRoutes = ["/"];
 const nonAuthenticatedRoutes = ["/login", "/register"];
@@ -36,12 +38,11 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, _) => {
-  const token = localStorage.getItem("token");
-  if (authenticatedRoutes.includes(to.path) && !token) {
+router.beforeEach(async (to, _) => {
+  const authStore = useAuthStore();
+  const { token } = storeToRefs(authStore);
+  if (authenticatedRoutes.includes(to.path) && !token.value) {
     return "/login";
-  } else if (nonAuthenticatedRoutes.includes(to.path) && token != null) {
-    return "/";
   }
 });
 

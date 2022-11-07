@@ -3,10 +3,11 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import { ref } from "vue";
 import { ToastType } from "../types";
-import { useToastStore } from "../state";
+import { useAuthStore, useToastStore } from "../state";
 
 const router = useRouter();
 const { setActiveToast } = useToastStore();
+const { registerUser } = useAuthStore();
 
 const firstName = ref("");
 const lastName = ref("");
@@ -18,17 +19,13 @@ const isSubmitting = ref(false);
 const submitForm = async () => {
   try {
     isSubmitting.value = true;
-    const response = await axios
-      .post("http://localhost:5000/api/register", {
-        firstName: firstName.value,
-        lastName: lastName.value,
-        email: email.value,
-        password: password.value,
-        passwordConfirmation: confirmPassword.value,
-      })
-      .then((res) => res.data);
-
-    localStorage.setItem("token", response.data.token);
+    await registerUser({
+      firstName: firstName.value,
+      lastName: lastName.value,
+      email: email.value,
+      password: password.value,
+      passwordConfirmation: confirmPassword.value,
+    });
     isSubmitting.value = false;
     router.push("/");
   } catch (error) {

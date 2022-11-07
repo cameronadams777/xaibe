@@ -14,6 +14,7 @@ func SetupRouter(app *gin.Engine) {
 	// Authentication
 	api.POST("/login", controllers.Login)
 	api.POST("/register", controllers.Register)
+	api.POST("/refresh_token", controllers.RefreshToken)
 
 	api.POST("/webhook", controllers.WebHook)
 	api.GET("/ws", controllers.ServeWS)

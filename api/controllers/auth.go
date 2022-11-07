@@ -4,10 +4,13 @@ import (
 	"api/config"
 	"api/initializers/database"
 	"api/models"
+	"api/services/auth_service"
+	"api/services/users_service"
 	"fmt"
+	"log"
+	"strconv"
 
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -44,15 +47,12 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	expirationTime := time.Now().Add(time.Hour * 24)
+	tokens, err := auth_service.CreateTokens(user)
 
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(user.ID)),
-		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: expirationTime.Unix(),
-	})
-
-	token, err := claims.SignedString([]byte(config.Get("AUTH_TOKEN_SECRET")))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Error on register request.", "data": err})
+		return
+	}
 
 	if err != nil {
 		fmt.Println(err)
@@ -60,18 +60,18 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("ucid", token, int(expirationTime.Unix()), "", "", false, true)
+	c.SetCookie("ucid", tokens.RefreshToken, int((time.Now().Add(time.Hour * 24 * 14)).Unix()), "/api/refresh_token", "localhost", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User logged in.", "data": gin.H{"token": token}})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User logged in.", "data": tokens.AccessToken})
 }
 
 func Register(c *gin.Context) {
 	type RegisterInput struct {
-		FirstName            string `json:"firstName" binding:"required"`
-		LastName             string `json:"lastName" binding:"required"`
+		FirstName            string `json:"first_name" binding:"required"`
+		LastName             string `json:"last_name" binding:"required"`
 		Email                string `json:"email" binding:"required"`
 		Password             string `json:"password" binding:"required"`
-		PasswordConfirmation string `json:"passwordConfirmation" binding:"required"`
+		PasswordConfirmation string `json:"password_confirmation" binding:"required"`
 	}
 
 	var input RegisterInput
@@ -106,28 +106,61 @@ func Register(c *gin.Context) {
 
 	database.DB.Create(&user)
 
-	expirationTime := time.Now().Add(time.Hour * 24)
-
-	// TODO: Migrate to RegisteredClaims
-	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(user.ID)),
-		IssuedAt:  time.Now().Unix(),
-		ExpiresAt: expirationTime.Unix(),
-	})
-
-	token, err := claims.SignedString([]byte(config.Get("AUTH_TOKEN_SECRET")))
+	tokens, err := auth_service.CreateTokens(user)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Error on register request.", "data": err})
 		return
 	}
 
-	c.SetCookie("ucid", token, int(expirationTime.Unix()), "", "", false, true)
+	c.SetCookie("ucid", tokens.RefreshToken, int((time.Now().Add(time.Hour * 24 * 14)).Unix()), "/api/refresh_token", "localhost", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User registered", "data": gin.H{
-		"token":     token,
-		"firstName": input.FirstName,
-		"lastName":  input.LastName,
-		"email":     input.Email,
-	}})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User registered", "data": tokens.AccessToken})
+}
+
+func RefreshToken(c *gin.Context) {
+	log.Println(c.Request.Cookies())
+
+	token, err := c.Cookie("ucid")
+
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusOK, gin.H{"token": ""})
+		return
+	}
+
+	verified_token, jwt_err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte(config.Get("REFRESH_SECRET")), nil
+	})
+
+	if jwt_err != nil {
+		c.JSON(http.StatusOK, gin.H{"token": ""})
+		return
+	}
+
+	claims := verified_token.Claims.(jwt.MapClaims)
+
+	user_id, _ := strconv.Atoi(claims["iss"].(string))
+
+	user, get_user_err := users_service.GetUserById(user_id)
+
+	if get_user_err != nil {
+		c.JSON(http.StatusOK, gin.H{"token": ""})
+		return
+	}
+
+	tokens, tokens_err := auth_service.CreateTokens(*user)
+
+	if tokens_err != nil {
+		c.JSON(http.StatusOK, gin.H{"token": ""})
+		return
+	}
+
+	c.SetCookie("ucid", tokens.RefreshToken, int((time.Now().Add(time.Hour * 24 * 14)).Unix()), "/api/refresh_token", "localhost", false, true)
+
+	c.JSON(http.StatusOK, gin.H{"token": tokens.AccessToken})
 }

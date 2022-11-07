@@ -2,11 +2,12 @@
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import axios from "axios";
-import { useToastStore } from "../state";
+import { useAuthStore, useToastStore } from "../state";
 import { ToastType } from "../types";
 
 const router = useRouter();
 const { setActiveToast } = useToastStore();
+const { login } = useAuthStore();
 
 const email = ref("");
 const password = ref("");
@@ -15,17 +16,11 @@ const isSubmitting = ref(false);
 const submitForm = async () => {
   try {
     isSubmitting.value = true;
-    const response = await axios
-      .post("http://localhost:5000/api/login", {
-        email: email.value,
-        password: password.value,
-      })
-      .then((res) => res.data);
-
-    localStorage.setItem("token", response.data.token);
+    await login({ email: email.value, password: password.value });
     isSubmitting.value = false;
     router.push("/");
   } catch (error) {
+    console.log(error);
     setActiveToast({
       message: "An error occurred while attempting to log in.",
       type: ToastType.ERROR,
