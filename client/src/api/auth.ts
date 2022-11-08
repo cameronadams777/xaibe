@@ -48,6 +48,5 @@ interface IFetchAuthTokenResponse {
 
 export const fetchAuthToken = async (): Promise<string> => {
   const response = await invoke<IFetchAuthTokenResponse>("fetch_auth_token");
-  console.log(response);
   return response.token;
 };

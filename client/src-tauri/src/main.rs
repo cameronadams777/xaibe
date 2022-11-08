@@ -8,7 +8,7 @@ use std::{collections::HashMap, fs, path::Path};
 
 use chrono::Utc;
 use notify_rust::Notification;
-use reqwest::{cookie::Jar, Url};
+use reqwest::header::{self, HeaderMap};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::{
@@ -40,8 +40,6 @@ fn get_or_build_config_dir() -> String {
 }
 
 fn get_auth_token() -> String {
-  let mut token = String::new();
-
   let config_file_path = get_or_build_config_dir();
 
   let config_as_string = fs::read_to_string(&config_file_path).unwrap();
@@ -49,16 +47,12 @@ fn get_auth_token() -> String {
   let config: HashMap<&str, Value> = serde_json::from_str(config_as_string.as_str()).unwrap();
 
   match config.get("elid") {
-    Some(res) => token = res.to_string().replace("\"", ""),
-    None => token = "".to_string(),
+    Some(res) => return res.to_string().replace("\"", ""),
+    None => return "".to_string(),
   }
-
-  return token;
 }
 
 fn get_refresh_token() -> String {
-  let mut token = String::new();
-
   let config_file_path = get_or_build_config_dir();
 
   let config_as_string = fs::read_to_string(&config_file_path).unwrap();
@@ -66,11 +60,9 @@ fn get_refresh_token() -> String {
   let config: HashMap<&str, Value> = serde_json::from_str(config_as_string.as_str()).unwrap();
 
   match config.get("ucid") {
-    Some(res) => token = res.to_string().replace("\"", ""),
-    None => token = "".to_string(),
+    Some(res) => return res.to_string().replace("\"", ""),
+    None => return "".to_string(),
   }
-
-  return token;
 }
 
 fn set_auth_token(token: String) {
@@ -97,6 +89,20 @@ fn set_refresh_token(token: String) {
 
   let config_to_write = serde_json::to_string_pretty(&config).unwrap();
   fs::write(&config_file_path, config_to_write).unwrap();
+}
+
+fn create_cookie_headers() -> HeaderMap {
+  let cookie = format!("ucid={}", get_refresh_token());
+  let cookie_header = header::HeaderValue::from_str(cookie.as_str());
+  let mut request_headers = header::HeaderMap::new();
+
+  match cookie_header {
+    Ok(header) => {
+      request_headers.insert(header::COOKIE, header);
+      return request_headers;
+    }
+    Err(_) => return request_headers,
+  }
 }
 
 #[tokio::main]
@@ -264,12 +270,11 @@ struct FetchAuthTokenResponse {
 
 #[tauri::command]
 async fn fetch_auth_token() -> Result<FetchAuthTokenResponse, String> {
-  let cookie = format!("ucid={}; Domain=localhost", get_refresh_token());
-  let url = "http://localhost:5000".parse::<Url>().unwrap();
-  let jar = Jar::default();
-  jar.add_cookie_str(cookie.as_str(), &url);
-
-  let client = reqwest::Client::builder().build().unwrap();
+  let client = reqwest::Client::builder()
+    .default_headers(create_cookie_headers())
+    .cookie_store(true)
+    .build()
+    .unwrap();
 
   let url = "http://localhost:5000/api/refresh_token";
 
@@ -527,8 +532,6 @@ async fn fetch_team_by_id(team_id: i32) -> Result<FetchTeamByPayload, String> {
     .unwrap()
     .json::<FetchTeamByPayload>()
     .await;
-
-  println!("{:?}", result);
 
   match result {
     Ok(res) => Ok(res),

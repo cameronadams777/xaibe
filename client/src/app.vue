@@ -5,17 +5,11 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
-import { fetchAuthToken } from "./api/auth";
 import TheGlobalModal from "./components/the-global-modal.vue";
 import TheToastMessage from "./components/the-toast-message.vue";
 
 const route = useRoute();
-
-onBeforeMount(async () => {
-  await fetchAuthToken();
-});
 </script>
 
 <style>

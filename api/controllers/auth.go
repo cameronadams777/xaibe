@@ -119,8 +119,6 @@ func Register(c *gin.Context) {
 }
 
 func RefreshToken(c *gin.Context) {
-	log.Println(c.Request.Cookies())
-
 	token, err := c.Cookie("ucid")
 
 	if err != nil {

@@ -26,6 +26,7 @@ export const useAuthStore = defineStore("auth", {
     },
     async fetchAuthToken(): Promise<string> {
       const token = await fetchAuthToken();
+      console.log(token);
       this.token = token;
       return token;
     },
