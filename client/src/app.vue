@@ -5,6 +5,7 @@
 </template>
 
 <script lang="ts" setup>
+import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 import TheGlobalModal from "./components/the-global-modal.vue";
 import TheToastMessage from "./components/the-toast-message.vue";

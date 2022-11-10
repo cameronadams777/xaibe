@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useRouter } from "vue-router";
 import { ref } from "vue";
-import axios from "axios";
 import { useAuthStore, useToastStore } from "../state";
 import { ToastType } from "../types";
 

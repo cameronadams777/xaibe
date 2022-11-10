@@ -129,7 +129,8 @@ async fn main() {
       fetch_team_by_id,
       login,
       notify_user,
-      register_user
+      register_user,
+      remove_user_from_team,
     ])
     .system_tray(SystemTray::new().with_menu(tray_menu))
     .on_system_tray_event(|app, event| match event {
@@ -414,6 +415,8 @@ struct Application {
   TeamId: Option<i32>,
   UserId: Option<i32>,
   AlertSchema: Option<AlertSchema>,
+  User: Option<User>,
+  Team: Option<Team>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -467,10 +470,12 @@ async fn create_new_application(
 #[derive(Debug, Serialize, Deserialize)]
 struct Team {
   ID: i32,
+  Name: String,
   CreatedAt: chrono::DateTime<Utc>,
   UpdatedAt: Option<chrono::DateTime<Utc>>,
   DeletedAt: Option<chrono::DateTime<Utc>>,
-  Name: String,
+  Applications: Option<Vec<Application>>,
+  Managers: Option<Vec<User>>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -512,14 +517,14 @@ async fn create_new_team(team_name: String) -> Result<NewTeamResponse, String> {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct FetchTeamByPayload {
+struct FetchTeamByIdPayload {
   status: String,
   message: String,
   data: Team,
 }
 
 #[tauri::command]
-async fn fetch_team_by_id(team_id: i32) -> Result<FetchTeamByPayload, String> {
+async fn fetch_team_by_id(team_id: i32) -> Result<String, ()> {
   let client = reqwest::Client::new();
   let url = format!("http://localhost:5000/api/teams/{}", team_id);
   let auth_token = get_auth_token();
@@ -530,16 +535,11 @@ async fn fetch_team_by_id(team_id: i32) -> Result<FetchTeamByPayload, String> {
     .send()
     .await
     .unwrap()
-    .json::<FetchTeamByPayload>()
-    .await;
+    .text()
+    .await
+    .unwrap();
 
-  match result {
-    Ok(res) => Ok(res),
-    Err(err) => Err(format!(
-      "An error occurred while fetching team {}",
-      err.to_string()
-    )),
-  }
+  Ok(result)
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -572,15 +572,39 @@ async fn delete_team(team_id: i32) -> Result<DeleteTeamPayload, String> {
   }
 }
 
+#[tauri::command]
+async fn remove_user_from_team(team_id: i32, user_id: i32) -> Result<String, ()> {
+  let client = reqwest::Client::new();
+  let url = format!(
+    "http://localhost:5000/api/teams/{}/user/{}",
+    team_id, user_id
+  );
+  let auth_token = get_auth_token();
+
+  let result = client
+    .delete(url)
+    .bearer_auth(auth_token)
+    .send()
+    .await
+    .unwrap()
+    .text()
+    .await
+    .unwrap();
+
+  Ok(result)
+}
+
 #[derive(Debug, Serialize, Deserialize)]
-struct FetchApplicationByPayload {
+struct FetchApplicationByIdPayload {
   status: String,
   message: String,
   data: Application,
 }
 
 #[tauri::command]
-async fn fetch_application_by_id(application_id: i32) -> Result<FetchApplicationByPayload, String> {
+async fn fetch_application_by_id(
+  application_id: i32,
+) -> Result<FetchApplicationByIdPayload, String> {
   let client = reqwest::Client::new();
   let url = format!("http://localhost:5000/api/applications/{}", application_id);
   let auth_token = get_auth_token();
@@ -591,7 +615,7 @@ async fn fetch_application_by_id(application_id: i32) -> Result<FetchApplication
     .send()
     .await
     .unwrap()
-    .json::<FetchApplicationByPayload>()
+    .json::<FetchApplicationByIdPayload>()
     .await;
 
   match result {

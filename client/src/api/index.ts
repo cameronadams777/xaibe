@@ -7,4 +7,5 @@ export enum TauriEvents {
   FETCH_APPLICATION_BY_ID = "fetch_application_by_id",
   FETCH_CACHED_ALERTS = "fetch_cached_alerts",
   FETCH_TEAM_BY_ID = "fetch_team_by_id",
+  REMOVE_USER_FROM_TEAM = "remove_user_from_team",
 }

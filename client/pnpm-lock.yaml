@@ -12,6 +12,7 @@ specifiers:
   humps: ^2.0.1
   pinia: ^2.0.23
   socket.io-client: ^4.5.3
+  tailwind-merge: ^1.8.0
   typescript: ^4.6.4
   unocss: ^0.45.18
   vite: ^3.1.0
@@ -29,6 +30,7 @@ dependencies:
   humps: 2.0.1
   pinia: 2.0.23_arz4dztosvwy2ghjrlh2wdhejm
   socket.io-client: 4.5.3
+  tailwind-merge: 1.8.0
   vue: 3.2.39
   vue-router: 4.1.5_vue@3.2.39
 
@@ -1408,6 +1410,10 @@ packages:
   /supports-preserve-symlinks-flag/1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  /tailwind-merge/1.8.0:
+    resolution: {integrity: sha512-tER/2SbYRdfPYg6m4pDWZSlbymLTmDi+dx4iCsJmgmz4UDGzgnVelOvBe3GNtGCw9Bmc4MiObfJJbKeVL+KnMQ==}
+    dev: false
 
   /thenify-all/1.6.0:
     resolution: {integrity: sha512-RNxQH/qI8/t3thXJDwcstUO4zeqo64+Uy/+sNVRBx4Xn2OX+OZ9oP+iJnNFqplFra2ZUVeKCSa2oVWi3T4uVmA==}

@@ -1,11 +1,18 @@
 <script lang="ts" setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import TheTopNav from "../components/the-top-nav.vue";
 import TheLeftNav from "../components/the-left-nav.vue";
+import { useActiveUserStore } from "src/state";
+
+const { getActiveUser } = useActiveUserStore();
 
 const isLeftNavOpen = ref(true);
 
 const toggleLeftNav = () => (isLeftNavOpen.value = !isLeftNavOpen.value);
+
+onMounted(async () => {
+  await getActiveUser();
+});
 </script>
 
 <template>

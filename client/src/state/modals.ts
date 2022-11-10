@@ -1,9 +1,22 @@
 import { defineStore } from "pinia";
 
+export const emptyRemoveUserConfirmationProps: IRemoveUserConfirmationProps = {
+  isOpen: false,
+  userId: undefined,
+  teamId: undefined,
+};
+
+interface IRemoveUserConfirmationProps {
+  isOpen: boolean;
+  userId: number | undefined;
+  teamId: number | undefined;
+}
+
 interface IModalStoreState {
   isNewElementModalShown: boolean;
   isDeleteApplicationConfirmationModalShown: boolean;
   isDeleteTeamConfirmationModalShown: boolean;
+  removeUserConfirmationProps: IRemoveUserConfirmationProps;
 }
 
 export const useModalStore = defineStore("modals", {
@@ -12,6 +25,7 @@ export const useModalStore = defineStore("modals", {
       isNewElementModalShown: false,
       isDeleteApplicationConfirmationModalShown: false,
       isDeleteTeamConfirmationModalShown: false,
+      removeUserConfirmationProps: emptyRemoveUserConfirmationProps,
     };
   },
   actions: {
@@ -23,6 +37,9 @@ export const useModalStore = defineStore("modals", {
     },
     setIsDeleteTeamConfirmationModalShown(newValue: boolean): void {
       this.isDeleteTeamConfirmationModalShown = newValue;
+    },
+    setRemoveUserConfirmationProps(props: IRemoveUserConfirmationProps): void {
+      this.removeUserConfirmationProps = props;
     },
   },
 });

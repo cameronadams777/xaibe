@@ -2,29 +2,47 @@
   <div class="w-full h-full flex flex-col">
     <h5 class="p-0 m-0 ml-1 mb-2">Members</h5>
     <div
-      class="w-full h-full flex flex-col mr-4 border-1 border-gray-300 rounded-lg overflow-y-auto"
+      class="relative w-full h-full flex flex-col mr-4 border-1 border-gray-300 rounded-lg overflow-y-auto"
     >
       <div
         v-if="members.length"
         v-for="member in members"
         :key="member.ID"
-        class="p-4 flex justify-between items-center border-b border-gray-300 hover:bg-gray-600 hover:border-gray-600 hover:text-white font-bold text-black no-underline transition-all duration-300"
+        class="p-4 flex justify-between items-center border-b border-gray-300 font-bold text-black no-underline transition-all duration-300"
       >
         {{ member.FirstName }} {{ member.LastName }}
-        <base-fab-button>
+        <button
+          class="p-0 hover:text-red-500 rounded-full border-none bg-white flex justify-center items-center cursor-pointer"
+          @click="displayRemoveUserConfirmationModal(member.ID)"
+        >
           <x-mark-icon class="h-full w-4" />
-        </base-fab-button>
+        </button>
       </div>
       <div v-else class="w-full h-full flex justify-center items-center">
         <p>No members</p>
       </div>
+      <base-fab-button
+        class="absolute bottom-2 right-2 bg-indigo-500 text-white"
+      >
+        <plus-icon class="h-full w-4" />
+      </base-fab-button>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { XMarkIcon } from "@heroicons/vue/24/solid";
+import { XMarkIcon, PlusIcon } from "@heroicons/vue/24/solid";
+import { useModalStore } from "src/state";
 import { IUser } from "src/types";
 
-defineProps<{ members: IUser[] }>();
+const props = defineProps<{ teamId: number; members: IUser[] }>();
+
+const { setRemoveUserConfirmationProps } = useModalStore();
+
+const displayRemoveUserConfirmationModal = (userId: number) =>
+  setRemoveUserConfirmationProps({
+    teamId: props.teamId,
+    userId,
+    isOpen: true,
+  });
 </script>

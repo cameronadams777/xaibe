@@ -1,6 +1,6 @@
 <template>
   <the-main-layout>
-    <div class="w-full h-full p-4">
+    <div v-if="activeTeam != null" class="w-full h-full p-4">
       <div class="flex justify-between items-center">
         <h2 class="capitalize">{{ activeTeam?.Name }}</h2>
         <base-fab-button
@@ -15,7 +15,10 @@
           <applications-list :applications="activeTeam?.Applications || []" />
         </div>
         <div class="w-full h-48 lg:h-96 lg:w-1/4 mr-4 mb-4">
-          <team-member-list :members="activeTeam?.Users || []" />
+          <team-member-list
+            :team-id="activeTeam.ID"
+            :members="activeTeam?.Users || []"
+          />
         </div>
       </div>
     </div>

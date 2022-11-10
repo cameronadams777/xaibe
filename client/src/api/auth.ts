@@ -42,6 +42,16 @@ export const registerUser = async (
   return response.data;
 };
 
+interface ISubmitResetPasswordRequestInput {
+  email: string;
+}
+
+export const submitResetPasswordRequest = async (
+  payload: ISubmitResetPasswordRequestInput
+): Promise<void> => {
+  await invoke("submit_reset_password_request", { ...payload });
+};
+
 interface IFetchAuthTokenResponse {
   token: string;
 }

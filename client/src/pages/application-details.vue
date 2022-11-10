@@ -59,7 +59,6 @@ const getApplicationAlerts = async (applicationId: number) => {
     });
     applicationAlerts.value = cachedAlerts;
   } catch (error) {
-    console.error(error);
     setActiveToast({
       message:
         "An error occurred fetching alerts for the specified application.",

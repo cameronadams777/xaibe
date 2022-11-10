@@ -8,6 +8,10 @@ const routes: RouteRecordRaw[] = [
   { path: "/", component: () => import("../pages/home.vue") },
   { path: "/login", component: () => import("../pages/login.vue") },
   { path: "/register", component: () => import("../pages/register.vue") },
+  {
+    path: "/forgot-password",
+    component: () => import("../pages/forgot-password.vue"),
+  },
   { path: "/teams/new", component: () => import("../pages/new-team.vue") },
   {
     path: "/teams/:teamId",
@@ -42,6 +46,8 @@ router.beforeEach(async (to, _) => {
   const token = await fetchAuthToken();
   if (authenticatedRoutes.includes(to.path) && !token) {
     return "/login";
+  } else if (nonAuthenticatedRoutes.includes(to.path) && !!token) {
+    return "/";
   }
 });
 

@@ -66,7 +66,6 @@ const submitForm = async (applicationName: string, teamId?: number) => {
     router.push(`/applications/${application.ID}`);
     isSubmitting.value = false;
   } catch (error) {
-    console.error(error);
     setActiveToast({
       message:
         "An error occurred while creating your new application. Please try again later.",
