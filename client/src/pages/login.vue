@@ -19,7 +19,6 @@ const submitForm = async () => {
     isSubmitting.value = false;
     router.push("/");
   } catch (error) {
-    console.log(error);
     setActiveToast({
       message: "An error occurred while attempting to log in.",
       type: ToastType.ERROR,

@@ -12,6 +12,7 @@
       >
         {{ member.FirstName }} {{ member.LastName }}
         <button
+          v-if="managerControlsVisible && activeUser?.ID !== member.ID"
           class="p-0 hover:text-red-500 rounded-full border-none bg-white flex justify-center items-center cursor-pointer"
           @click="displayRemoveUserConfirmationModal(member.ID)"
         >
@@ -22,6 +23,7 @@
         <p>No members</p>
       </div>
       <base-fab-button
+        v-if="managerControlsVisible"
         class="absolute bottom-2 right-2 bg-indigo-500 text-white"
       >
         <plus-icon class="h-full w-4" />
@@ -32,10 +34,18 @@
 
 <script lang="ts" setup>
 import { XMarkIcon, PlusIcon } from "@heroicons/vue/24/solid";
-import { useModalStore } from "src/state";
+import { storeToRefs } from "pinia";
+import { useActiveUserStore, useModalStore } from "src/state";
 import { IUser } from "src/types";
 
-const props = defineProps<{ teamId: number; members: IUser[] }>();
+const props = defineProps<{
+  teamId: number;
+  members: IUser[];
+  managerControlsVisible: boolean;
+}>();
+
+const activeUserStore = useActiveUserStore();
+const { activeUser } = storeToRefs(activeUserStore);
 
 const { setRemoveUserConfirmationProps } = useModalStore();
 

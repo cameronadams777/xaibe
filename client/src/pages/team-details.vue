@@ -4,6 +4,7 @@
       <div class="flex justify-between items-center">
         <h2 class="capitalize">{{ activeTeam?.Name }}</h2>
         <base-fab-button
+          v-if="managerControlsVisible"
           aria-label="Delete Team"
           @click="setIsDeleteTeamConfirmationModalShown(true)"
         >
@@ -18,6 +19,7 @@
           <team-member-list
             :team-id="activeTeam.ID"
             :members="activeTeam?.Users || []"
+            :manager-controls-visible="managerControlsVisible"
           />
         </div>
       </div>
@@ -26,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { TrashIcon } from "@heroicons/vue/24/outline";
 import TheMainLayout from "src/layouts/the-main-layout.vue";
@@ -35,12 +37,22 @@ import TeamMemberList from "src/components/team-member-list.vue";
 import { fetchTeamById } from "src/api/teams";
 import { useModalStore } from "src/state/modals";
 import { ITeam, ToastType } from "src/types";
-import { useToastStore } from "src/state";
+import { useActiveUserStore, useToastStore } from "src/state";
+import { storeToRefs } from "pinia";
 
 const route = useRoute();
 const router = useRouter();
+const activeUserStore = useActiveUserStore();
+const { activeUser } = storeToRefs(activeUserStore);
 const { setIsDeleteTeamConfirmationModalShown } = useModalStore();
 const { setActiveToast } = useToastStore();
+
+const managerControlsVisible = computed(
+  () =>
+    activeTeam.value?.Managers.some(
+      (manager) => manager.ID === activeUser?.value?.ID
+    ) || false
+);
 
 const activeTeam = ref<ITeam | undefined>(undefined);
 
@@ -58,7 +70,6 @@ onMounted(async () => {
     }
     activeTeam.value = team;
   } catch (error) {
-    console.log(error);
     setActiveToast({
       message: "An error occurred trying to fetch the team you wanted.",
       type: ToastType.ERROR,
