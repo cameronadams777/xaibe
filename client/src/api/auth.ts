@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api";
+import { TauriEvents } from ".";
 
 export interface ILoginInput {
   email: string;
@@ -15,7 +16,10 @@ export const login = async ({
   email,
   password,
 }: ILoginInput): Promise<string> => {
-  const response = await invoke<ILoginResponse>("login", { email, password });
+  const response = await invoke<ILoginResponse>(TauriEvents.LOGIN, {
+    email,
+    password,
+  });
   return response.data;
 };
 
@@ -36,9 +40,12 @@ interface IRegisterUserResponse {
 export const registerUser = async (
   input: IRegisterUserInput
 ): Promise<string> => {
-  const response = await invoke<IRegisterUserResponse>("register_user", {
-    ...input,
-  });
+  const response = await invoke<IRegisterUserResponse>(
+    TauriEvents.REGISTER_USER,
+    {
+      ...input,
+    }
+  );
   return response.data;
 };
 
@@ -53,7 +60,7 @@ export const submitResetPasswordRequest = async (
 };
 
 export const logoutUser = async (): Promise<void> => {
-  await invoke("logout_user");
+  await invoke(TauriEvents.LOGOUT_USER);
 };
 
 interface IFetchAuthTokenResponse {
@@ -61,6 +68,8 @@ interface IFetchAuthTokenResponse {
 }
 
 export const fetchAuthToken = async (): Promise<string> => {
-  const response = await invoke<IFetchAuthTokenResponse>("fetch_auth_token");
+  const response = await invoke<IFetchAuthTokenResponse>(
+    TauriEvents.FETCH_AUTH_TOKEN
+  );
   return response.token;
 };

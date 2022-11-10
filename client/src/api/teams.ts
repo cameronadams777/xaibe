@@ -44,6 +44,17 @@ export const fetchTeamById = async ({
   return response.data;
 };
 
+interface IAddUserToTeamInput {
+  teamId: number;
+  userId: number;
+}
+
+export const addUserToTeam = async (
+  input: IAddUserToTeamInput
+): Promise<void> => {
+  await invoke<string>(TauriEvents.ADD_USER_TO_TEAM, { ...input });
+};
+
 interface IRemoveUserFromTeamInput {
   teamId: number;
   userId: number;

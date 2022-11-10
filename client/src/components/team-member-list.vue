@@ -25,6 +25,7 @@
       <base-fab-button
         v-if="managerControlsVisible"
         class="absolute bottom-2 right-2 bg-indigo-500 text-white"
+        @click="displayAddUserModal"
       >
         <plus-icon class="h-full w-4" />
       </base-fab-button>
@@ -47,7 +48,14 @@ const props = defineProps<{
 const activeUserStore = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);
 
-const { setRemoveUserConfirmationProps } = useModalStore();
+const { setAddUserToTeamProps, setRemoveUserConfirmationProps } =
+  useModalStore();
+
+const displayAddUserModal = () =>
+  setAddUserToTeamProps({
+    teamId: props.teamId,
+    isOpen: true,
+  });
 
 const displayRemoveUserConfirmationModal = (userId: number) =>
   setRemoveUserConfirmationProps({

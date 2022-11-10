@@ -12,7 +12,18 @@ interface IRemoveUserConfirmationProps {
   teamId: number | undefined;
 }
 
+export const emptyAddUserToTeamProps: IAddUserToTeamProps = {
+  isOpen: false,
+  teamId: undefined,
+};
+
+interface IAddUserToTeamProps {
+  isOpen: boolean;
+  teamId: number | undefined;
+}
+
 interface IModalStoreState {
+  addUserToTeamProps: IAddUserToTeamProps;
   isNewElementModalShown: boolean;
   isDeleteApplicationConfirmationModalShown: boolean;
   isDeleteTeamConfirmationModalShown: boolean;
@@ -22,6 +33,7 @@ interface IModalStoreState {
 export const useModalStore = defineStore("modals", {
   state: (): IModalStoreState => {
     return {
+      addUserToTeamProps: emptyAddUserToTeamProps,
       isNewElementModalShown: false,
       isDeleteApplicationConfirmationModalShown: false,
       isDeleteTeamConfirmationModalShown: false,
@@ -29,6 +41,9 @@ export const useModalStore = defineStore("modals", {
     };
   },
   actions: {
+    setAddUserToTeamProps(props: IAddUserToTeamProps): void {
+      this.addUserToTeamProps = props;
+    },
     setIsNewElementModalShown(newValue: boolean): void {
       this.isNewElementModalShown = newValue;
     },

@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { useRouter } from "vue-router";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import {
   emptyRemoveUserConfirmationProps,
@@ -15,7 +14,6 @@ const props = defineProps<{
   userId?: number;
 }>();
 
-const router = useRouter();
 const { setRemoveUserConfirmationProps } = useModalStore();
 const { setActiveToast } = useToastStore();
 
@@ -28,7 +26,7 @@ const confirm = async () => {
     await removeUserFromTeam({ teamId: props.teamId, userId: props.userId });
     setActiveToast({
       type: ToastType.SUCCESS,
-      message: "User removed",
+      message: "User removed.",
     });
     close();
   } catch (error) {
