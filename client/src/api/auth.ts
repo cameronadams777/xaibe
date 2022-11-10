@@ -52,6 +52,10 @@ export const submitResetPasswordRequest = async (
   await invoke("submit_reset_password_request", { ...payload });
 };
 
+export const logoutUser = async (): Promise<void> => {
+  await invoke("logout_user");
+};
+
 interface IFetchAuthTokenResponse {
   token: string;
 }

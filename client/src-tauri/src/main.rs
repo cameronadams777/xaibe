@@ -128,6 +128,7 @@ async fn main() {
       fetch_auth_token,
       fetch_team_by_id,
       login,
+      logout_user,
       notify_user,
       register_user,
       remove_user_from_team,
@@ -262,6 +263,12 @@ async fn register_user(
     }
     Err(e) => Err(format!("An error occurred {}", e)),
   }
+}
+
+#[tauri::command]
+fn logout_user() {
+  set_auth_token("".to_string());
+  set_refresh_token("".to_string());
 }
 
 #[derive(Debug, Serialize, Deserialize)]

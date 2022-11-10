@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { UserIcon } from "@heroicons/vue/24/outline";
+import { logoutUser } from "src/api/auth";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -12,8 +13,8 @@ const userNavigation = [
   },
   {
     name: "Log Out",
-    cb: () => {
-      localStorage.removeItem("token"); // TODO: Move this to tauri side
+    cb: async () => {
+      await logoutUser();
       router.push("/login");
     },
   },
