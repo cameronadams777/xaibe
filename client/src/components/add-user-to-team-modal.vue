@@ -37,8 +37,13 @@ const confirm = async () => {
       message: "User added.",
     });
     close();
+    /**
+     * TODO: We are reloading the page here to ensure that the user that is
+     * added is shown in the list upon closing. Need to refactor this with
+     * and emitter when the modals refactor happens.
+     */
+    window.location.reload();
   } catch (error) {
-    console.error(error);
     setActiveToast({
       type: ToastType.ERROR,
       message: "An error occurred while trying to add the specified user.",
