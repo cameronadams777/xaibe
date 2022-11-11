@@ -1,14 +1,16 @@
 <script lang="ts" setup>
+import { onMounted, ref } from "vue";
+import { storeToRefs } from "pinia";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import SelectUserList from "./select-user-list.vue";
 import {
   emptyAddUserToTeamProps,
+  useActiveUserStore,
   useModalStore,
   useToastStore,
 } from "src/state";
 import { ButtonVariant, IUser, ToastType } from "src/types";
 import { addUserToTeam } from "src/api/teams";
-import { onMounted, ref } from "vue";
 import { fetchAllUsers } from "src/api/users";
 
 const props = defineProps<{
@@ -16,6 +18,8 @@ const props = defineProps<{
   teamId?: number;
 }>();
 
+const activeUserStore = useActiveUserStore();
+const { activeUser } = storeToRefs(activeUserStore);
 const { setAddUserToTeamProps } = useModalStore();
 const { setActiveToast } = useToastStore();
 
@@ -34,6 +38,7 @@ const confirm = async () => {
     });
     close();
   } catch (error) {
+    console.error(error);
     setActiveToast({
       type: ToastType.ERROR,
       message: "An error occurred while trying to add the specified user.",
@@ -49,6 +54,7 @@ onMounted(async () => {
     const users = await fetchAllUsers();
     usersList.value = users;
   } catch (error) {
+    console.error(error);
     setActiveToast({
       type: ToastType.ERROR,
       message: "An error occurred while trying to fetch list of users.",
@@ -68,7 +74,12 @@ onMounted(async () => {
         Please Select a User
       </h2>
       <div class="w-9/10 mb-4">
-        <select-user-list :users="usersList" @on-select="selectUser" />
+        <select-user-list
+          :active-user-id="activeUser?.ID"
+          :selected-user-id="userId"
+          :users="usersList"
+          @on-select="selectUser"
+        />
       </div>
       <div class="w-1/2 flex flex-col md:flex-row">
         <base-button

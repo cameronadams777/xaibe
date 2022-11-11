@@ -70,6 +70,26 @@ func DeleteTeam(team_id int) (*models.Team, error) {
 	return &team_to_delete, nil
 }
 
+func AddUserToTeam(team_id int, user_id int) (*models.Team, error) {
+	var team models.Team
+	team_err := database.DB.First(&team, team_id).Error
+
+	if team_err != nil {
+		return nil, team_err
+	}
+
+	var user models.User
+	user_err := database.DB.First(&user, user_id).Error
+
+	if user_err != nil {
+		return nil, user_err
+	}
+
+	database.DB.Model(&team).Association("Users").Append(&user)
+
+	return &team, nil
+}
+
 func RemoveUserFromTeam(team_id int, user_id int) (*models.Team, error) {
 	var team models.Team
 	team_err := database.DB.First(&team, team_id).Error

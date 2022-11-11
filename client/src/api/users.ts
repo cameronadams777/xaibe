@@ -9,8 +9,7 @@ interface IFetchAllUsersResponse {
 }
 
 export const fetchAllUsers = async (): Promise<IUser[]> => {
-  const response = await invoke<IFetchAllUsersResponse>(
-    TauriEvents.FETCH_ALL_USERS
-  );
+  const responseString = await invoke<string>(TauriEvents.FETCH_ALL_USERS);
+  const response: IFetchAllUsersResponse = JSON.parse(responseString);
   return response.data;
 };

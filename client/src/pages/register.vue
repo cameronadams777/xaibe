@@ -28,6 +28,7 @@ const submitForm = async () => {
     isSubmitting.value = false;
     router.push("/");
   } catch (error) {
+    console.log(error);
     isSubmitting.value = false;
     setActiveToast({
       message:

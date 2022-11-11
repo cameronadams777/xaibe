@@ -118,11 +118,13 @@ async fn main() {
     .add_item(quit);
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
+      add_user_to_team,
       create_new_application,
       create_new_team,
       delete_application,
       delete_team,
       fetch_active_user,
+      fetch_all_users,
       fetch_application_by_id,
       fetch_cached_alerts,
       fetch_auth_token,
@@ -241,14 +243,26 @@ struct RegisterUserResponse {
 
 #[tauri::command]
 async fn register_user(
-  register_user_input: RegisterUserPayload,
+  first_name: String,
+  last_name: String,
+  email: String,
+  password: String,
+  password_confirmation: String,
 ) -> Result<RegisterUserResponse, String> {
   let client = reqwest::Client::new();
   let url = "http://localhost:5000/api/register";
 
+  let payload = RegisterUserPayload {
+    first_name: first_name,
+    last_name: last_name,
+    email: email,
+    password: password,
+    password_confirmation: password_confirmation,
+  };
+
   let result = client
     .post(url)
-    .json::<RegisterUserPayload>(&register_user_input)
+    .json::<RegisterUserPayload>(&payload)
     .send()
     .await
     .unwrap()
@@ -387,6 +401,32 @@ async fn fetch_active_user() -> Result<FetchActiveUserResponse, String> {
       err.to_string()
     )),
   }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct FetchAllUsersResponse {
+  status: String,
+  message: String,
+  data: Vec<User>,
+}
+
+#[tauri::command]
+async fn fetch_all_users() -> Result<String, ()> {
+  let client = reqwest::Client::new();
+  let url = format!("http://localhost:5000/api/users");
+  let auth_token = get_auth_token();
+
+  let result = client
+    .get(url)
+    .bearer_auth(auth_token)
+    .send()
+    .await
+    .unwrap()
+    .text()
+    .await
+    .unwrap();
+
+  Ok(result)
 }
 
 #[derive(Clone, Serialize, Deserialize)]
@@ -577,6 +617,28 @@ async fn delete_team(team_id: i32) -> Result<DeleteTeamPayload, String> {
       err.to_string()
     )),
   }
+}
+
+#[tauri::command]
+async fn add_user_to_team(team_id: i32, user_id: i32) -> Result<String, ()> {
+  let client = reqwest::Client::new();
+  let url = format!(
+    "http://localhost:5000/api/teams/{}/user/{}",
+    team_id, user_id
+  );
+  let auth_token = get_auth_token();
+
+  let result = client
+    .post(url)
+    .bearer_auth(auth_token)
+    .send()
+    .await
+    .unwrap()
+    .text()
+    .await
+    .unwrap();
+
+  Ok(result)
 }
 
 #[tauri::command]

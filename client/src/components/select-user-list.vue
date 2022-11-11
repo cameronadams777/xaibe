@@ -1,17 +1,38 @@
 <template>
   <div
-    class="w-full h-full border-gray-400 border-1 rounded-md overflow-hidden"
+    class="w-full h-full p-0 border-gray-400 border-1 rounded-md overflow-hidden"
   >
-    <div
-      class="p-2 border-b-1 border-gray-400 hover:bg-gray-600 hover:text-white transition-colors duration-300"
+    <button
+      v-for="(user, index) of selectableUsers"
+      :class="{
+        'w-full m-0 p-2 border-0 transition-colors duration-300 cursor-pointer': true,
+        'border-b-1 border-gray-400': index !== users.length,
+        'bg-white hover:bg-gray-600 hover:text-white':
+          user.ID !== selectedUserId,
+        'bg-gray-600 text-white': user.ID === selectedUserId,
+      }"
+      @click="emits('onSelect', user.ID)"
     >
-      Cameron Adams
-    </div>
+      {{ user.FirstName }} {{ user.LastName }}
+    </button>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { IUser } from "src/types";
+import { computed } from "vue";
 
-defineProps<{ users: IUser[] }>();
+const props = defineProps<{
+  activeUserId?: number;
+  selectedUserId?: number;
+  users: IUser[];
+}>();
+
+const selectableUsers = computed(() =>
+  props.users.filter((user) => user.ID !== props.activeUserId)
+);
+
+const emits = defineEmits<{
+  (event: "onSelect", userId: number): void;
+}>();
 </script>

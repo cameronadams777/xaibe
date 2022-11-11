@@ -122,6 +122,59 @@ func DeleteTeam(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Team successfully deleted.", "data": deleted_team})
 }
 
+func AddUserToTeam(c *gin.Context) {
+	team_input_param := c.Param("team_id")
+	team_id, _ := strconv.Atoi(team_input_param)
+
+	user_input_param := c.Param("user_id")
+	user_id, _ := strconv.Atoi(user_input_param)
+
+	team, err := teams_service.GetTeamById(team_id)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Team not found.", "data": nil})
+		return
+	}
+
+	data, _ := c.Get("authScope")
+	authScope := data.(structs.AuthScope)
+
+	if user_id == authScope.UserID {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You cannot remove yourself from a team.", "data": nil})
+		return
+	}
+
+	team_manager_err := assertions.UserIsManagerOfTeam(team.ID, uint(authScope.UserID))
+
+	if team_manager_err != nil {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
+		return
+	}
+
+	user_is_member_of_team := false
+
+	for _, user := range team.Users {
+		if int(user.ID) == user_id {
+			user_is_member_of_team = true
+			break
+		}
+	}
+
+	if user_is_member_of_team {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "User is already a member of this team.", "data": nil})
+		return
+	}
+
+	updated_team, update_err := teams_service.AddUserToTeam(team_id, user_id)
+
+	if update_err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred removing the user.", "data": nil})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User successfully removed.", "data": updated_team})
+}
+
 func RemoveUserFromTeam(c *gin.Context) {
 	team_input_param := c.Param("team_id")
 	team_id, _ := strconv.Atoi(team_input_param)
