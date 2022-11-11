@@ -1,9 +1,18 @@
 <script lang="ts" setup>
-import { useAttrs } from "vue";
+import { useAttrs, watch } from "vue";
 
-defineProps<{ isOpen: boolean }>();
-
+const props = defineProps<{ isOpen: boolean }>();
 const attrs = useAttrs();
+
+watch(
+  () => props.isOpen,
+  (value) => {
+    const bodyEl = document.querySelector("body");
+    if (!bodyEl) return;
+    if (value) bodyEl.style.overflowY = "hidden";
+    else bodyEl.style.overflowY = "auto";
+  }
+);
 </script>
 
 <template>
