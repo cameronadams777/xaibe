@@ -58,21 +58,18 @@ func (s Subscription) ReadPump() {
 	}()
 	c.Socket.SetReadLimit(maxMessageSize)
 	c.Socket.SetReadDeadline(time.Now().Add(pongWait))
-	c.Socket.SetPongHandler(func(string) error {
-		c.Socket.SetReadDeadline(time.Now().Add(pongWait))
-		return nil
-	})
+	c.Socket.SetPongHandler(func(string) error { c.Socket.SetReadDeadline(time.Now().Add(pongWait)); return nil })
 	for {
 		_, msg, err := c.Socket.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-				log.Printf("err: %v", err)
+				log.Printf("error: %v", err)
 			}
+			break
 		}
 		m := Message{msg, s.Room}
 		Pool.Broadcast <- m
 	}
-
 }
 
 func (s *Subscription) WritePump() {
@@ -87,9 +84,9 @@ func (s *Subscription) WritePump() {
 		case message, ok := <-c.Send:
 			if !ok {
 				c.write(websocket.CloseMessage, []byte{})
+				return
 			}
-			if err := c.write(websocket.CloseMessage, message); err != nil {
-				log.Println(err)
+			if err := c.write(websocket.TextMessage, message); err != nil {
 				return
 			}
 		case <-ticker.C:
@@ -108,28 +105,26 @@ func (c *Connection) write(mt int, payload []byte) error {
 func (p *ConnectionPool) Run() {
 	for {
 		select {
-		case s := <-p.Register:
-			connections := p.Rooms[s.Room]
+		case s := <-Pool.Register:
+			connections := Pool.Rooms[s.Room]
 			if connections == nil {
 				connections = make(map[*Connection]bool)
-				p.Rooms[s.Room] = connections
+				Pool.Rooms[s.Room] = connections
 			}
-			log.Println("User joined " + s.Room + ".")
-			p.Rooms[s.Room][s.Conn] = true
-		case s := <-p.Unregister:
-			connections := p.Rooms[s.Room]
-			log.Println("User left " + s.Room + ".")
+			Pool.Rooms[s.Room][s.Conn] = true
+		case s := <-Pool.Unregister:
+			connections := Pool.Rooms[s.Room]
 			if connections != nil {
 				if _, ok := connections[s.Conn]; ok {
 					delete(connections, s.Conn)
 					close(s.Conn.Send)
 					if len(connections) == 0 {
-						delete(p.Rooms, s.Room)
+						delete(Pool.Rooms, s.Room)
 					}
 				}
 			}
-		case m := <-p.Broadcast:
-			connections := p.Rooms[m.Room]
+		case m := <-Pool.Broadcast:
+			connections := Pool.Rooms[m.Room]
 			for c := range connections {
 				select {
 				case c.Send <- m.Data:
@@ -137,7 +132,7 @@ func (p *ConnectionPool) Run() {
 					close(c.Send)
 					delete(connections, c)
 					if len(connections) == 0 {
-						delete(p.Rooms, m.Room)
+						delete(Pool.Rooms, m.Room)
 					}
 				}
 			}

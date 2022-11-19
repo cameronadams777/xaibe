@@ -41,6 +41,7 @@ func ServeWS(c *gin.Context) {
 	}
 
 	conn := &websockets.Connection{Send: make(chan []byte, 256), Socket: ws}
+	// TODO: Also take into account team applications
 	for _, application := range current_user.Applications {
 		room_id := strconv.Itoa(int(application.ID)) + ":" + application.UniqueId
 		s := websockets.Subscription{Conn: conn, Room: room_id}
