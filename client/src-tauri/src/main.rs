@@ -4,7 +4,7 @@
   windows_subsystem = "windows"
 )]
 
-use std::{collections::HashMap, fs, path::Path};
+use std::{collections::HashMap, env, fs, path::Path};
 
 use chrono::Utc;
 use notify_rust::Notification;
@@ -16,6 +16,19 @@ use tauri::{
 };
 
 const CONFIG_FILE_NAME: &str = "config.json";
+
+fn get_api_base_url() -> &'static str {
+  let build_env = env::var("BUILD_ENV");
+
+  match build_env {
+    Ok(env) => match env.as_str() {
+      "staging" => return "https://staging-api.galata.io",
+      "production" => return "https://api.galata.io",
+      _ => return "http://localhost:5000",
+    },
+    Err(_) => "http://localhost:5000",
+  }
+}
 
 fn get_or_build_config_dir() -> String {
   let home_path = home::home_dir()
@@ -53,6 +66,7 @@ fn get_auth_token() -> String {
 }
 
 fn get_refresh_token() -> String {
+  println!("{}", get_api_base_url());
   let config_file_path = get_or_build_config_dir();
 
   let config_as_string = fs::read_to_string(&config_file_path).unwrap();
@@ -191,7 +205,7 @@ async fn login(email: String, password: String) -> Result<LoginResponse, String>
     .build()
     .unwrap();
 
-  let url = "http://localhost:5000/api/login";
+  let url = format!("{}/api/login", get_api_base_url());
 
   let payload = LoginPayload {
     email: email,
@@ -250,7 +264,7 @@ async fn register_user(
   password_confirmation: String,
 ) -> Result<RegisterUserResponse, String> {
   let client = reqwest::Client::new();
-  let url = "http://localhost:5000/api/register";
+  let url = format!("{}/api/register", get_api_base_url());
 
   let payload = RegisterUserPayload {
     first_name: first_name,
@@ -298,7 +312,7 @@ async fn fetch_auth_token() -> Result<FetchAuthTokenResponse, String> {
     .build()
     .unwrap();
 
-  let url = "http://localhost:5000/api/refresh_token";
+  let url = format!("{}/api/refresh_token", get_api_base_url());
 
   let result = client.post(url).send().await.unwrap();
 
@@ -333,7 +347,8 @@ struct CachedAlertsResponse {
 async fn fetch_cached_alerts(application_id: i32) -> Result<CachedAlertsResponse, String> {
   let client = reqwest::Client::new();
   let url = format!(
-    "http://localhost:5000/api/applications/{}/alerts",
+    "{}/api/applications/{}/alerts",
+    get_api_base_url(),
     application_id
   );
   let auth_token = get_auth_token();
@@ -382,7 +397,7 @@ struct FetchActiveUserResponse {
 #[tauri::command]
 async fn fetch_active_user() -> Result<FetchActiveUserResponse, String> {
   let client = reqwest::Client::new();
-  let url = format!("http://localhost:5000/api/users/me");
+  let url = format!("{}/api/users/me", get_api_base_url());
   let auth_token = get_auth_token();
 
   let result = client
@@ -413,7 +428,7 @@ struct FetchAllUsersResponse {
 #[tauri::command]
 async fn fetch_all_users() -> Result<String, ()> {
   let client = reqwest::Client::new();
-  let url = format!("http://localhost:5000/api/users");
+  let url = format!("{}/api/users", get_api_base_url());
   let auth_token = get_auth_token();
 
   let result = client
@@ -481,7 +496,7 @@ async fn create_new_application(
   alert_schema: Option<AlertSchemaInput>,
 ) -> Result<NewApplicationResponse, String> {
   let client = reqwest::Client::new();
-  let url = "http://localhost:5000/api/applications";
+  let url = format!("{}/api/applications", get_api_base_url());
   let auth_token = get_auth_token();
 
   let mut payload = NewApplicationPayload {
@@ -540,7 +555,7 @@ struct NewTeamResponse {
 #[tauri::command]
 async fn create_new_team(team_name: String) -> Result<NewTeamResponse, String> {
   let client = reqwest::Client::new();
-  let url = format!("http://localhost:5000/api/teams");
+  let url = format!("{}/api/teams", get_api_base_url());
   let auth_token = get_auth_token();
 
   let payload = NewTeamPayload {
@@ -573,7 +588,7 @@ struct FetchTeamByIdPayload {
 #[tauri::command]
 async fn fetch_team_by_id(team_id: i32) -> Result<String, ()> {
   let client = reqwest::Client::new();
-  let url = format!("http://localhost:5000/api/teams/{}", team_id);
+  let url = format!("{}/api/teams/{}", get_api_base_url(), team_id);
   let auth_token = get_auth_token();
 
   let result = client
@@ -598,7 +613,7 @@ struct DeleteTeamPayload {
 #[tauri::command]
 async fn delete_team(team_id: i32) -> Result<DeleteTeamPayload, String> {
   let client = reqwest::Client::new();
-  let url = format!("http://localhost:5000/api/teams/{}", team_id);
+  let url = format!("{}/api/teams/{}", get_api_base_url(), team_id);
   let auth_token = get_auth_token();
 
   let result = client
@@ -623,8 +638,10 @@ async fn delete_team(team_id: i32) -> Result<DeleteTeamPayload, String> {
 async fn add_user_to_team(team_id: i32, user_id: i32) -> Result<String, ()> {
   let client = reqwest::Client::new();
   let url = format!(
-    "http://localhost:5000/api/teams/{}/user/{}",
-    team_id, user_id
+    "{}/api/teams/{}/user/{}",
+    get_api_base_url(),
+    team_id,
+    user_id
   );
   let auth_token = get_auth_token();
 
@@ -645,8 +662,10 @@ async fn add_user_to_team(team_id: i32, user_id: i32) -> Result<String, ()> {
 async fn remove_user_from_team(team_id: i32, user_id: i32) -> Result<String, ()> {
   let client = reqwest::Client::new();
   let url = format!(
-    "http://localhost:5000/api/teams/{}/user/{}",
-    team_id, user_id
+    "{}/api/teams/{}/user/{}",
+    get_api_base_url(),
+    team_id,
+    user_id
   );
   let auth_token = get_auth_token();
 
@@ -675,7 +694,7 @@ async fn fetch_application_by_id(
   application_id: i32,
 ) -> Result<FetchApplicationByIdPayload, String> {
   let client = reqwest::Client::new();
-  let url = format!("http://localhost:5000/api/applications/{}", application_id);
+  let url = format!("{}/api/applications/{}", get_api_base_url(), application_id);
   let auth_token = get_auth_token();
 
   let result = client
@@ -705,7 +724,7 @@ struct DeleteApplicationPayload {
 #[tauri::command]
 async fn delete_application(application_id: i32) -> Result<DeleteApplicationPayload, String> {
   let client = reqwest::Client::new();
-  let url = format!("http://localhost:5000/api/applications/{}", application_id);
+  let url = format!("{}/api/applications/{}", get_api_base_url(), application_id);
   let auth_token = get_auth_token();
 
   let result = client
