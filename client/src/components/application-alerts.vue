@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from "vue";
+import { computed, toRaw } from "vue";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/vue/24/outline";
 import { IAlert, IAlertSchema } from "src/types";
 
@@ -14,11 +14,11 @@ const applicationAlertsMappedToSchema = computed(() =>
   props.alerts
     .map((alert) => {
       const titleKeys = props.alertSchema.Title.split(".");
-      const Title = getElByKey(alert, titleKeys);
+      const Title = getElByKey(toRaw(alert), titleKeys);
       const descriptionKeys = props.alertSchema.Description.split(".");
-      const Description = getElByKey(alert, descriptionKeys);
+      const Description = getElByKey(toRaw(alert), descriptionKeys);
       const linkKeys = props.alertSchema.Link.split(".");
-      const Link = getElByKey(alert, linkKeys);
+      const Link = getElByKey(toRaw(alert), linkKeys);
 
       return { Title, Description, Link } as IAlert;
     })

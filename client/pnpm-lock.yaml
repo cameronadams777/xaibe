@@ -6,10 +6,12 @@ specifiers:
   '@julr/unocss-preset-forms': ^0.0.2
   '@tauri-apps/api': ^1.0.2
   '@types/humps': ^2.0.2
+  '@types/lodash': ^4.14.189
   '@types/node': ^18.7.16
   '@vitejs/plugin-vue': ^3.1.0
   axios: ^1.1.2
   humps: ^2.0.1
+  lodash: ^4.17.21
   pinia: ^2.0.23
   socket.io-client: ^4.5.3
   tailwind-merge: ^1.8.0
@@ -28,6 +30,7 @@ dependencies:
   '@tauri-apps/api': 1.0.2
   axios: 1.1.2
   humps: 2.0.1
+  lodash: 4.17.21
   pinia: 2.0.23_arz4dztosvwy2ghjrlh2wdhejm
   socket.io-client: 4.5.3
   tailwind-merge: 1.8.0
@@ -36,6 +39,7 @@ dependencies:
 
 devDependencies:
   '@types/humps': 2.0.2
+  '@types/lodash': 4.14.189
   '@types/node': 18.7.16
   '@vitejs/plugin-vue': 3.1.0_vite@3.1.0+vue@3.2.39
   typescript: 4.8.3
@@ -202,6 +206,10 @@ packages:
 
   /@types/humps/2.0.2:
     resolution: {integrity: sha512-FuyQoVNSW6mjSLxLVRq8YK1pi8P5zyL2pahEuCtMqlbmV4jyWYITz4eE2fZIErNovIfKU32tPbCl44VbOUaEiw==}
+    dev: true
+
+  /@types/lodash/4.14.189:
+    resolution: {integrity: sha512-kb9/98N6X8gyME9Cf7YaqIMvYGnBSWqEci6tiettE6iJWH1XdJz/PO8LB0GtLCG7x8dU3KWhZT+lA1a35127tA==}
     dev: true
 
   /@types/node/18.7.16:
@@ -1076,6 +1084,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       p-locate: 5.0.0
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+    dev: false
 
   /magic-string/0.25.9:
     resolution: {integrity: sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ==}

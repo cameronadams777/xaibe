@@ -1,3 +1,4 @@
+import compact from "lodash/compact";
 import { defineStore } from "pinia";
 import { fetchCachedApplicationAlerts } from "../api/alerts";
 import { IAlert } from "../types";
@@ -24,7 +25,7 @@ export const useAlertsStore = defineStore("alerts", {
       let alerts = this.getLocalCacheAlerts(applicationId);
       if (!alerts)
         alerts = await fetchCachedApplicationAlerts({ applicationId });
-      return alerts || [];
+      return compact(alerts) || [];
     },
   },
 });

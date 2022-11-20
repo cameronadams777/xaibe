@@ -5,6 +5,7 @@
 </template>
 
 <script lang="ts" setup>
+import { invoke } from "@tauri-apps/api";
 import { storeToRefs } from "pinia";
 import { watch, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -18,36 +19,46 @@ const { token } = storeToRefs(authStore);
 
 const hasConnected = ref(false);
 
+const getElByKey = (obj: Record<any, any>, keys: string[]): any => {
+  if (keys.length === 1) return obj[keys[0]];
+  return getElByKey(obj[keys[0]], keys.slice(1));
+};
+
 watch(token, async (tokenValue) => {
   if (!tokenValue || hasConnected.value) return;
-
   let socket = new WebSocket(`ws://localhost:5000/api/ws?token=${token.value}`);
-
   socket.onopen = function (e) {
-    alert("[open] Connection established");
-    alert("Sending to server");
+    console.log("[open] Connection established");
     hasConnected.value = true;
   };
-
   socket.onmessage = function (event) {
-    alert(`[message] Data received from server: ${event.data}`);
-  };
+    const alert = JSON.parse(event.data);
+    const schema = alert.alert_schema;
 
+    if (!schema) {
+      // TODO: Make this more informative
+      invoke("notify_user", {
+        title: "New Alert!",
+        body: "One of you applications just receive an alert for the first time!",
+      });
+      return;
+    }
+
+    const titleKeys = schema.Title.split(".");
+    const title = getElByKey(alert, titleKeys);
+    const descriptionKeys = schema.Description.split(".");
+    const body = getElByKey(alert, descriptionKeys);
+
+    invoke("notify_user", { title, body });
+  };
   socket.onclose = function (event) {
     if (event.wasClean) {
-      alert(
+      console.log(
         `[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`
       );
-    } else {
-      console.log(event);
-      // e.g. server process killed or network down
-      // event.code is usually 1006 in this case
-      alert("[close] Connection died");
+      return;
     }
-  };
-
-  socket.onerror = function (error) {
-    alert(`[error]`);
+    console.log("[close] Connection died: ", event);
   };
 });
 </script>

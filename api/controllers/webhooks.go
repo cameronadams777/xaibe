@@ -41,10 +41,15 @@ func WebHook(c *gin.Context) {
 		return
 	}
 
+	body_as_json["application_id"] = application_id
+	body_as_json["alert_schema"] = application.AlertSchema
+
+	alert_as_byte_array, _ := json.Marshal(body_as_json)
+
 	// Push alert data via websocket to any active clients
 	alert := websockets.Message{
 		Room: application_input_param + ":" + application.UniqueId,
-		Data: body_as_byte_array,
+		Data: alert_as_byte_array,
 	}
 
 	websockets.Pool.Broadcast <- alert
