@@ -32,6 +32,7 @@ watch(token, async (tokenValue) => {
     hasConnected.value = true;
   };
   socket.onmessage = function (event) {
+    // TODO: Also add to cached alerts
     const alert = JSON.parse(event.data);
     const schema = alert.alert_schema;
 

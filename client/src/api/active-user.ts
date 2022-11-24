@@ -9,12 +9,8 @@ interface IFetchActiveUserResponse {
 }
 
 export const fetchActiveUser = async (): Promise<IUser | undefined> => {
-  const authToken = localStorage.getItem("token");
   const response = await invoke<IFetchActiveUserResponse>(
-    TauriEvents.FETCH_ACTIVE_USER,
-    {
-      authToken,
-    }
+    TauriEvents.FETCH_ACTIVE_USER
   );
   return response.data;
 };

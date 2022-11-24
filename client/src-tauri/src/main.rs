@@ -66,7 +66,6 @@ fn get_auth_token() -> String {
 }
 
 fn get_refresh_token() -> String {
-  println!("{}", get_api_base_url());
   let config_file_path = get_or_build_config_dir();
 
   let config_as_string = fs::read_to_string(&config_file_path).unwrap();
@@ -140,7 +139,8 @@ async fn main() {
       fetch_active_user,
       fetch_all_users,
       fetch_application_by_id,
-      fetch_cached_alerts,
+      fetch_all_cached_alerts,
+      fetch_cached_alerts_by_application,
       fetch_auth_token,
       fetch_team_by_id,
       login,
@@ -328,6 +328,30 @@ async fn fetch_auth_token() -> Result<FetchAuthTokenResponse, String> {
   }
 }
 
+#[tauri::command]
+async fn fetch_all_cached_alerts() -> Result<String, String> {
+  let client = reqwest::Client::new();
+  let url = format!("{}/api/alerts", get_api_base_url(),);
+  let auth_token = get_auth_token();
+
+  let result = client
+    .get(url)
+    .bearer_auth(auth_token)
+    .send()
+    .await
+    .unwrap()
+    .text()
+    .await;
+
+  match result {
+    Ok(res) => Ok(res),
+    Err(err) => Err(format!(
+      "An error occurred while fetching alerts {}",
+      err.to_string()
+    )),
+  }
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 struct Alert {
   Title: String,
@@ -344,10 +368,12 @@ struct CachedAlertsResponse {
 }
 
 #[tauri::command]
-async fn fetch_cached_alerts(application_id: i32) -> Result<CachedAlertsResponse, String> {
+async fn fetch_cached_alerts_by_application(
+  application_id: i32,
+) -> Result<CachedAlertsResponse, String> {
   let client = reqwest::Client::new();
   let url = format!(
-    "{}/api/applications/{}/alerts",
+    "{}/api/alerts/applications/{}",
     get_api_base_url(),
     application_id
   );

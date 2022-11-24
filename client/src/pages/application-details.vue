@@ -10,7 +10,7 @@ import {
 } from "../state";
 import TheMainLayout from "../layouts/the-main-layout.vue";
 import AlertSchemaForm from "../components/alert-schema-form.vue";
-import ApplicationAlerts from "../components/application-alerts.vue";
+import AlertsListByApplication from "../components/alerts-list-by-application.vue";
 import { IAlert, IApplication, ToastType } from "../types";
 import { fetchApplicationById } from "../api/applications";
 
@@ -92,7 +92,7 @@ onMounted(async () => {
         v-if="activeApplication?.AlertSchema != null"
         class="w-full lg:w-1/3 h-48 lg:h-96"
       >
-        <application-alerts
+        <alerts-list-by-application
           :alerts="applicationAlerts"
           :alert-schema="activeApplication?.AlertSchema"
         />

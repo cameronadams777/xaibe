@@ -1,31 +1,3 @@
-<script lang="ts" setup>
-import { computed, toRaw } from "vue";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/vue/24/outline";
-import { IAlert, IAlertSchema } from "src/types";
-
-const props = defineProps<{ alertSchema: IAlertSchema; alerts: IAlert[] }>();
-
-const getElByKey = (obj: Record<any, any>, keys: string[]): any => {
-  if (keys.length === 1) return obj[keys[0]];
-  return getElByKey(obj[keys[0]], keys.slice(1));
-};
-
-const applicationAlertsMappedToSchema = computed(() =>
-  props.alerts
-    .map((alert) => {
-      const titleKeys = props.alertSchema.Title.split(".");
-      const Title = getElByKey(toRaw(alert), titleKeys);
-      const descriptionKeys = props.alertSchema.Description.split(".");
-      const Description = getElByKey(toRaw(alert), descriptionKeys);
-      const linkKeys = props.alertSchema.Link.split(".");
-      const Link = getElByKey(toRaw(alert), linkKeys);
-
-      return { Title, Description, Link } as IAlert;
-    })
-    .filter((alert) => Object.values(alert).every((value) => !!value))
-);
-</script>
-
 <template>
   <div class="w-full h-full flex">
     <div class="w-2/3 h-full">
@@ -62,3 +34,27 @@ const applicationAlertsMappedToSchema = computed(() =>
     </div>
   </div>
 </template>
+
+<script lang="ts" setup>
+import { computed, toRaw } from "vue";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/vue/24/outline";
+import { IAlert, IAlertSchema } from "src/types";
+import { getElByKey } from "src/helpers";
+
+const props = defineProps<{ alertSchema: IAlertSchema; alerts: IAlert[] }>();
+
+const applicationAlertsMappedToSchema = computed(() =>
+  props.alerts
+    .map((alert) => {
+      const titleKeys = props.alertSchema.Title.split(".");
+      const Title = getElByKey(toRaw(alert), titleKeys);
+      const descriptionKeys = props.alertSchema.Description.split(".");
+      const Description = getElByKey(toRaw(alert), descriptionKeys);
+      const linkKeys = props.alertSchema.Link.split(".");
+      const Link = getElByKey(toRaw(alert), linkKeys);
+
+      return { Title, Description, Link } as IAlert;
+    })
+    .filter((alert) => Object.values(alert).every((value) => !!value))
+);
+</script>

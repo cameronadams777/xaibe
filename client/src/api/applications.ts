@@ -16,11 +16,9 @@ interface IFetchApplicationByIdResponse {
 export const fetchApplicationById = async ({
   applicationId,
 }: IFetchApplicationByIdInput): Promise<IApplication | undefined> => {
-  const authToken = localStorage.getItem("token");
   const response = await invoke<IFetchApplicationByIdResponse>(
     TauriEvents.FETCH_APPLICATION_BY_ID,
     {
-      authToken,
       applicationId,
     }
   );
@@ -46,10 +44,8 @@ export const createNewApplication = async ({
   applicationName,
   alertSchema,
 }: ICreateNewApplicationInput): Promise<IApplication | undefined> => {
-  const authToken = localStorage.getItem("token");
   let body: Record<string, any> = {
     applicationName,
-    authToken,
   };
   if (teamId != null) body.teamId = teamId;
   else if (userId != null) body.userId = userId;
@@ -77,10 +73,8 @@ interface IDeleteApplicationInput {
 export const deleteApplication = async ({
   applicationId,
 }: IDeleteApplicationInput): Promise<void> => {
-  const authToken = localStorage.getItem("token");
   let body: Record<string, any> = {
     applicationId,
-    authToken,
   };
   await invoke<IApplication>(TauriEvents.DELETE_APPLICATION, {
     ...body,

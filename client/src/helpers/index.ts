@@ -1,3 +1,4 @@
+export * from "./alerts";
 export * from "./applications";
 
 export const getSrc = (path: string) => {
