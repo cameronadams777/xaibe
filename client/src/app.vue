@@ -26,12 +26,24 @@ const getElByKey = (obj: Record<any, any>, keys: string[]): any => {
 
 watch(token, async (tokenValue) => {
   if (!tokenValue || hasConnected.value) return;
+  let timerId: any;
   let socket = new WebSocket(`ws://localhost:5000/api/ws?token=${token.value}`);
+
+  function heartbeat() {
+    if (!socket) return;
+    if (socket.readyState !== 1) return;
+    socket.send("heartbeat");
+    setTimeout(heartbeat, 500);
+  }
+
+  heartbeat();
+
   socket.onopen = function (e) {
     console.log("[open] Connection established");
     hasConnected.value = true;
   };
   socket.onmessage = function (event) {
+    if (!event.data || !event.data.length) return;
     // TODO: Also add to cached alerts
     const alert = JSON.parse(event.data);
     const schema = alert.alert_schema;
@@ -51,6 +63,9 @@ watch(token, async (tokenValue) => {
     const body = getElByKey(alert, descriptionKeys);
 
     invoke("notify_user", { title, body });
+  };
+  socket.onerror = function (event) {
+    console.log("[error] A socket error occurred.");
   };
   socket.onclose = function (event) {
     if (event.wasClean) {

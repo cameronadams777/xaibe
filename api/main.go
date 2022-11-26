@@ -14,6 +14,7 @@ import (
 
 func main() {
 
+	websockets.CreateNewPool()
 	go websockets.Pool.Run()
 
 	// Connect to postgres database

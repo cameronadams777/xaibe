@@ -1,7 +1,7 @@
 package websockets
 
 import (
-	"log"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -16,12 +16,12 @@ const (
 
 	// Send pings to peer with this period. Must be less than pongWait.
 	pingPeriod = (pongWait * 9) / 10
-
-	// Maximum message size allowed from peer.
-	maxMessageSize = 512
 )
 
+var Pool *ConnectionPool
+
 type Connection struct {
+	mu     sync.Mutex
 	Socket *websocket.Conn
 	Send   chan []byte
 }
@@ -31,13 +31,6 @@ type ConnectionPool struct {
 	Broadcast  chan Message
 	Register   chan Subscription
 	Unregister chan Subscription
-}
-
-var Pool = ConnectionPool{
-	Broadcast:  make(chan Message),
-	Register:   make(chan Subscription),
-	Unregister: make(chan Subscription),
-	Rooms:      make(map[string]map[*Connection]bool),
 }
 
 type Subscription struct {
@@ -50,32 +43,12 @@ type Message struct {
 	Room string
 }
 
-func (s Subscription) ReadPump() {
-	c := s.Conn
-	defer func() {
-		Pool.Unregister <- s
-		c.Socket.Close()
-	}()
-	c.Socket.SetReadLimit(maxMessageSize)
-	c.Socket.SetReadDeadline(time.Now().Add(pongWait))
-	c.Socket.SetPongHandler(func(string) error { c.Socket.SetReadDeadline(time.Now().Add(pongWait)); return nil })
-	for {
-		_, msg, err := c.Socket.ReadMessage()
-		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-				log.Printf("error: %v", err)
-			}
-			break
-		}
-		m := Message{msg, s.Room}
-		Pool.Broadcast <- m
-	}
-}
-
 func (s *Subscription) WritePump() {
 	c := s.Conn
+	c.mu.Lock()
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
+		c.mu.Unlock()
 		ticker.Stop()
 		c.Socket.Close()
 	}()
@@ -105,26 +78,26 @@ func (c *Connection) write(mt int, payload []byte) error {
 func (p *ConnectionPool) Run() {
 	for {
 		select {
-		case s := <-Pool.Register:
-			connections := Pool.Rooms[s.Room]
+		case s := <-p.Register:
+			connections := p.Rooms[s.Room]
 			if connections == nil {
 				connections = make(map[*Connection]bool)
-				Pool.Rooms[s.Room] = connections
+				p.Rooms[s.Room] = connections
 			}
-			Pool.Rooms[s.Room][s.Conn] = true
-		case s := <-Pool.Unregister:
-			connections := Pool.Rooms[s.Room]
+			p.Rooms[s.Room][s.Conn] = true
+		case s := <-p.Unregister:
+			connections := p.Rooms[s.Room]
 			if connections != nil {
 				if _, ok := connections[s.Conn]; ok {
 					delete(connections, s.Conn)
 					close(s.Conn.Send)
 					if len(connections) == 0 {
-						delete(Pool.Rooms, s.Room)
+						delete(p.Rooms, s.Room)
 					}
 				}
 			}
-		case m := <-Pool.Broadcast:
-			connections := Pool.Rooms[m.Room]
+		case m := <-p.Broadcast:
+			connections := p.Rooms[m.Room]
 			for c := range connections {
 				select {
 				case c.Send <- m.Data:
@@ -132,10 +105,20 @@ func (p *ConnectionPool) Run() {
 					close(c.Send)
 					delete(connections, c)
 					if len(connections) == 0 {
-						delete(Pool.Rooms, m.Room)
+						delete(p.Rooms, m.Room)
 					}
 				}
 			}
 		}
 	}
+}
+
+func CreateNewPool() {
+	var connection_pool = ConnectionPool{
+		Broadcast:  make(chan Message),
+		Register:   make(chan Subscription),
+		Unregister: make(chan Subscription),
+		Rooms:      make(map[string]map[*Connection]bool),
+	}
+	Pool = &connection_pool
 }

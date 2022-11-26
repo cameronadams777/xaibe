@@ -47,7 +47,6 @@ func ServeWS(c *gin.Context) {
 		s := websockets.Subscription{Conn: conn, Room: room_id}
 		websockets.Pool.Register <- s
 		go s.WritePump()
-		go s.ReadPump()
 	}
 
 }
