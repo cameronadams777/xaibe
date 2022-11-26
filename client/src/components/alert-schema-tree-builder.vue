@@ -13,7 +13,7 @@ const emits = defineEmits<{
 }>();
 
 const choose = (key: string) => {
-  let newKey = props.rootKey.length ? `${props.rootKey}_${key}` : key;
+  let newKey = props.rootKey.length ? `${props.rootKey}.${key}` : key;
   emits("onElementSelect", newKey);
 };
 </script>

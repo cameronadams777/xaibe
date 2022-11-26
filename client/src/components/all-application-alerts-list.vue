@@ -63,6 +63,4 @@ let applicationAlertsMappedToSchema = computed(() => {
     })
   ).filter((alert) => Object.values(alert).every((value) => !!value));
 });
-
-console.log(applicationAlertsMappedToSchema);
 </script>

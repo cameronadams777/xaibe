@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, toRaw } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { TrashIcon } from "@heroicons/vue/24/outline";
 import {
@@ -7,12 +7,13 @@ import {
   useApplicationsStore,
   useModalStore,
   useToastStore,
-} from "../state";
-import TheMainLayout from "../layouts/the-main-layout.vue";
-import AlertSchemaForm from "../components/alert-schema-form.vue";
-import AlertsListByApplication from "../components/alerts-list-by-application.vue";
-import { IAlert, IApplication, ToastType } from "../types";
-import { fetchApplicationById } from "../api/applications";
+} from "src/state";
+import TheMainLayout from "src/layouts/the-main-layout.vue";
+import AlertSchemaForm from "src/components/alert-schema-form.vue";
+import AlertsListByApplication from "src/components/alerts-list-by-application.vue";
+import { IAlert, IApplication, ToastType } from "src/types";
+import { fetchApplicationById } from "src/api/applications";
+import { hasTruthyFields } from "src/helpers";
 
 const { getCachedApplication, cacheApplication } = useApplicationsStore();
 const { getCachedApplicationAlerts } = useAlertsStore();
@@ -70,9 +71,11 @@ const getApplicationAlerts = async (applicationId: number) => {
 
 onMounted(async () => {
   const applicationId = parseInt(route.params.applicationId as string);
-  // TODO: Introduce loading component for while data is being fetched and then Promise.all these requests
+  // TODO: Introduce loading component while data is being fetched and then Promise.all these requests
   await getActiveApplication(applicationId);
   await getApplicationAlerts(applicationId);
+
+  // TODO: Add redirect logic if application is not found
 });
 </script>
 
@@ -89,16 +92,25 @@ onMounted(async () => {
         </base-fab-button>
       </div>
       <div
-        v-if="activeApplication?.AlertSchema != null"
+        v-if="
+          activeApplication != null &&
+          activeApplication.AlertSchema != null &&
+          hasTruthyFields(activeApplication.AlertSchema)
+        "
         class="w-full lg:w-1/3 h-48 lg:h-96"
       >
         <alerts-list-by-application
           :alerts="applicationAlerts"
-          :alert-schema="activeApplication?.AlertSchema"
+          :alert-schema="activeApplication.AlertSchema"
         />
       </div>
       <alert-schema-form
-        v-else-if="applicationAlerts?.length"
+        v-else-if="
+          activeApplication != null &&
+          !hasTruthyFields(activeApplication?.AlertSchema) &&
+          applicationAlerts?.length
+        "
+        :application-id="activeApplication?.ID"
         :base-object="applicationAlerts[0]"
       />
       <div v-else>

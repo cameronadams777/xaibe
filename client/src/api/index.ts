@@ -1,4 +1,5 @@
 export enum TauriEvents {
+  ADD_SCHEMA_TO_APPLICATION = "add_schema_to_application",
   ADD_USER_TO_TEAM = "add_user_to_team",
   CREATE_NEW_APPLICATION = "create_new_application",
   CREATE_NEW_TEAM = "create_new_team",

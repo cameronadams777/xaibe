@@ -1,10 +1,9 @@
 import { ApplicationType, IAlertSchema } from "src/types";
 
-export const getAppSchemaByType = (appType: ApplicationType): IAlertSchema => {
-  if (appType === ApplicationType.OTHER)
-    throw new Error(
-      'Galata Error: No pre-defined schema for "other" application type'
-    );
+export const getAppSchemaByType = (
+  appType: ApplicationType
+): IAlertSchema | undefined => {
+  if (appType === ApplicationType.OTHER) return;
 
   const applicationSchemasByType: Record<string, any> = {
     [ApplicationType.AIRBRAKE]: {

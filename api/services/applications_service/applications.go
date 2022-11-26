@@ -41,6 +41,19 @@ func UpdateApplication(application_id int, updates models.Application) (*models.
 	return &application_to_update, nil
 }
 
+func AddSchemaToApplication(application_id int, alert_schema models.AlertSchema) (*models.Application, error) {
+	var application models.Application
+	application_err := database.DB.First(&application, application_id).Error
+
+	if application_err != nil {
+		return nil, application_err
+	}
+
+	database.DB.Model(&application).Association("AlertSchema").Append(alert_schema)
+
+	return &application, nil
+}
+
 func DeleteApplication(application_id int) (*models.Application, error) {
 	var application_to_delete models.Application
 	err := database.DB.First(&application_to_delete, application_id).Error

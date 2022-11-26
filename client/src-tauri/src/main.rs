@@ -131,6 +131,7 @@ async fn main() {
     .add_item(quit);
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
+      add_schema_to_application,
       add_user_to_team,
       create_new_application,
       create_new_team,
@@ -730,6 +731,60 @@ async fn fetch_application_by_id(
     .await
     .unwrap()
     .json::<FetchApplicationByIdPayload>()
+    .await;
+
+  match result {
+    Ok(res) => Ok(res),
+    Err(err) => Err(format!(
+      "An error occurred while fetching application {}",
+      err.to_string()
+    )),
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct AddSchemaToApplicationPayload {
+  title: String,
+  description: String,
+  link: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct AddSchemaToApplicationResponse {
+  status: String,
+  message: String,
+  data: Application,
+}
+
+#[tauri::command]
+async fn add_schema_to_application(
+  application_id: i32,
+  title: String,
+  description: String,
+  link: String,
+) -> Result<AddSchemaToApplicationResponse, String> {
+  let client = reqwest::Client::new();
+  let url = format!(
+    "{}/api/applications/{}/alert_schema",
+    get_api_base_url(),
+    application_id
+  );
+  let auth_token = get_auth_token();
+
+  let payload = AddSchemaToApplicationPayload {
+    title: title,
+    description: description,
+    link: link,
+  };
+
+  let result = client
+    .patch(url)
+    .bearer_auth(auth_token)
+    .json::<AddSchemaToApplicationPayload>(&payload)
+    .send()
+    .await
+    .unwrap()
+    .json::<AddSchemaToApplicationResponse>()
     .await;
 
   match result {

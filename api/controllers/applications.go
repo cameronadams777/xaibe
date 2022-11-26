@@ -141,6 +141,61 @@ func DeleteApplication(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Application successfully deleted.", "data": deleted_application})
 }
 
+func AddSchemaToApplication(c *gin.Context) {
+	application_input_param := c.Param("application_id")
+	application_id, conv_err := strconv.Atoi(application_input_param)
+
+	if conv_err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting application by id.", "data": nil})
+		return
+	}
+
+	var input AlertSchemaInput
+
+	if err := c.BindJSON(&input); err != nil {
+		fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": nil})
+		return
+	}
+
+	application_to_update, err := applications_service.GetApplicationById(application_id)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Application not found.", "data": nil})
+		return
+	}
+
+	data, _ := c.Get("authScope")
+	authScope := data.(structs.AuthScope)
+
+	user_ownership_error := assertions.UserOwnsApplication(application_to_update.ID, uint(authScope.UserID))
+	team_manager_error := assertions.UserIsManagerOfTeamApplication(application_to_update.ID, uint(authScope.UserID))
+
+	if user_ownership_error != nil && team_manager_error != nil {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
+		return
+	}
+
+	alert_schema_to_create := models.AlertSchema{
+		ApplicationID: application_to_update.ID,
+		Title:         input.Title,
+		Description:   input.Description,
+		Link:          input.Link,
+	}
+
+	_, schema_create_err := alert_schemas_service.CreateNewAlertSchema(alert_schema_to_create)
+
+	if schema_create_err != nil {
+		fmt.Println(schema_create_err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred while creating the alert schema for the specified application.", "data": nil})
+		return
+	}
+
+	updated_application, _ := applications_service.GetApplicationById(application_id)
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Schema added to application.", "data": updated_application})
+}
+
 func GetApplicationServiceTokens(c *gin.Context) {
 	application_input_param := c.Param("application_id")
 	application_id, conv_err := strconv.Atoi(application_input_param)

@@ -36,7 +36,7 @@ import { getAppSchemaByType } from "src/helpers";
 
 const router = useRouter();
 const { cacheApplication } = useApplicationsStore();
-const { getActiveUser, ...activeUserStore } = useActiveUserStore();
+const activeUserStore = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);
 const { setActiveToast } = useToastStore();
 
@@ -62,10 +62,11 @@ const submitForm = async (applicationName: string, teamId?: number) => {
     if (!application)
       throw new Error("Galata Error: Application not generated.");
     cacheApplication(application);
-    await getActiveUser();
+    await activeUserStore.getActiveUser();
     router.push(`/applications/${application.ID}`);
     isSubmitting.value = false;
   } catch (error) {
+    console.log(error);
     setActiveToast({
       message:
         "An error occurred while creating your new application. Please try again later.",

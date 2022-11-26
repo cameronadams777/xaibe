@@ -42,6 +42,7 @@ func SetupRouter(app *gin.Engine) {
 	applications.GET("/:application_id", controllers.GetApplicationById)
 	applications.GET("/:application_id/service_tokens", controllers.GetApplicationServiceTokens)
 	applications.POST("/", controllers.CreateNewApplication)
+	applications.PATCH("/:application_id/alert_schema", controllers.AddSchemaToApplication)
 	applications.DELETE("/:application_id", controllers.DeleteApplication)
 
 	alerts := api.Group("/alerts", middleware.Protected())

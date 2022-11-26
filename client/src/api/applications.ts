@@ -66,6 +66,29 @@ export const createNewApplication = async ({
   return response.data;
 };
 
+export interface IAddSchemaToApplicationInput {
+  applicationId: number;
+  title: string;
+  description: string;
+  link: string;
+}
+
+interface IAddSchemaToApplicationResponse {
+  status: string;
+  message: string;
+  data: IApplication;
+}
+
+export const addSchemaToApplication = async (
+  alertSchema: IAddSchemaToApplicationInput
+): Promise<IApplication> => {
+  const response = await invoke<IAddSchemaToApplicationResponse>(
+    TauriEvents.ADD_SCHEMA_TO_APPLICATION,
+    { ...alertSchema }
+  );
+  return response.data;
+};
+
 interface IDeleteApplicationInput {
   applicationId: number;
 }
