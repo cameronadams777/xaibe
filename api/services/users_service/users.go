@@ -24,6 +24,17 @@ func GetUserById(user_id int) (*models.User, error) {
 	return &user, nil
 }
 
+func GetUserByEmail(email string) (*models.User, error) {
+	var user models.User
+	err := database.DB.Preload("Teams").Preload("Applications").First(&user, email).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func UpdateUser(user_id int, updates models.User) (*models.User, error) {
 	// Get user that we want to update
 	var user_to_update models.User

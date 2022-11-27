@@ -149,6 +149,7 @@ async fn main() {
       notify_user,
       register_user,
       remove_user_from_team,
+      submit_reset_password_request,
     ])
     .system_tray(SystemTray::new().with_menu(tray_menu))
     .on_system_tray_event(|app, event| match event {
@@ -822,6 +823,33 @@ async fn delete_application(application_id: i32) -> Result<DeleteApplicationPayl
     Err(err) => Err(format!(
       "An error occurred while fetching application {}",
       err.to_string()
+    )),
+  }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct SendResetPasswordRequestPayload {
+  email: String,
+}
+
+#[tauri::command]
+async fn submit_reset_password_request(email: String) -> Result<String, String> {
+  let client = reqwest::Client::new();
+  let url = format!("{}/send-reset-password-email", get_api_base_url());
+
+  let payload = SendResetPasswordRequestPayload { email: email };
+
+  let result = client
+    .post(url)
+    .json::<SendResetPasswordRequestPayload>(&payload)
+    .send()
+    .await;
+
+  match result {
+    Ok(_) => Ok("Success!".to_string()),
+    Err(err) => Err(format!(
+      "An error occurred while sending the password reset email: {}",
+      err
     )),
   }
 }
