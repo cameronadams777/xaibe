@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"api/models"
+	"api/services/sparkpost_service"
 	"api/services/users_service"
 	"net/http"
 	"time"
@@ -54,6 +55,12 @@ func SendResetPasswordEmail(c *gin.Context) {
 	}
 
 	// Send email with link to users email
+	send_err := sparkpost_service.SendEmail(user.Email, "reset_password")
+
+	if send_err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
+		return
+	}
 
 	// If email sends successfully, return success
 	// Else throw error
