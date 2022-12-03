@@ -8,14 +8,16 @@ import (
 
 type User struct {
 	gorm.Model
-	FirstName    string
-	LastName     string
-	Email        string
-	Password     string
-	IsAdmin      bool
-	IsVerified   bool
-	Applications []Application
-	Teams        []*Team `gorm:"many2many:team_users;"`
+	FirstName           string
+	LastName            string
+	Email               string
+	Password            string
+	IsAdmin             bool
+	IsVerified          bool
+	ResetPasswordCode   string
+	ResetPasswordExpiry time.Time
+	Applications        []Application
+	Teams               []*Team `gorm:"many2many:team_users;"`
 }
 
 type Team struct {

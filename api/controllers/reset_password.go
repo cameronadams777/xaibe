@@ -1,0 +1,118 @@
+package controllers
+
+import (
+	"api/models"
+	"api/services/users_service"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
+)
+
+type SendResetPasswordEmailInput struct {
+	Email string `json:"email" binding:"required"`
+}
+
+type ValidateResetPasswordCodeInput struct {
+	Code string `json:"code" binding:"required"`
+}
+
+type ResetUserPasswordInput struct {
+	Code                 string `json:"code" binding:"required"`
+	Password             string `json:"password" binding:"required"`
+	PasswordConfirmation string `json:"password_confirmation" binding:"required"`
+}
+
+func SendResetPasswordEmail(c *gin.Context) {
+	// Retreive email from request body
+	var input SendResetPasswordEmailInput
+
+	if err := c.BindJSON(&input); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": err})
+		return
+	}
+	// See if user exists based on email
+	user, err := users_service.GetUserByEmail(input.Email)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
+		return
+	}
+
+	// Update user with random uuid token, and timestamp that is 15 minutes from now
+	updates := models.User{
+		ResetPasswordCode:   uuid.NewString(),
+		ResetPasswordExpiry: time.Now().Add(time.Minute * 15),
+	}
+	_, update_err := users_service.UpdateUser(int(user.ID), updates)
+
+	if update_err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
+		return
+	}
+
+	// Send email with link to users email
+
+	// If email sends successfully, return success
+	// Else throw error
+}
+
+func ValidateResetPasswordCode(c *gin.Context) {
+	// Receive code from body
+	var input ValidateResetPasswordCodeInput
+
+	if err := c.BindJSON(&input); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": err})
+		return
+	}
+
+	// Find user by reset password token and reset password expiry
+	_, err := users_service.GetUserByPasswordCode(input.Code, time.Now())
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "error", "message": "Password reset token is invalid or has expired.", "data": false})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Validated.", "data": true})
+}
+
+func ResetUserPassword(c *gin.Context) {
+	// Receive password and code from body
+	var input ResetUserPasswordInput
+
+	if err := c.BindJSON(&input); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": err})
+		return
+	}
+
+	if input.Password != input.PasswordConfirmation {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Password and Confirmation do not match.", "data": nil})
+		return
+	}
+
+	// Fetch user by reset password token and reset password expiry
+	user, err := users_service.GetUserByPasswordCode(input.Code, time.Now())
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "error", "message": "Password reset token is invalid or has expired.", "data": false})
+		return
+	}
+
+	// Salt the updated password
+	password, _ := bcrypt.GenerateFromPassword([]byte(input.Password), 14)
+
+	// Update user password as well as clear the reset psasword token and password expiry
+	_, update_err := users_service.UpdateUser(int(user.ID), models.User{Password: string(password)})
+	// Send password update success email
+
+	if update_err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred during password reset process.", "data": false})
+		return
+	}
+
+	// Return success
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Password updated.", "data": true})
+}

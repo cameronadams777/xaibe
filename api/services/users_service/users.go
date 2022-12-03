@@ -3,6 +3,7 @@ package users_service
 import (
 	"api/initializers/database"
 	"api/models"
+	"time"
 )
 
 // TODO: Find way to specify preloads when querying, to prevent excess queries
@@ -27,6 +28,17 @@ func GetUserById(user_id int) (*models.User, error) {
 func GetUserByEmail(email string) (*models.User, error) {
 	var user models.User
 	err := database.DB.Preload("Teams").Preload("Applications").First(&user, email).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func GetUserByPasswordCode(reset_password_code string, reset_password_expiry time.Time) (*models.User, error) {
+	var user models.User
+	err := database.DB.First(&user, reset_password_code, reset_password_expiry).Error
 
 	if err != nil {
 		return nil, err

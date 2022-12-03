@@ -3,6 +3,7 @@ package main
 import (
 	"api/initializers/cache"
 	"api/initializers/database"
+	"api/initializers/sparkpost"
 	"api/router"
 	"api/websockets"
 
@@ -16,6 +17,9 @@ func main() {
 
 	websockets.CreateNewPool()
 	go websockets.Pool.Run()
+
+	// Create SparkPost Client
+	sparkpost.CreateSparkPostClient()
 
 	// Connect to postgres database
 	database.ConnectDB()

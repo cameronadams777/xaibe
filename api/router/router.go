@@ -19,6 +19,11 @@ func SetupRouter(app *gin.Engine) {
 	api.POST("/webhook", controllers.WebHook)
 	api.GET("/ws", controllers.ServeWS)
 
+	reset_password := api.Group("/reset_password")
+	reset_password.POST("/send-code", controllers.SendResetPasswordEmail)
+	reset_password.POST("/validate", controllers.ValidateResetPasswordCode)
+	reset_password.POST("/reset", controllers.ResetUserPassword)
+
 	email := api.Group("/email")
 	email.POST("/subscribe", controllers.SubscribeNewUser)
 
@@ -55,5 +60,4 @@ func SetupRouter(app *gin.Engine) {
 	tokens := api.Group("/service_tokens", middleware.Protected())
 	tokens.POST("/:application_id", controllers.CreateNewToken)
 	tokens.DELETE("/:token_id", controllers.DeleteToken)
-
 }
