@@ -1,6 +1,7 @@
 package controllers
 
 import (
+  "api/config"
 	"api/models"
 	"api/services/sparkpost_service"
 	"api/services/users_service"
@@ -24,6 +25,11 @@ type ResetUserPasswordInput struct {
 	Code                 string `json:"code" binding:"required"`
 	Password             string `json:"password" binding:"required"`
 	PasswordConfirmation string `json:"password_confirmation" binding:"required"`
+}
+
+type ResetPasswordTemplateElements struct {
+  Email string  
+  Link  string
 }
 
 func SendResetPasswordEmail(c *gin.Context) {
@@ -54,16 +60,20 @@ func SendResetPasswordEmail(c *gin.Context) {
 		return
 	}
 
+  templateElements := ResetPasswordTemplateElements{
+    Email: user.Email,
+    Link: config.Get("APP_HOST_NAME") + "/reset-password?hash=" + user.ResetPasswordCode,
+  }
+  
 	// Send email with link to users email
-	send_err := sparkpost_service.SendEmail(user.Email, "reset_password")
+	send_err := sparkpost_service.SendEmail(user.Email, "reset_password", templateElements)
 
 	if send_err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
 		return
 	}
 
-	// If email sends successfully, return success
-	// Else throw error
+  c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Email sent.", "data": nil})
 }
 
 func ValidateResetPasswordCode(c *gin.Context) {

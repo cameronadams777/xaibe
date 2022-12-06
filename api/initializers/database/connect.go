@@ -12,11 +12,11 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-  host := config.Get("REDIS_HOST")
-  user := config.Get("REDIS_USER")
-  password := config.Get("REDIS_PASSWORD")
-  dbname := config.Get("REDIS_DB")
-  port := config.Get("REDIS_PORT")
+  host := config.Get("DB_HOST")
+  user := config.Get("DB_USER")
+  password := config.Get("DB_PASSWORD")
+  dbname := config.Get("DB_NAME")
+  port := config.Get("DB_PORT")
 
 	dsn := "host=" + host + " user=" + user + " password=" + password + " dbname=" + dbname + " port=" + port
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})

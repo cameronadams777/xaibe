@@ -21,5 +21,5 @@ func CreateSparkPostClient() {
 	if err != nil {
 		log.Fatalf("SparkPost client init failed: %s\n", err)
 	}
-	spClient = &client
+	SPClient = &client
 }

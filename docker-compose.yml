@@ -5,7 +5,7 @@ services:
     image: "redis"
     restart: always
     ports:
-      - '6379:6379'
+      - '40500:6379'
     volumes:
       - 'cache:/data'
 

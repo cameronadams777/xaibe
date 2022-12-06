@@ -14,9 +14,9 @@ import (
 func get_subject_by_template(template_key string) string {
   switch template_key {
   case "reset_password":
-    return "Reset Password - Galata.app"
+    return "Reset Password: Galata.app"
   case "verify_email":
-    return "Verify Email - Galata.app"
+    return "Verify Email: Galata.app"
   default:
     return ""
   }
