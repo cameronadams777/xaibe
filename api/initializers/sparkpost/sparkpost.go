@@ -1,8 +1,8 @@
 package sparkpost
 
 import (
+	"api/config"
 	"log"
-	"os"
 
 	sp "github.com/SparkPost/gosparkpost"
 )
@@ -10,7 +10,7 @@ import (
 var SPClient *sp.Client
 
 func CreateSparkPostClient() {
-	apiKey := os.Getenv("SPARKPOST_API_KEY")
+	apiKey := config.Get("SPARKPOST_API_KEY")
 	cfg := &sp.Config{
 		BaseUrl:    "https://api.sparkpost.com",
 		ApiKey:     apiKey,

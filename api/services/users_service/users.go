@@ -27,7 +27,7 @@ func GetUserById(user_id int) (*models.User, error) {
 
 func GetUserByEmail(email string) (*models.User, error) {
 	var user models.User
-	err := database.DB.Preload("Teams").Preload("Applications").First(&user, email).Error
+  err := database.DB.Preload("Teams").Preload("Applications").Where(models.User{ Email: email }).First(&user).Error
 
 	if err != nil {
 		return nil, err

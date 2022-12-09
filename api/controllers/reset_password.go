@@ -1,10 +1,11 @@
 package controllers
 
 import (
-  "api/config"
+	"api/config"
 	"api/models"
 	"api/services/sparkpost_service"
 	"api/services/users_service"
+	"log"
 	"net/http"
 	"time"
 
@@ -44,6 +45,7 @@ func SendResetPasswordEmail(c *gin.Context) {
 	user, err := users_service.GetUserByEmail(input.Email)
 
 	if err != nil {
+    log.Panicln(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
 		return
 	}
@@ -56,6 +58,7 @@ func SendResetPasswordEmail(c *gin.Context) {
 	_, update_err := users_service.UpdateUser(int(user.ID), updates)
 
 	if update_err != nil {
+    log.Panicln(update_err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
 		return
 	}
@@ -69,6 +72,7 @@ func SendResetPasswordEmail(c *gin.Context) {
 	send_err := sparkpost_service.SendEmail(user.Email, "reset_password", templateElements)
 
 	if send_err != nil {
+    log.Panicln(send_err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
 		return
 	}

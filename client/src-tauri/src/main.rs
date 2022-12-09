@@ -835,7 +835,7 @@ struct SendResetPasswordRequestPayload {
 #[tauri::command]
 async fn submit_reset_password_request(email: String) -> Result<String, String> {
   let client = reqwest::Client::new();
-  let url = format!("{}/send-reset-password-email", get_api_base_url());
+  let url = format!("{}/api/reset_password/send-code", get_api_base_url());
 
   let payload = SendResetPasswordRequestPayload { email: email };
 

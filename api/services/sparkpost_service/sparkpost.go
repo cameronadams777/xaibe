@@ -1,7 +1,6 @@
 package sparkpost_service
 
 import (
-  "go/format"
 	"api/helpers"
 	"api/initializers/sparkpost"
 	"bytes"
@@ -32,13 +31,7 @@ func format_html_template(html_template string, template_vars interface{}) (*str
     return nil, compl_err
   }
 
-  formatted, format_err := format.Source(processed.Bytes())
-
-  if format_err != nil {
-    return nil, format_err
-  }
-
-  fmt_as_string := string(formatted)
+  fmt_as_string := string(processed.Bytes())
 
   return &fmt_as_string, nil
 }

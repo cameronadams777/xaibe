@@ -3,6 +3,7 @@ package helpers
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -17,7 +18,8 @@ func ReadEmailTemplate(template_key string) (*string, error) {
 	if err != nil {
 		return nil, errors.New("ReadEmailTemplate: Error getting current working directory")
 	}
-	path := filepath.Join(cwd, "../email_templates", template_key)
+	path := filepath.Join(cwd, "email_templates", template_key + ".html")
+  log.Println(path)
 	dat, read_err := os.ReadFile(path)
 	if read_err != nil {
 		return nil, errors.New("ReadEmailTemplate: Error reading in " + template_key)
