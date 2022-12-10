@@ -1,5 +1,4 @@
-import { invoke } from "@tauri-apps/api";
-import { TauriEvents } from ".";
+import * as http from "src/helpers/http";
 import { IUser } from "src/types";
 
 interface IFetchActiveUserResponse {
@@ -9,8 +8,6 @@ interface IFetchActiveUserResponse {
 }
 
 export const fetchActiveUser = async (): Promise<IUser | undefined> => {
-  const response = await invoke<IFetchActiveUserResponse>(
-    TauriEvents.FETCH_ACTIVE_USER
-  );
+  const response = await http.get<IFetchActiveUserResponse>({ url: "api/users/me" });
   return response.data;
 };

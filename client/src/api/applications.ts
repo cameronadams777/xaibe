@@ -1,5 +1,5 @@
-import { invoke } from "@tauri-apps/api";
-import { TauriEvents } from ".";
+import * as http from "src/helpers/http";
+import { Body } from "@tauri-appsapi/http";
 import { IAlertSchema, IApplication } from "src/types";
 import { camelizeKeys } from "humps";
 
@@ -16,12 +16,9 @@ interface IFetchApplicationByIdResponse {
 export const fetchApplicationById = async ({
   applicationId,
 }: IFetchApplicationByIdInput): Promise<IApplication | undefined> => {
-  const response = await invoke<IFetchApplicationByIdResponse>(
-    TauriEvents.FETCH_APPLICATION_BY_ID,
-    {
-      applicationId,
-    }
-  );
+  const response = await http.get<IFetchApplicationByIdResponse>({
+    url: `api/applications/${applicationId}`
+  })
   return response.data;
 };
 
@@ -59,10 +56,11 @@ export const createNewApplication = async ({
     body.alertSchema = camelizeKeys(alertSchema);
   }
 
-  const response = await invoke<ICreateNewApplicationResponse>(
-    TauriEvents.CREATE_NEW_APPLICATION,
+  const response = await http.post<ICreateNewApplicationResponse>({
+    url: "api/application",
     body
-  );
+  });
+  
   return response.data;
 };
 
@@ -80,12 +78,15 @@ interface IAddSchemaToApplicationResponse {
 }
 
 export const addSchemaToApplication = async (
-  alertSchema: IAddSchemaToApplicationInput
+  input: IAddSchemaToApplicationInput
 ): Promise<IApplication> => {
-  const response = await invoke<IAddSchemaToApplicationResponse>(
-    TauriEvents.ADD_SCHEMA_TO_APPLICATION,
-    { ...alertSchema }
-  );
+  const { applicationId, ...rest } = input;
+  const response = await http.patch<IAddSchemaToApplicationResponse>({
+    url: `api/applications/${applicationId}`,
+    options: {
+      body: Body.json(rest)
+    }
+  });
   return response.data;
 };
 
@@ -96,10 +97,5 @@ interface IDeleteApplicationInput {
 export const deleteApplication = async ({
   applicationId,
 }: IDeleteApplicationInput): Promise<void> => {
-  let body: Record<string, any> = {
-    applicationId,
-  };
-  await invoke<IApplication>(TauriEvents.DELETE_APPLICATION, {
-    ...body,
-  });
+  await http.del({ url: `api/applications/${applicationId}` });
 };

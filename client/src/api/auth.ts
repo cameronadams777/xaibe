@@ -1,5 +1,5 @@
-import { invoke } from "@tauri-apps/api";
-import { TauriEvents } from ".";
+import { invoke } from "@tauri-apps/api/tauri";
+import * as http from "src/helpers/http";
 
 export interface ILoginInput {
   email: string;
@@ -16,9 +16,12 @@ export const login = async ({
   email,
   password,
 }: ILoginInput): Promise<string> => {
-  const response = await invoke<ILoginResponse>(TauriEvents.LOGIN, {
-    email,
-    password,
+  const response = await http.post<ILoginResponse>({
+    url: `api/login`, 
+    body: {
+      email,
+      password
+    }
   });
   return response.data;
 };
@@ -40,12 +43,10 @@ interface IRegisterUserResponse {
 export const registerUser = async (
   input: IRegisterUserInput
 ): Promise<string> => {
-  const response = await invoke<IRegisterUserResponse>(
-    TauriEvents.REGISTER_USER,
-    {
-      ...input,
-    }
-  );
+  const response = await http.post<IRegisterUserResponse>({
+    url: "api/register",
+    body: input
+  });
   return response.data;
 };
 
@@ -56,11 +57,14 @@ interface ISubmitResetPasswordRequestInput {
 export const submitResetPasswordRequest = async (
   payload: ISubmitResetPasswordRequestInput
 ): Promise<void> => {
-  await invoke("submit_reset_password_request", { ...payload });
+  await http.post({
+    url: "api/reset-password/send-code",
+    body: payload
+  });
 };
 
 export const logoutUser = async (): Promise<void> => {
-  await invoke(TauriEvents.LOGOUT_USER);
+  await invoke("logout_user");
 };
 
 interface IFetchAuthTokenResponse {
@@ -68,8 +72,9 @@ interface IFetchAuthTokenResponse {
 }
 
 export const fetchAuthToken = async (): Promise<string> => {
-  const response = await invoke<IFetchAuthTokenResponse>(
-    TauriEvents.FETCH_AUTH_TOKEN
-  );
+  const response = await http.get<IFetchAuthTokenResponse>({
+    url: "api/refresh_token",
+  });
+  await invoke('store_auth_token', { token: response.token });
   return response.token;
 };

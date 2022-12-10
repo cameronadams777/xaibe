@@ -11,6 +11,7 @@ import { watch, ref } from "vue";
 import { useRoute } from "vue-router";
 import TheGlobalModal from "./components/the-global-modal.vue";
 import TheToastMessage from "./components/the-toast-message.vue";
+import { config } from "./config";
 import { useAuthStore } from "./state";
 
 const route = useRoute();
@@ -26,8 +27,10 @@ const getElByKey = (obj: Record<any, any>, keys: string[]): any => {
 
 watch(token, async (tokenValue) => {
   if (!tokenValue || hasConnected.value) return;
-  let timerId: any;
-  let socket = new WebSocket(`ws://localhost:5000/api/ws?token=${token.value}`);
+  console.log(config.apiBaseUrl);
+  let socket = new WebSocket(
+    `ws://${config.apiBaseUrl}/api/ws?token=${token.value}`
+  );
 
   function heartbeat() {
     if (!socket) return;

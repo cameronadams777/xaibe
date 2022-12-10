@@ -1,6 +1,5 @@
-import { invoke } from "@tauri-apps/api";
+import * as http from "src/helpers/http";
 import { IUser } from "src/types";
-import { TauriEvents } from ".";
 
 interface IFetchAllUsersResponse {
   status: string;
@@ -9,7 +8,6 @@ interface IFetchAllUsersResponse {
 }
 
 export const fetchAllUsers = async (): Promise<IUser[]> => {
-  const responseString = await invoke<string>(TauriEvents.FETCH_ALL_USERS);
-  const response: IFetchAllUsersResponse = JSON.parse(responseString);
+  const response = await http.get<IFetchAllUsersResponse>({ url: "api/users" });
   return response.data;
 };

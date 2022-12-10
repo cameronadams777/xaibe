@@ -1,7 +1,5 @@
-import { invoke } from "@tauri-apps/api";
-import { TauriEvents } from ".";
+import * as http from "src/helpers/http";
 import { IAlert, IAlertSchema } from "src/types";
-import { camelizeKeys } from "humps";
 
 export interface ICachedAlerts {
   AlertSchema: IAlertSchema;
@@ -19,10 +17,7 @@ interface IFetchCacheAlertsResponse {
 export const fetchAllCachedAlerts = async (): Promise<{
   string: ICachedAlerts;
 }> => {
-  const responseString = await invoke<string>(
-    TauriEvents.FETCH_ALL_CACHED_ALERTS
-  );
-  const response: IFetchCacheAlertsResponse = JSON.parse(responseString);
+  const response = await http.get<IFetchCacheAlertsResponse>({ url: "api/alerts" })
   return response.data;
 };
 
@@ -39,11 +34,8 @@ interface IFetchCacheAlertsByApplicationResponse {
 export const fetchCachedApplicationAlerts = async ({
   applicationId,
 }: IFetchCachedAlertsInput): Promise<IAlert[]> => {
-  const response = await invoke<IFetchCacheAlertsByApplicationResponse>(
-    TauriEvents.FETCH_CACHED_ALERTS_BY_APPLICATION,
-    {
-      applicationId,
-    }
-  );
+  const response = await http.get<IFetchCacheAlertsByApplicationResponse>({
+    url: `api/alerts/applications/${applicationId}`
+  })
   return response.data || [];
 };
