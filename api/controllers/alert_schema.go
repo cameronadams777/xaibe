@@ -13,7 +13,7 @@ import (
 )
 
 type CreateNewSchemaInput struct {
-	ApplicationID int    `json:"application_id" binding:"required"`
+	ApplicationID int    `json:"applicationId" binding:"required"`
 	Title         string `json:"title" binding:"required"`
 	Description   string `json:"description" binding:"required"`
 	Link          string `json:"link" binding:"required"`

@@ -25,7 +25,7 @@ type ValidateResetPasswordCodeInput struct {
 type ResetUserPasswordInput struct {
 	Code                 string `json:"code" binding:"required"`
 	Password             string `json:"password" binding:"required"`
-	PasswordConfirmation string `json:"password_confirmation" binding:"required"`
+	PasswordConfirmation string `json:"passwordConfirmation" binding:"required"`
 }
 
 type ResetPasswordTemplateElements struct {

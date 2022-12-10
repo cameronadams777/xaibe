@@ -23,10 +23,10 @@ type AlertSchemaInput struct {
 }
 
 type CreateNewApplicationInput struct {
-	TeamId      *uint            `json:"team_id" binding:"required_without=UserId"`
-	UserId      *uint            `json:"user_id" binding:"required_without=TeamId"`
-	Name        string           `json:"application_name" binding:"required"`
-	AlertSchema AlertSchemaInput `json:"alert_schema" binding:"-"`
+	TeamId      *uint            `json:"teamId" binding:"required_without=UserId"`
+	UserId      *uint            `json:"userId" binding:"required_without=TeamId"`
+	Name        string           `json:"applicationName" binding:"required"`
+	AlertSchema AlertSchemaInput `json:"alertSchema" binding:"-"`
 }
 
 func GetApplicationById(c *gin.Context) {

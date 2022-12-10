@@ -2129,16 +2129,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "86f0b0d4bf799edbc74508c1e8bf170ff5f41238e5f8225603ca7caaae2b7860"
 
 [[package]]
-name = "open"
-version = "3.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b4a3100141f1733ea40b53381b0ae3117330735ef22309a190ac57b9576ea716"
-dependencies = [
- "pathdiff",
- "windows-sys 0.36.1",
-]
-
-[[package]]
 name = "openssl"
 version = "0.10.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2191,27 +2181,6 @@ checksum = "44630c059eacfd6e08bdaa51b1db2ce33119caa4ddc1235e923109aa5f25ccb1"
 dependencies = [
  "futures-core",
  "pin-project-lite",
-]
-
-[[package]]
-name = "os_info"
-version = "3.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c4750134fb6a5d49afc80777394ad5d95b04bc12068c6abb92fae8f43817270f"
-dependencies = [
- "log",
- "serde",
- "winapi",
-]
-
-[[package]]
-name = "os_pipe"
-version = "1.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0dceb7e43f59c35ee1548045b2c72945a5a3bb6ce6d6f07cdc13dc8f6bc4930a"
-dependencies = [
- "libc",
- "winapi",
 ]
 
 [[package]]
@@ -2279,12 +2248,6 @@ name = "paste"
 version = "1.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1de2e551fb905ac83f73f7aedf2f0cb4a0da7e35efa24a202a936269f1f18e1"
-
-[[package]]
-name = "pathdiff"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8835116a5c179084a830efb3adc117ab007512b535bc1a21c991d3b32a6b44dd"
 
 [[package]]
 name = "percent-encoding"
@@ -3073,16 +3036,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "shared_child"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b0d94659ad3c2137fef23ae75b03d5241d633f8acded53d672decfa0e6e0caef"
-dependencies = [
- "libc",
- "winapi",
-]
-
-[[package]]
 name = "signal-hook-registry"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3343,20 +3296,15 @@ dependencies = [
  "notify-rust",
  "objc",
  "once_cell",
- "open",
- "os_info",
- "os_pipe",
  "percent-encoding",
  "rand 0.8.5",
  "raw-window-handle",
- "regex",
  "rfd",
  "semver 1.0.14",
  "serde",
  "serde_json",
  "serde_repr",
  "serialize-to-javascript",
- "shared_child",
  "state",
  "tar",
  "tauri-macros",
@@ -3403,7 +3351,6 @@ dependencies = [
  "png 0.17.7",
  "proc-macro2",
  "quote",
- "regex",
  "semver 1.0.14",
  "serde",
  "serde_json",

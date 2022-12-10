@@ -16,7 +16,7 @@ import (
 // TODO: Write helper function that returns a JSON response but filters out sensitive data
 
 type UpdateUserInput struct {
-	UserId  int         `json:"user_id" binding:"required"`
+	UserId  int         `json:"userId" binding:"required"`
 	Updates models.User `json:"user" binding:"-"`
 }
 

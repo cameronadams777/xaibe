@@ -11,7 +11,14 @@
   },
   "tauri": {
     "allowlist": {
-      "all": true,
+      "http": {
+        "request": true,
+        "scope": [
+          "http://localhost:5000/*",
+          "https://staging-api.galata.io/*",
+          "https://api.galata.io/*"
+        ]
+      },
       "notification": {
         "all": true
       }

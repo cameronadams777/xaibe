@@ -1,5 +1,5 @@
 import * as http from "src/helpers/http";
-import { Body } from "@tauri-appsapi/http";
+import { Body } from "@tauri-apps/api/http";
 import { IAlertSchema, IApplication } from "src/types";
 import { camelizeKeys } from "humps";
 

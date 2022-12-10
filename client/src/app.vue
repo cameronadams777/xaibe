@@ -27,9 +27,8 @@ const getElByKey = (obj: Record<any, any>, keys: string[]): any => {
 
 watch(token, async (tokenValue) => {
   if (!tokenValue || hasConnected.value) return;
-  console.log(config.apiBaseUrl);
   let socket = new WebSocket(
-    `ws://${config.apiBaseUrl}/api/ws?token=${token.value}`
+    `${config.apiWSUrl}/api/ws?token=${token.value}`
   );
 
   function heartbeat() {

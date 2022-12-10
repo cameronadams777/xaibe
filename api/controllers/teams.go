@@ -13,7 +13,7 @@ import (
 )
 
 type CreateNewTeamInput struct {
-	Name string `json:"team_name" binding:"required"`
+	Name string `json:"teamName" binding:"required"`
 }
 
 func GetAllTeams(c *gin.Context) {

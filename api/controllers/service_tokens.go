@@ -15,7 +15,7 @@ import (
 )
 
 type CreateNewTokenInput struct {
-	ApplicationID int `json:"application_id" binding:"required"`
+	ApplicationID int `json:"applicationId" binding:"required"`
 }
 
 func CreateNewToken(c *gin.Context) {

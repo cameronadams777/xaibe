@@ -67,11 +67,11 @@ func Login(c *gin.Context) {
 
 func Register(c *gin.Context) {
 	type RegisterInput struct {
-		FirstName            string `json:"first_name" binding:"required"`
-		LastName             string `json:"last_name" binding:"required"`
+		FirstName            string `json:"firstName" binding:"required"`
+		LastName             string `json:"lastName" binding:"required"`
 		Email                string `json:"email" binding:"required"`
 		Password             string `json:"password" binding:"required"`
-		PasswordConfirmation string `json:"password_confirmation" binding:"required"`
+		PasswordConfirmation string `json:"passwordConfirmation" binding:"required"`
 	}
 
 	var input RegisterInput

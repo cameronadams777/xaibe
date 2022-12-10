@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/tauri";
+import { deserializeCookie } from "src/helpers";
 import * as http from "src/helpers/http";
 
 export interface ILoginInput {
@@ -16,14 +17,19 @@ export const login = async ({
   email,
   password,
 }: ILoginInput): Promise<string> => {
-  const response = await http.post<ILoginResponse>({
+  const response = await http.rawPost<ILoginResponse>({
     url: `api/login`, 
     body: {
       email,
       password
     }
   });
-  return response.data;
+  const cookies = deserializeCookie(response.headers['set-cookie']);
+  await invoke('store_tokens', {
+    authToken: response.data.data,
+    refreshToken: cookies.ucid
+  });
+  return response.data.data;
 };
 
 export interface IRegisterUserInput {
@@ -72,9 +78,21 @@ interface IFetchAuthTokenResponse {
 }
 
 export const fetchAuthToken = async (): Promise<string> => {
-  const response = await http.get<IFetchAuthTokenResponse>({
-    url: "api/refresh_token",
+  const refreshToken = await invoke<string>("get_stored_refresh_token");
+  if (!refreshToken?.length) return "";
+  const response = await http
+    .rawPost<IFetchAuthTokenResponse>({
+      url: "api/refresh_token",
+      body: {},
+      options: {
+        headers: {
+          Cookie: `ucid=${refreshToken}`
+        }
+      }
+    });
+  await invoke('store_tokens', {
+    authToken: response.data.token ?? "", 
+    refreshToken
   });
-  await invoke('store_auth_token', { token: response.token });
-  return response.token;
+  return response.data.token;
 };

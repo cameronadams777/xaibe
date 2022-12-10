@@ -1,3 +1,4 @@
+import fromPairs from "lodash/fromPairs";
 export * from "./alerts";
 export * from "./applications";
 
@@ -19,3 +20,9 @@ export const hasTruthyFields = (obj: any): boolean => {
     (val) => !isUndefOrNull(val) && stringHasLength(val)
   );
 };
+
+export const deserializeCookie = (cookieString: string) => {
+  const cookieArray = cookieString.split("; ");
+  const cookiesObject = fromPairs(cookieArray.map(cookie => cookie.split("="))); 
+  return cookiesObject;
+}

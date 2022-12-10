@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import { useAuthStore } from "src/state";
-import { storeToRefs } from "pinia";
 
 const authenticatedRoutes = ["/"];
 const nonAuthenticatedRoutes = ["/login", "/register"];

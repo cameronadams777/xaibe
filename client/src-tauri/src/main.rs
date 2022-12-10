@@ -6,10 +6,7 @@
 
 use std::{collections::HashMap, env, fs, path::Path};
 
-use chrono::Utc;
 use notify_rust::Notification;
-use reqwest::header::{self, HeaderMap};
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::{
   CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
@@ -91,20 +88,6 @@ fn set_refresh_token(token: String) {
   fs::write(&config_file_path, config_to_write).unwrap();
 }
 
-fn create_cookie_headers() -> HeaderMap {
-  let cookie = format!("ucid={}", get_refresh_token());
-  let cookie_header = header::HeaderValue::from_str(cookie.as_str());
-  let mut request_headers = header::HeaderMap::new();
-
-  match cookie_header {
-    Ok(header) => {
-      request_headers.insert(header::COOKIE, header);
-      return request_headers;
-    }
-    Err(_) => return request_headers,
-  }
-}
-
 #[tokio::main]
 async fn main() {
   let _ = get_or_build_config_dir();
@@ -119,8 +102,10 @@ async fn main() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
       get_stored_auth_token,
+      get_stored_refresh_token,
       logout_user,
       notify_user,
+      store_tokens,
     ])
     .system_tray(SystemTray::new().with_menu(tray_menu))
     .on_system_tray_event(|app, event| match event {
@@ -161,6 +146,17 @@ async fn main() {
 #[tauri::command]
 fn get_stored_auth_token() -> String {
   return get_auth_token();
+}
+
+#[tauri::command]
+fn get_stored_refresh_token() -> String {
+  return get_refresh_token();
+}
+
+#[tauri::command]
+fn store_tokens(auth_token: String, refresh_token: String) { 
+  set_auth_token(auth_token);
+  set_refresh_token(refresh_token);
 }
 
 #[tauri::command]
