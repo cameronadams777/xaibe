@@ -57,7 +57,7 @@ export const createNewApplication = async ({
   }
 
   const response = await http.post<ICreateNewApplicationResponse>({
-    url: "api/application",
+    url: "api/applications",
     body
   });
   
@@ -82,7 +82,7 @@ export const addSchemaToApplication = async (
 ): Promise<IApplication> => {
   const { applicationId, ...rest } = input;
   const response = await http.patch<IAddSchemaToApplicationResponse>({
-    url: `api/applications/${applicationId}`,
+    url: `api/applications/${applicationId}/alert_schema`,
     options: {
       body: Body.json(rest)
     }

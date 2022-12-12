@@ -22,9 +22,7 @@ export const useAlertsStore = defineStore("alerts", {
     async getCachedApplicationAlerts({
       applicationId,
     }: IGetApplicationAlertsInput): Promise<IAlert[]> {
-      let alerts = this.getLocalCacheAlerts(applicationId);
-      if (!alerts)
-        alerts = await fetchCachedApplicationAlerts({ applicationId });
+      const alerts = await fetchCachedApplicationAlerts({ applicationId });
       return compact(alerts) || [];
     },
   },

@@ -37,6 +37,7 @@ export interface IAlert extends Omit<IAlertSchema, "ID"> {
 }
 
 export interface IAlertSchema {
+  ID: number;
   Title: string;
   Description: string;
   Link: string;

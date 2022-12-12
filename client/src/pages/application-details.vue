@@ -37,6 +37,7 @@ const getActiveApplication = async (applicationId: number) => {
   }
   try {
     const application = await fetchApplicationById({ applicationId });
+    console.log(application) 
     if (!application) {
       router.push("/404");
       return;
@@ -77,6 +78,7 @@ onMounted(async () => {
 
   // TODO: Add redirect logic if application is not found
 });
+
 </script>
 
 <template>
@@ -94,8 +96,7 @@ onMounted(async () => {
       <div
         v-if="
           activeApplication != null &&
-          activeApplication.AlertSchema != null &&
-          hasTruthyFields(activeApplication.AlertSchema)
+          activeApplication.AlertSchema?.ID !== 0
         "
         class="w-full lg:w-1/3 h-48 lg:h-96"
       >
@@ -107,7 +108,6 @@ onMounted(async () => {
       <alert-schema-form
         v-else-if="
           activeApplication != null &&
-          !hasTruthyFields(activeApplication?.AlertSchema) &&
           applicationAlerts?.length
         "
         :application-id="activeApplication?.ID"
