@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref, toRaw } from "vue";
+import { computed, onMounted, ref, toRaw } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { TrashIcon } from "@heroicons/vue/24/outline";
 import {
@@ -13,22 +13,23 @@ import AlertSchemaForm from "src/components/alert-schema-form.vue";
 import AlertsListByApplication from "src/components/alerts-list-by-application.vue";
 import { IAlert, IApplication, ToastType } from "src/types";
 import { fetchApplicationById } from "src/api/applications";
-import { hasTruthyFields } from "src/helpers";
+import { storeToRefs } from "pinia";
 
 const { getCachedApplication, cacheApplication } = useApplicationsStore();
-const { getCachedApplicationAlerts } = useAlertsStore();
+const { getCachedApplicationAlerts, ...alertStore } = useAlertsStore();
+const { localCacheAlerts } = storeToRefs(alertStore);
 const { setIsDeleteApplicationConfirmationModalShown } = useModalStore();
 const { setActiveToast } = useToastStore();
 
 const activeApplication = ref<IApplication | undefined>(undefined);
-const applicationAlerts = ref<IAlert[]>([]);
 const applicationUrl = ref("");
+
+const applicationAlerts = computed(() => localCacheAlerts.value?.[`application_${activeApplication.value?.ID}`] ?? []);
 
 const router = useRouter();
 const route = useRoute();
 
 const getActiveApplication = async (applicationId: number) => {
-  // TODO: Refactor this into state
   const cachedApplication = getCachedApplication(applicationId);
   if (cachedApplication != null) {
     activeApplication.value = cachedApplication;
@@ -37,7 +38,6 @@ const getActiveApplication = async (applicationId: number) => {
   }
   try {
     const application = await fetchApplicationById({ applicationId });
-    console.log(application) 
     if (!application) {
       router.push("/404");
       return;
@@ -54,28 +54,13 @@ const getActiveApplication = async (applicationId: number) => {
   }
 };
 
-const getApplicationAlerts = async (applicationId: number) => {
-  try {
-    const cachedAlerts = await getCachedApplicationAlerts({
-      applicationId,
-    });
-    applicationAlerts.value = cachedAlerts;
-  } catch (error) {
-    setActiveToast({
-      message:
-        "An error occurred fetching alerts for the specified application.",
-      type: ToastType.ERROR,
-    });
-    return;
-  }
-};
-
 onMounted(async () => {
   const applicationId = parseInt(route.params.applicationId as string);
   // TODO: Introduce loading component while data is being fetched and then Promise.all these requests
   await getActiveApplication(applicationId);
-  await getApplicationAlerts(applicationId);
-
+  await getCachedApplicationAlerts({
+    applicationId,
+  });
   // TODO: Add redirect logic if application is not found
 });
 

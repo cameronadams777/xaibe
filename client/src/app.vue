@@ -12,9 +12,11 @@ import { useRoute } from "vue-router";
 import TheGlobalModal from "./components/the-global-modal.vue";
 import TheToastMessage from "./components/the-toast-message.vue";
 import { config } from "./config";
-import { useAuthStore } from "./state";
+import { useAlertsStore, useAuthStore } from "./state";
+import { IAlertSchema } from "./types";
 
 const route = useRoute();
+const { pushAlertToApplication } = useAlertsStore();
 const authStore = useAuthStore();
 const { token } = storeToRefs(authStore);
 
@@ -46,25 +48,31 @@ watch(token, async (tokenValue) => {
   };
   socket.onmessage = function (event) {
     if (!event.data || !event.data.length) return;
-    // TODO: Also add to cached alerts
-    const alert = JSON.parse(event.data);
-    const schema = alert.alert_schema;
+    const alertResponseData = JSON.parse(event.data);
+    const applicationId = alertResponseData.application_id;
+    const schema = alertResponseData.alert_schema as IAlertSchema;
 
-    if (!schema) {
+    const { alert_schema, ...rest } = alertResponseData;
+
+    pushAlertToApplication(applicationId, rest); 
+
+    if (schema?.ID === 0) {
       // TODO: Make this more informative
       invoke("notify_user", {
         title: "New Alert!",
-        body: "One of you applications just receive an alert for the first time!",
+        body: "One of you applications just receive an alertResponseData for the first time!",
       });
       return;
     }
 
     const titleKeys = schema.Title.split(".");
-    const title = getElByKey(alert, titleKeys);
+    const title = getElByKey(alertResponseData, titleKeys);
     const descriptionKeys = schema.Description.split(".");
-    const body = getElByKey(alert, descriptionKeys);
+    const description = getElByKey(alertResponseData, descriptionKeys);
+    const linkKeys = schema.Link.split(".");
+    const link = getElByKey(alertResponseData, linkKeys);
 
-    invoke("notify_user", { title, body });
+    invoke("notify_user", { title, body: description });
   };
   socket.onerror = function (event) {
     console.log("[error] A socket error occurred.");
