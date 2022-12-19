@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"api/config"
-	"api/models"
 	"api/services/sparkpost_service"
 	"api/services/users_service"
 	"log"
@@ -51,11 +50,12 @@ func SendResetPasswordEmail(c *gin.Context) {
 	}
 
 	// Update user with random uuid token, and timestamp that is 15 minutes from now
-	updates := models.User{
-		ResetPasswordCode:   uuid.NewString(),
-		ResetPasswordExpiry: time.Now().Add(time.Minute * 15),
+	updates := map[string]interface{}{
+		"ResetPasswordCode":   uuid.NewString(),
+		"ResetPasswordExpiry": time.Now().Add(time.Minute * 15),
 	}
-	_, update_err := users_service.UpdateUser(int(user.ID), updates)
+
+	updated_user, update_err := users_service.UpdateUserNullish(int(user.ID), updates)
 
 	if update_err != nil {
     log.Panicln(update_err)
@@ -65,7 +65,7 @@ func SendResetPasswordEmail(c *gin.Context) {
 
   templateElements := ResetPasswordTemplateElements{
     Email: user.Email,
-    Link: config.Get("APP_HOST_NAME") + "/reset-password?hash=" + user.ResetPasswordCode,
+    Link: config.Get("APP_HOST_NAME") + "/reset-password/" + updated_user.ResetPasswordCode,
   }
   
 	// Send email with link to users email
@@ -126,8 +126,7 @@ func ResetUserPassword(c *gin.Context) {
 	password, _ := bcrypt.GenerateFromPassword([]byte(input.Password), 14)
 
 	// Update user password as well as clear the reset psasword token and password expiry
-	_, update_err := users_service.UpdateUser(int(user.ID), models.User{Password: string(password)})
-	// Send password update success email
+	_, update_err := users_service.UpdateUserNullish(int(user.ID), map[string]interface{}{"Password": string(password), "ResetPasswordCode": nil, "ResetPasswordExpiry": nil})
 
 	if update_err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred during password reset process.", "data": false})

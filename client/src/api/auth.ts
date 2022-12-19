@@ -64,7 +64,7 @@ export const submitResetPasswordRequest = async (
   payload: ISubmitResetPasswordRequestInput
 ): Promise<void> => {
   await http.post({
-    url: "api/reset-password/send-code",
+    url: "api/reset_password/send_code",
     body: payload
   });
 };

@@ -44,21 +44,16 @@ func SendEmail(to string, template_key string, template_vars interface{}) error 
 		return temp_err
 	}
 
-  formatted_html_template, format_err := format_html_template(*html_template, template_vars)
-
-  if format_err != nil {
-    return format_err
-  }
-
 	// Create a Transmission using an inline Recipient List
 	// and inline email Content.
 	tx := &sp.Transmission{
 		Recipients: []string{to},
 		Content: sp.Content{
-			HTML:    *formatted_html_template,
+			HTML:    *html_template,
 			From:    "noreply@galata.app",
 			Subject: subject,
 		},
+    Metadata: template_vars,
 	}
 
 	id, _, err := sparkpost.SPClient.Send(tx)

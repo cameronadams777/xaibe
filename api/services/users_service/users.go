@@ -38,7 +38,7 @@ func GetUserByEmail(email string) (*models.User, error) {
 
 func GetUserByPasswordCode(reset_password_code string, reset_password_expiry time.Time) (*models.User, error) {
 	var user models.User
-	err := database.DB.First(&user, reset_password_code, reset_password_expiry).Error
+	err := database.DB.Where("reset_password_code = ? AND reset_password_expiry >= ?", reset_password_code, reset_password_expiry).First(&user).Error
 
 	if err != nil {
 		return nil, err
@@ -48,6 +48,20 @@ func GetUserByPasswordCode(reset_password_code string, reset_password_expiry tim
 }
 
 func UpdateUser(user_id int, updates models.User) (*models.User, error) {
+	// Get user that we want to update
+	var user_to_update models.User
+	err := database.DB.Preload("Teams").Preload("Applications").First(&user_to_update, user_id).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	database.DB.Model(&user_to_update).Updates(updates)
+
+	return &user_to_update, nil
+}
+
+func UpdateUserNullish(user_id int, updates map[string]interface{}) (*models.User, error) {
 	// Get user that we want to update
 	var user_to_update models.User
 	err := database.DB.Preload("Teams").Preload("Applications").First(&user_to_update, user_id).Error

@@ -20,7 +20,7 @@ func SetupRouter(app *gin.Engine) {
 	api.GET("/ws", controllers.ServeWS)
 
 	reset_password := api.Group("/reset_password")
-	reset_password.POST("/send-code", controllers.SendResetPasswordEmail)
+	reset_password.POST("/send_code", controllers.SendResetPasswordEmail)
 	reset_password.POST("/validate", controllers.ValidateResetPasswordCode)
 	reset_password.POST("/reset", controllers.ResetUserPassword)
 
