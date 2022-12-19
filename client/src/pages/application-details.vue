@@ -61,7 +61,6 @@ onMounted(async () => {
   await getCachedApplicationAlerts({
     applicationId,
   });
-  // TODO: Add redirect logic if application is not found
 });
 
 </script>
@@ -81,7 +80,8 @@ onMounted(async () => {
       <div
         v-if="
           activeApplication != null &&
-          activeApplication.AlertSchema?.ID !== 0
+          activeApplication.AlertSchema?.ID !== 0 &&
+          applicationAlerts.length > 0
         "
         class="w-full lg:w-1/3 h-48 lg:h-96"
       >
