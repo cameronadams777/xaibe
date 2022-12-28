@@ -227,3 +227,15 @@ func RemoveUserFromTeam(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User successfully removed.", "data": updated_team})
 }
+
+func GetTeamInvites(c *gin.Context) {
+	// Retrieve all invites for a given user
+}
+
+func InviteExistingUserToTeam(c *gin.Context) {
+	// Invite an existing user to a team passed in request body
+}
+
+func UpdateTeamInvite(c *gin.Context) {
+	// Update the status of an invite
+}

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"api/structs/invite_status"
 	"time"
 
 	"gorm.io/gorm"
@@ -55,4 +56,12 @@ type AlertSchema struct {
 	Title         string
 	Description   string
 	Link          string
+}
+
+type TeamInvite struct {
+	gorm.Model
+	TeamID uint
+	Team   Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Email  string
+	Status invite_status.InviteStatus
 }

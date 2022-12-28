@@ -3,41 +3,26 @@ package sparkpost_service
 import (
 	"api/helpers"
 	"api/initializers/sparkpost"
-	"bytes"
-	"html/template"
 	"log"
 
 	sp "github.com/SparkPost/gosparkpost"
 )
 
 func get_subject_by_template(template_key string) string {
-  switch template_key {
-  case "reset_password":
-    return "Reset Password: Galata.app"
-  case "verify_email":
-    return "Verify Email: Galata.app"
-  default:
-    return ""
-  }
-}
-
-func format_html_template(html_template string, template_vars interface{}) (*string, error) {
-  var processed bytes.Buffer
-  template_compiler, _ := template.New("email_temp").Parse(html_template)
-  
-  compl_err := template_compiler.Execute(&processed, template_vars)
-
-  if compl_err != nil {
-    return nil, compl_err
-  }
-
-  fmt_as_string := string(processed.Bytes())
-
-  return &fmt_as_string, nil
+	switch template_key {
+	case "reset_password":
+		return "Reset Password: Galata.app"
+	case "verify_email":
+		return "Verify Email: Galata.app"
+	case "invite_new_user":
+		return "You're invited!"
+	default:
+		return ""
+	}
 }
 
 func SendEmail(to string, template_key string, template_vars interface{}) error {
-  subject := get_subject_by_template(template_key)
+	subject := get_subject_by_template(template_key)
 	html_template, temp_err := helpers.ReadEmailTemplate(template_key)
 
 	if temp_err != nil {
@@ -53,7 +38,7 @@ func SendEmail(to string, template_key string, template_vars interface{}) error 
 			From:    "noreply@galata.app",
 			Subject: subject,
 		},
-    Metadata: template_vars,
+		Metadata: template_vars,
 	}
 
 	id, _, err := sparkpost.SPClient.Send(tx)

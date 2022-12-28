@@ -3,6 +3,7 @@ package teams_service
 import (
 	"api/initializers/database"
 	"api/models"
+	"api/structs/invite_status"
 )
 
 // TODO: Find way to specify preloads when querying, to prevent excess queries
@@ -109,4 +110,30 @@ func RemoveUserFromTeam(team_id int, user_id int) (*models.Team, error) {
 	database.DB.Model(&team).Association("Managers").Delete(&user)
 
 	return &team, nil
+}
+
+func CreateInvite(team_id uint, email string) (*models.TeamInvite, error) {
+	invite := models.TeamInvite{
+		TeamID: team_id,
+		Email:  email,
+		Status: invite_status.PENDING,
+	}
+	err := database.DB.Create(&invite).Error
+	if err != nil {
+		return nil, err
+	}
+	return &invite, nil
+}
+
+func UpdateInvite(invite_id uint, updates models.TeamInvite) (*models.TeamInvite, error) {
+	var invite_to_update models.TeamInvite
+	err := database.DB.First(&invite_to_update, invite_id).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	database.DB.Model(&invite_to_update).Updates(updates)
+
+	return &invite_to_update, nil
 }

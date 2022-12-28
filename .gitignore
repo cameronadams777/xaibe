@@ -28,3 +28,6 @@ target
 api/store
 
 .env
+
+# releases
+code_sign_setup.sh

@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"api/config"
 	"api/models"
+	"api/services/sparkpost_service"
+	"api/services/teams_service"
 	"api/services/users_service"
 	"api/structs"
 	"fmt"
@@ -18,6 +21,11 @@ import (
 type UpdateUserInput struct {
 	UserId  int         `json:"userId" binding:"required"`
 	Updates models.User `json:"user" binding:"-"`
+}
+
+type InviteNewUserInput struct {
+	Email  string `json:"email" binding:"required"`
+	TeamId *int   `json:"teamId" binding:"-"`
 }
 
 func GetUserDetails(c *gin.Context) {
@@ -133,4 +141,25 @@ func DeleteUser(c *gin.Context) {
 	deleted_user, _ := users_service.UpdateUser(user_id, models.User{Model: gorm.Model{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
 
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User successfully deleted.", "data": gin.H{"user": deleted_user}})
+}
+
+func InviteNewUser(c *gin.Context) {
+	var input InviteNewUserInput
+
+	if err := c.BindJSON(&input); err != nil {
+		fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": nil})
+		return
+	}
+
+	if input.TeamId != nil {
+		// Add new record to invites table
+		teams_service.CreateInvite(uint(*input.TeamId), input.Email)
+	}
+
+	templateElements := ResetPasswordTemplateElements{
+		Link: config.Get("APP_HOST_NAME"),
+	}
+
+	sparkpost_service.SendEmail(input.Email, "invite_new_user", templateElements)
 }

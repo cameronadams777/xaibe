@@ -33,7 +33,7 @@ const submitForm = async () => {
     <h2>Welcome Back!</h2>
     <div class="flex flex-col w-1/4 mb-2">
       <label for="email" class="font-bold mb-2">Email</label>
-      <input v-model="email" id="email" name="email" type="text" class="p-1" />
+      <input v-model="email" id="email" name="email" type="email" class="p-1" />
     </div>
     <div class="flex flex-col w-1/4 mb-3">
       <label for="password" class="font-bold mb-2">Password</label>

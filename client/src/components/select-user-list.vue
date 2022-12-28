@@ -3,7 +3,7 @@
     class="w-full h-full p-0 border-gray-400 border-1 rounded-md overflow-hidden"
   >
     <button
-      v-for="(user, index) of selectableUsers"
+      v-for="(user, index) of users"
       :class="{
         'w-full m-0 p-2 border-0 transition-colors duration-300 cursor-pointer': true,
         'border-b-1 border-gray-400': index !== users.length,
@@ -20,17 +20,11 @@
 
 <script lang="ts" setup>
 import { IUser } from "src/types";
-import { computed } from "vue";
 
-const props = defineProps<{
-  activeUserId?: number;
+defineProps<{
   selectedUserId?: number;
   users: IUser[];
 }>();
-
-const selectableUsers = computed(() =>
-  props.users.filter((user) => user.ID !== props.activeUserId)
-);
 
 const emits = defineEmits<{
   (event: "onSelect", userId: number): void;
