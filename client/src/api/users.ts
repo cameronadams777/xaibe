@@ -14,10 +14,12 @@ export const fetchAllUsers = async (): Promise<IUser[]> => {
 
 interface IInviteNewUserInput {
   email: string;
+  teamId?: number;
 }
 
 export const inviteNewUser = async ({
+  teamId,
   email,
 }: IInviteNewUserInput): Promise<void> => {
-  await http.post({ url: "api/users/invite", body: { email } });
+  await http.post({ url: "api/users/invite", body: { teamId, email } });
 };

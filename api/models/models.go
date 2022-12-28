@@ -60,8 +60,10 @@ type AlertSchema struct {
 
 type TeamInvite struct {
 	gorm.Model
-	TeamID uint
-	Team   Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
-	Email  string
-	Status invite_status.InviteStatus
+	SenderID uint
+	Sender   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	TeamID   uint
+	Team     Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	Email    string
+	Status   invite_status.InviteStatus
 }

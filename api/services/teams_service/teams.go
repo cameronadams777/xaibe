@@ -112,11 +112,21 @@ func RemoveUserFromTeam(team_id int, user_id int) (*models.Team, error) {
 	return &team, nil
 }
 
-func CreateInvite(team_id uint, email string) (*models.TeamInvite, error) {
+func GetPendingTeamInvites(email string) (*[]models.TeamInvite, error) {
+	var invites []models.TeamInvite
+	err := database.DB.Where("email = ? AND status = ?", email, invite_status.PENDING).Find(&invites).Error
+	if err != nil {
+		return nil, err
+	}
+	return &invites, nil
+}
+
+func CreateInvite(team_id uint, sender_id uint, email string) (*models.TeamInvite, error) {
 	invite := models.TeamInvite{
-		TeamID: team_id,
-		Email:  email,
-		Status: invite_status.PENDING,
+		TeamID:   team_id,
+		SenderID: sender_id,
+		Email:    email,
+		Status:   invite_status.PENDING,
 	}
 	err := database.DB.Create(&invite).Error
 	if err != nil {

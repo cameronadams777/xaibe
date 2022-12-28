@@ -59,28 +59,31 @@ import {
   useActiveUserStore,
   useModalStore,
   useToastStore,
+  useGalataUsersStore,
 } from "src/state";
 import { ButtonVariant, IUser, ToastType } from "src/types";
 import { addUserToTeam } from "src/api/teams";
-import { fetchAllUsers, inviteNewUser } from "src/api/users";
+import { inviteNewUser } from "src/api/users";
 
 const props = defineProps<{
   isOpen: boolean;
   teamId?: number;
 }>();
 
+const { getAllUsers, ...galataUsersStore } = useGalataUsersStore();
+const { users: allGalataUsers } = storeToRefs(galataUsersStore);
 const activeUserStore = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);
 const { setAddUserToTeamProps } = useModalStore();
 const { setActiveToast } = useToastStore();
 
 const newUserEmail = ref("");
-const usersList = ref<IUser[]>([]);
 const userId = ref<number | undefined>(undefined);
 
 const selectableUsers = computed(
   () =>
-    usersList.value?.filter((user) => user.ID !== activeUser?.value?.ID) ?? []
+    allGalataUsers.value?.filter((user) => user.ID !== activeUser?.value?.ID) ??
+    []
 );
 
 const selectUser = (selectedUserId: number) => (userId.value = selectedUserId);
@@ -89,16 +92,19 @@ const confirm = async () => {
   try {
     // TODO: Add validation errors here as well
     if (!props.teamId) return;
-    if (!userId.value || !newUserEmail.value) return;
+    if (!userId.value && !newUserEmail.value) return;
 
     if (newUserEmail.value.length) {
-      await inviteNewUser({ email: newUserEmail.value });
+      await inviteNewUser({ teamId: props.teamId, email: newUserEmail.value });
       setActiveToast({
         type: ToastType.SUCCESS,
         message: "User invited.",
       });
+      close();
       return;
     }
+
+    if (!userId.value) return;
 
     await addUserToTeam({ teamId: props.teamId, userId: userId.value });
     setActiveToast({
@@ -106,12 +112,6 @@ const confirm = async () => {
       message: "User added.",
     });
     close();
-    /**
-     * TODO: We are reloading the page here to ensure that the user that is
-     * added is shown in the list upon closing. Need to refactor this with
-     * and emitter when the modals refactor happens.
-     */
-    window.location.reload();
   } catch (error) {
     setActiveToast({
       type: ToastType.ERROR,
@@ -125,8 +125,7 @@ const close = () => setAddUserToTeamProps(emptyAddUserToTeamProps);
 
 onMounted(async () => {
   try {
-    const users = await fetchAllUsers();
-    usersList.value = users;
+    await getAllUsers();
   } catch (error) {
     console.error(error);
     setActiveToast({

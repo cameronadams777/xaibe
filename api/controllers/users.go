@@ -152,9 +152,19 @@ func InviteNewUser(c *gin.Context) {
 		return
 	}
 
+	data, _ := c.Get("authScope")
+	authScope := data.(structs.AuthScope)
+
+	_, find_existing_user_err := users_service.GetUserByEmail(input.Email)
+
+	if find_existing_user_err == nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "A user with that email already exists.", "data": nil})
+		return
+	}
+
 	if input.TeamId != nil {
 		// Add new record to invites table
-		teams_service.CreateInvite(uint(*input.TeamId), input.Email)
+		teams_service.CreateInvite(uint(*input.TeamId), uint(authScope.UserID), input.Email)
 	}
 
 	templateElements := ResetPasswordTemplateElements{

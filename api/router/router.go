@@ -31,7 +31,7 @@ func SetupRouter(app *gin.Engine) {
 	users.GET("/me", controllers.GetUserDetails)
 	users.GET("/", controllers.GetAllUsers)
 	users.GET("/:user_id", controllers.GetUserById)
-	users.POST("/invite_new_user", controllers.InviteNewUser)
+	users.POST("/invite", controllers.InviteNewUser)
 	users.PATCH("/", controllers.UpdateUser)
 	users.DELETE("/:user_id", middleware.IsAdmin(), controllers.DeleteUser)
 
@@ -40,9 +40,8 @@ func SetupRouter(app *gin.Engine) {
 	teams.GET("/:team_id", controllers.GetTeamById)
 	teams.GET("/invites", controllers.GetTeamInvites)
 	teams.POST("/", controllers.CreateNewTeam)
-	teams.POST("/:team_id/user/:user_id", controllers.AddUserToTeam)
 	teams.POST("/invites", controllers.InviteExistingUserToTeam)
-	teams.PATCH("invites", controllers.UpdateTeamInvite)
+	teams.PATCH("invites", controllers.UpdateTeamInviteStatus)
 	teams.DELETE("/:team_id", controllers.DeleteTeam)
 	teams.DELETE("/:team_id/user/:user_id", controllers.RemoveUserFromTeam)
 

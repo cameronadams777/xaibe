@@ -28,8 +28,8 @@ type ResetUserPasswordInput struct {
 }
 
 type ResetPasswordTemplateElements struct {
-  Email string  
-  Link  string
+	Email string
+	Link  string
 }
 
 func SendResetPasswordEmail(c *gin.Context) {
@@ -44,7 +44,7 @@ func SendResetPasswordEmail(c *gin.Context) {
 	user, err := users_service.GetUserByEmail(input.Email)
 
 	if err != nil {
-    log.Panicln(err)
+		log.Panicln(err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
 		return
 	}
@@ -58,26 +58,26 @@ func SendResetPasswordEmail(c *gin.Context) {
 	updated_user, update_err := users_service.UpdateUserNullish(int(user.ID), updates)
 
 	if update_err != nil {
-    log.Panicln(update_err)
+		log.Panicln(update_err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
 		return
 	}
 
-  templateElements := ResetPasswordTemplateElements{
-    Email: user.Email,
-    Link: config.Get("APP_HOST_NAME") + "/reset-password/" + updated_user.ResetPasswordCode,
-  }
-  
+	template_elements := ResetPasswordTemplateElements{
+		Email: user.Email,
+		Link:  config.Get("APP_HOST_NAME") + "/reset-password/" + updated_user.ResetPasswordCode,
+	}
+
 	// Send email with link to users email
-	send_err := sparkpost_service.SendEmail(user.Email, "reset_password", templateElements)
+	send_err := sparkpost_service.SendEmail(user.Email, "reset_password", template_elements)
 
 	if send_err != nil {
-    log.Panicln(send_err)
+		log.Panicln(send_err)
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
 		return
 	}
 
-  c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Email sent.", "data": nil})
+	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Email sent.", "data": nil})
 }
 
 func ValidateResetPasswordCode(c *gin.Context) {
