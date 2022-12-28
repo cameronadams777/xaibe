@@ -6,7 +6,7 @@
       v-for="(user, index) of users"
       :class="{
         'w-full m-0 p-2 border-0 transition-colors duration-300 cursor-pointer': true,
-        'border-b-1 border-gray-400': index !== users.length,
+        'border-b-1 border-gray-400': index !== users.length && users.length > 1,
         'bg-white hover:bg-gray-600 hover:text-white':
           user.ID !== selectedUserId,
         'bg-gray-600 text-white': user.ID === selectedUserId,

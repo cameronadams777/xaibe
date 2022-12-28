@@ -11,7 +11,7 @@ const { activeUser } = storeToRefs(activeUserStore);
 
 <template>
   <div
-    class="h-full hidden border-r-1 border-gray-300"
+    class="h-full border-r-1 border-gray-300"
     :class="{ 'flex flex-col w-full md:w-2/5 xl:w-1/5': isOpen }"
   >
     <router-link

@@ -1,8 +1,17 @@
-export interface IUser {
+export enum InviteStatus {
+  PENDING = 0,
+  ACCEPTED = 1,
+  REJECTED = 2,
+}
+
+export interface IEntity {
   ID: number;
   CreateAt: Date;
   UpdatedAt: Date;
   DeletedAt: Date;
+}
+
+export interface IUser extends IEntity {
   FirstName: string;
   LastName: string;
   Email: string;
@@ -12,15 +21,20 @@ export interface IUser {
   Applications: IApplication[];
 }
 
-export interface ITeam {
-  ID: number;
-  CreatedAt: Date;
-  UpdatedAt: Date;
-  DeletedAt: Date;
+export interface ITeam extends IEntity {
   Name: string;
   Users: IUser[];
   Managers: IUser[];
   Applications: IApplication[];
+}
+
+export interface ITeamInvite extends IEntity {
+  Email: string;
+  TeamID: number;
+  Team: ITeam;
+  SenderID: number;
+  Sender: IUser;
+  Status: InviteStatus;
 }
 
 export interface IApplication {

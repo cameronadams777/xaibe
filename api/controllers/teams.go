@@ -19,8 +19,8 @@ type CreateNewTeamInput struct {
 }
 
 type InviteExistingUserToTeamInput struct {
-	UserId int `json:"userId" binding:"required"`
-	TeamId int `json:"teamId" binding:"required"`
+	UserId int `json:"user_id" binding:"required"`
+	TeamId int `json:"team_id" binding:"required"`
 }
 
 type UpdateTeamInviteInput struct {
@@ -228,16 +228,21 @@ func InviteExistingUserToTeam(c *gin.Context) {
 		return
 	}
 
+  data, _ := c.Get("authScope")
+	authScope := data.(structs.AuthScope)
+
+  if user.ID == uint(authScope.UserID) {
+ 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You cannot invite yourself to a team.", "data": nil})
+		return 
+  }
+
 	team, find_team_err := teams_service.GetTeamById(input.TeamId)
 
 	if find_team_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting team by id.", "data": nil})
 		return
 	}
-
-	data, _ := c.Get("authScope")
-	authScope := data.(structs.AuthScope)
-
+	
 	team_manager_err := assertions.UserIsManagerOfTeam(team.ID, uint(authScope.UserID))
 
 	if team_manager_err != nil {

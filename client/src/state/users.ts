@@ -11,9 +11,10 @@ export const useGalataUsersStore = defineStore("galata_users", {
     return { users: [] };
   },
   actions: {
-    async getAllUsers() {
+    async getAllUsers(): Promise<IUser[]> {
       const users = await fetchAllUsers();
-      this.users = users;
+      this.users = users ?? [];
+      return users ?? [];
     },
   },
 });

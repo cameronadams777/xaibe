@@ -7,15 +7,15 @@
       <h2 class="text-center text-lg w-48 md:w-64 lg:w-72">
         Please Select a User
       </h2>
-      <div v-if="selectableUsers.length" class="w-9/10 mb-4">
+      <div v-if="usersList.length" class="w-9/10 mb-4">
         <select-user-list
           :active-user-id="activeUser?.ID"
           :selected-user-id="userId"
-          :users="selectableUsers"
+          :users="usersList"
           @on-select="selectUser"
         />
       </div>
-      <div v-if="selectableUsers.length" class="mb-4 w-full flex align-center">
+      <div v-if="usersList.length" class="mb-4 w-full flex align-center">
         <hr class="w-3/4 border-0 border-t border-gray-300 mt-3 ml-5 mr-2" />
         <span>or</span>
         <hr class="w-3/4 border-0 border-t border-gray-300 mt-3 mr-5 ml-2" />
@@ -50,7 +50,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import SelectUserList from "./select-user-list.vue";
@@ -62,29 +62,23 @@ import {
   useGalataUsersStore,
 } from "src/state";
 import { ButtonVariant, IUser, ToastType } from "src/types";
-import { addUserToTeam } from "src/api/teams";
 import { inviteNewUser } from "src/api/users";
+import { inviteExistingUserToTeam } from 'src/api/teams';
 
 const props = defineProps<{
   isOpen: boolean;
   teamId?: number;
 }>();
 
-const { getAllUsers, ...galataUsersStore } = useGalataUsersStore();
-const { users: allGalataUsers } = storeToRefs(galataUsersStore);
+const { getAllUsers } = useGalataUsersStore();
 const activeUserStore = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);
 const { setAddUserToTeamProps } = useModalStore();
 const { setActiveToast } = useToastStore();
 
 const newUserEmail = ref("");
+const usersList = ref<IUser[]>([]);
 const userId = ref<number | undefined>(undefined);
-
-const selectableUsers = computed(
-  () =>
-    allGalataUsers.value?.filter((user) => user.ID !== activeUser?.value?.ID) ??
-    []
-);
 
 const selectUser = (selectedUserId: number) => (userId.value = selectedUserId);
 
@@ -106,7 +100,7 @@ const confirm = async () => {
 
     if (!userId.value) return;
 
-    await addUserToTeam({ teamId: props.teamId, userId: userId.value });
+    await inviteExistingUserToTeam({ teamId: props.teamId, userId: userId.value });
     setActiveToast({
       type: ToastType.SUCCESS,
       message: "User added.",
@@ -125,7 +119,8 @@ const close = () => setAddUserToTeamProps(emptyAddUserToTeamProps);
 
 onMounted(async () => {
   try {
-    await getAllUsers();
+    const users = await getAllUsers();
+    usersList.value = users.filter(user => user.ID !== activeUser?.value?.ID) ?? [];
   } catch (error) {
     console.error(error);
     setActiveToast({

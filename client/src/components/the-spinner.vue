@@ -1,7 +1,3 @@
-<script lang="ts" setup>
-defineProps<{ show?: boolean }>();
-</script>
-
 <template>
   <svg
     v-if="show"
@@ -25,3 +21,7 @@ defineProps<{ show?: boolean }>();
     ></path>
   </svg>
 </template>
+
+<script lang="ts" setup>
+defineProps<{ show?: boolean }>();
+</script>
