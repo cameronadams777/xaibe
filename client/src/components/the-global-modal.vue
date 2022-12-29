@@ -24,17 +24,24 @@ const {
 
 <template>
   <add-user-to-team-modal
+    v-if="addUserToTeamProps.isOpen"
     :is-open="addUserToTeamProps.isOpen"
     :team-id="addUserToTeamProps.teamId"
   />
   <delete-application-confirmation-modal
+    v-if="isDeleteApplicationConfirmationModalShown"
     :is-open="isDeleteApplicationConfirmationModalShown"
   />
   <delete-team-confirmation-modal
+    v-if="isDeleteTeamConfirmationModalShown"
     :is-open="isDeleteTeamConfirmationModalShown"
   />
-  <new-element-modal :is-open="isNewElementModalShown" />
+  <new-element-modal 
+    v-if="isNewElementModalShown"
+    :is-open="isNewElementModalShown" 
+  />
   <remove-user-confirmation-modal
+    v-if="removeUserConfirmationProps.isOpen"
     :is-open="removeUserConfirmationProps.isOpen"
     :team-id="removeUserConfirmationProps.teamId"
     :user-id="removeUserConfirmationProps.userId"
