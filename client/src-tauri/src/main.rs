@@ -21,7 +21,26 @@ fn get_or_build_config_dir() -> String {
     .into_string()
     .unwrap();
 
-  let config_path = format!("{}{}", home_path, "/.config/galata/");
+  // Handle .config dir
+  let dot_config_directory_name = match env::consts::OS {
+    "windows" => "\\.config",
+    _ => "/.config"
+  };
+
+  let global_config_path = format!("{}{}", home_path, dot_config_directory_name);
+
+  if !Path::new(&global_config_path).is_dir() {
+    fs::create_dir(global_config_path).unwrap();
+  }
+
+  // Handle app directory
+
+  let app_config_directory_name = match env::consts::OS {
+    "windows" => "\\.config\\galata",
+    _ => "/.config/galata"
+  };
+
+  let config_path = format!("{}{}", home_path, app_config_directory_name);
 
   let config_file_path = format!("{}{}", config_path, CONFIG_FILE_NAME);
 
