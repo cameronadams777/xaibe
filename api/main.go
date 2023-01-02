@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/controllers"
 	"api/initializers/cache"
 	"api/initializers/database"
 	"api/initializers/sparkpost"
@@ -36,6 +37,10 @@ func main() {
 			"health": "I am health! 💪",
 		})
 	})
+
+  // Auto-Update Galata Desktop
+  app.GET("/auto_update/:platform/:current_version", controllers.CheckLatestAppVersion)
+ 
 
 	router.SetupRouter(app)
 

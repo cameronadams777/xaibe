@@ -138,11 +138,6 @@ async fn main() {
           "dashboard" => {
             window.show().unwrap();
           }
-          "download_update" => {
-            // let window = app.get_window("main").unwrap();
-            // window.emit("tauri://update", None);
-            // Attempt to download new update. Display alert if one is not available.
-          }
           "quit" => {
             window.close().unwrap();
           }
