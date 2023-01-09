@@ -31,6 +31,7 @@ import ChooseApplicationStep from "src/components/new-application-choose-applica
 import OtherApplicationTypeStep from "src/components/new-application-other-application-type-step.vue";
 import { ToastType, ApplicationType } from "src/types";
 import { getAppSchemaByType } from "src/helpers";
+import { mixpanelWrapper } from "src/tools/mixpanel";
 
 // TODO: Allow users to create team application as well
 
@@ -61,6 +62,8 @@ const submitForm = async (applicationName: string, teamId?: number) => {
     });
     if (!application)
       throw new Error("Galata Error: Application not generated.");
+
+    mixpanelWrapper.client.track("New application created");
     cacheApplication(application);
     await activeUserStore.getActiveUser();
     router.push(`/applications/${application.ID}`);

@@ -11,6 +11,7 @@ import { computed, reactive, ref } from "vue";
 import AlertSchemaTreeBuilder from "./alert-schema-tree-builder.vue";
 import { useApplicationsStore, useToastStore } from "src/state";
 import { ToastType } from "src/types";
+import { mixpanelWrapper } from "src/tools/mixpanel";
 
 const props = defineProps<{
   applicationId: number;
@@ -48,6 +49,7 @@ const submitForm = async () => {
       applicationId: props.applicationId,
       ...alertSchemaForm,
     });
+    mixpanelWrapper.client.track("Alert schema submitted");
     // TODO: Refactor code on application details page to utilize
     // the cached applications in state in order to not require this
     window.location.reload();

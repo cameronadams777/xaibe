@@ -4,6 +4,7 @@ import { XMarkIcon } from "@heroicons/vue/24/outline";
 import { useModalStore, useToastStore } from "src/state";
 import { deleteTeam } from "src/api/teams";
 import { ButtonVariant, ToastType } from "src/types";
+import { mixpanelWrapper } from "src/tools/mixpanel";
 
 defineProps<{ isOpen: boolean }>();
 
@@ -17,6 +18,9 @@ const attemptToDeleteTeam = async () => {
     const teamId = parseInt(route.params.teamId as string);
     await deleteTeam({ teamId });
     setIsDeleteTeamConfirmationModalShown(false);
+
+    mixpanelWrapper.client.track("Team deleted")
+
     setActiveToast({
       type: ToastType.SUCCESS,
       message: "Team deleted!",

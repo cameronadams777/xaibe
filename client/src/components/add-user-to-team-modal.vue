@@ -64,6 +64,7 @@ import {
 import { ButtonVariant, IUser, ToastType } from "src/types";
 import { inviteNewUser } from "src/api/users";
 import { inviteExistingUserToTeam } from 'src/api/teams';
+import { mixpanelWrapper } from "src/tools/mixpanel";
 
 const props = defineProps<{
   isOpen: boolean;
@@ -101,6 +102,9 @@ const confirm = async () => {
     if (!userId.value) return;
 
     await inviteExistingUserToTeam({ teamId: props.teamId, userId: userId.value });
+
+    mixpanelWrapper.client.track("Invited new user")
+
     setActiveToast({
       type: ToastType.SUCCESS,
       message: "User added.",

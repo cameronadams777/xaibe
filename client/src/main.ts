@@ -1,7 +1,8 @@
 import { createApp } from "vue";
+import { createPinia } from "pinia";
 import App from "./app.vue";
 import router from "./router";
-import { createPinia } from "pinia";
+import { mixpanelWrapper } from "./tools/mixpanel";
 import "uno.css";
 
 const pinia = createPinia();
@@ -22,6 +23,8 @@ Object.entries(components).forEach(([path, definition]) => {
   // Register component on this Vue instance
   app.component(componentName, (definition as any).default);
 });
+
+mixpanelWrapper.setup();
 
 app.use(router);
 app.use(pinia);

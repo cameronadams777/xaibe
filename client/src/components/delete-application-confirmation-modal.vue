@@ -3,6 +3,7 @@ import { useRoute, useRouter } from "vue-router";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import { useApplicationsStore, useModalStore, useToastStore } from "src/state";
 import { ButtonVariant, ToastType } from "src/types";
+import { mixpanelWrapper } from "src/tools/mixpanel";
 
 defineProps<{ isOpen: boolean }>();
 
@@ -21,6 +22,9 @@ const attemptToDeleteApplication = async () => {
       type: ToastType.SUCCESS,
       message: "Application deleted!",
     });
+
+    mixpanelWrapper.client.track("Application deleted");
+
     router.push("/");
   } catch (error) {
     setActiveToast({

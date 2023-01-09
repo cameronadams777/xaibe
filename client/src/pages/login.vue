@@ -3,6 +3,7 @@ import { useRouter } from "vue-router";
 import { ref } from "vue";
 import { useAuthStore, useToastStore } from "../state";
 import { ToastType } from "../types";
+import { mixpanelWrapper } from "src/tools/mixpanel";
 
 const router = useRouter();
 const { setActiveToast } = useToastStore();
@@ -16,6 +17,7 @@ const submitForm = async () => {
   try {
     isSubmitting.value = true;
     await login({ email: email.value, password: password.value });
+    mixpanelWrapper.client.track("User login");
     isSubmitting.value = false;
     router.push("/");
   } catch (error) {

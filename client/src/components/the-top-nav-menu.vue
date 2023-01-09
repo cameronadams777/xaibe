@@ -2,6 +2,7 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { UserIcon } from "@heroicons/vue/24/outline";
 import { logoutUser } from "src/api/auth";
+import { mixpanelWrapper } from "src/tools/mixpanel";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -14,6 +15,7 @@ const userNavigation = [
   {
     name: "Log Out",
     cb: async () => {
+      mixpanelWrapper.client.track("User logged out")
       await logoutUser();
       router.push("/login");
     },

@@ -7,6 +7,7 @@ import {
 } from "src/state";
 import { ButtonVariant, ToastType } from "src/types";
 import { removeUserFromTeam } from "src/api/teams";
+import { mixpanelWrapper } from "src/tools/mixpanel";
 
 const props = defineProps<{
   isOpen: boolean;
@@ -24,6 +25,9 @@ const confirm = async () => {
   try {
     if (!props.teamId || !props.userId) return;
     await removeUserFromTeam({ teamId: props.teamId, userId: props.userId });
+    
+    mixpanelWrapper.client.track("User removed from team");
+
     setActiveToast({
       type: ToastType.SUCCESS,
       message: "User removed.",
