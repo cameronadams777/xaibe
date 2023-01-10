@@ -6,7 +6,7 @@
 
 use std::{collections::HashMap, env, fs, path::Path};
 
-use notify_rust::Notification;
+use notify_rust::{Notification, Timeout};
 use serde_json::Value;
 use tauri::{
   CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
@@ -34,7 +34,6 @@ fn get_or_build_config_dir() -> String {
   }
 
   // Handle app directory
-
   let app_config_directory_name = match env::consts::OS {
     "windows" => "\\.config\\galata",
     _ => "/.config/galata"
@@ -184,6 +183,7 @@ fn notify_user(title: &str, body: &str) {
   Notification::new()
     .summary(title)
     .body(body)
+    .timeout(Timeout::Milliseconds(5000))
     .show()
     .unwrap();
 }
