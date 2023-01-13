@@ -6,7 +6,7 @@
   },
   "package": {
     "productName": "Galata",
-    "version": "0.1.0"
+    "version": "0.0.1"
   },
   "tauri": {
     "allowlist": {
@@ -65,7 +65,7 @@
     "updater": {
       "active": true,
       "endpoints": [
-        "http://localhost:5000/auto_update/{{target}}-{{arch}}/{{current_version}}", 
+        "https://staging-api.galata.io/auto_update/{{target}}-{{arch}}/{{current_version}}",
         "https://api.galata.io/auto_update/{{target}}-{{arch}}/{{current_version}}"
       ],
       "dialog": true,
