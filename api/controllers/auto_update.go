@@ -121,14 +121,5 @@ func CheckLatestAppVersion(c *gin.Context) {
     return
   }
   
-  latest_release_json, marshal_err := json.Marshal(*latest_release)
-  if marshal_err != nil {
-    log.Fatal(marshal_err)
-    c.AbortWithStatusJSON(http.StatusInternalServerError, "")
-    return
-  }
-
-  log.Println(string(latest_release_json))
-
-  c.JSON(http.StatusOK, string(latest_release_json))
+  c.JSON(http.StatusOK, latest_release)
 }
