@@ -128,5 +128,7 @@ func CheckLatestAppVersion(c *gin.Context) {
     return
   }
 
+  log.Println(string(latest_release_json))
+
   c.JSON(http.StatusOK, string(latest_release_json))
 }
