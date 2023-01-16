@@ -14,7 +14,8 @@ export const mixpanelWrapper: IMixpanelWrapper = {
       console.log("Warning: No mixpanel token detected.")
       return;
     }
-    mixpanel.init(token, { debug })
+    mixpanel.init(token, { debug });
+    mixpanel.track("Application opened")
   },
   client: mixpanel,
 }
