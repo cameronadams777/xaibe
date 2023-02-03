@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref, toRaw } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from "vue-router";
 import { TrashIcon } from "@heroicons/vue/24/outline";
 import {
@@ -11,9 +12,9 @@ import {
 import TheMainLayout from "src/layouts/the-main-layout.vue";
 import AlertSchemaForm from "src/components/alert-schema-form.vue";
 import AlertsListByApplication from "src/components/alerts-list-by-application.vue";
-import { IAlert, IApplication, ToastType } from "src/types";
+import { IApplication, ToastType } from "src/types";
 import { fetchApplicationById } from "src/api/applications";
-import { storeToRefs } from "pinia";
+import { config } from "src/config";
 
 const { getCachedApplication, cacheApplication } = useApplicationsStore();
 const { getCachedApplicationAlerts, ...alertStore } = useAlertsStore();
@@ -33,7 +34,7 @@ const getActiveApplication = async (applicationId: number) => {
   const cachedApplication = getCachedApplication(applicationId);
   if (cachedApplication != null) {
     activeApplication.value = cachedApplication;
-    applicationUrl.value = `http://localhost:5000/api/webhook?application_id=${applicationId}`;
+    applicationUrl.value = `${config.apiBaseUrl}/api/webhook?application_id=${applicationId}`;
     return;
   }
   try {
@@ -44,7 +45,7 @@ const getActiveApplication = async (applicationId: number) => {
     }
     cacheApplication(application);
     activeApplication.value = application;
-    applicationUrl.value = `http://localhost:5000/api/webhook?application_id=${applicationId}`;
+    applicationUrl.value = `${config.apiBaseUrl}/api/webhook?application_id=${applicationId}`;
   } catch (error) {
     setActiveToast({
       message: "An error occurred trying to fetch the requested application.",
