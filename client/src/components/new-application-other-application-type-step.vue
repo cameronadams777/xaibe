@@ -6,9 +6,7 @@
       id="applicationName"
       name="applicationName"
       type="applicationName"
-      placeholder="Airbrake"
-      :disabled="applicationType !== ApplicationType.OTHER"
-      :aria-disabled="applicationType !== ApplicationType.OTHER"
+      placeholder="My Awesome App"
       class="p-1.5 mb-4"
     />
     <div v-if="activeUser?.Teams?.length" class="w-full">

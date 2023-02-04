@@ -1,35 +1,3 @@
-<script lang="ts" setup>
-import { useRouter } from "vue-router";
-import { ref } from "vue";
-import { useAuthStore, useToastStore } from "../state";
-import { ToastType } from "../types";
-import { mixpanelWrapper } from "src/tools/mixpanel";
-
-const router = useRouter();
-const { setActiveToast } = useToastStore();
-const { login } = useAuthStore();
-
-const email = ref("");
-const password = ref("");
-const isSubmitting = ref(false);
-
-const submitForm = async () => {
-  try {
-    isSubmitting.value = true;
-    await login({ email: email.value, password: password.value });
-    mixpanelWrapper.client.track("User login");
-    isSubmitting.value = false;
-    router.push("/");
-  } catch (error) {
-    setActiveToast({
-      message: "An error occurred while attempting to log in.",
-      type: ToastType.ERROR,
-    });
-    isSubmitting.value = false;
-  }
-};
-</script>
-
 <template>
   <div class="w-full h-full flex flex-col justify-center items-center">
     <h2>Welcome Back!</h2>
@@ -70,3 +38,36 @@ const submitForm = async () => {
     >
   </div>
 </template>
+
+<script lang="ts" setup>
+import { useRouter } from "vue-router";
+import { ref } from "vue";
+import { useAuthStore, useToastStore } from "../state";
+import { ToastType } from "../types";
+import { mixpanelWrapper } from "src/tools/mixpanel";
+
+const router = useRouter();
+const { setActiveToast } = useToastStore();
+const { login } = useAuthStore();
+
+const email = ref("");
+const password = ref("");
+const isSubmitting = ref(false);
+
+const submitForm = async () => {
+  try {
+    isSubmitting.value = true;
+    await login({ email: email.value, password: password.value });
+    mixpanelWrapper.client.track("User login");
+    isSubmitting.value = false;
+    router.push("/");
+  } catch (error) {
+    setActiveToast({
+      message: "An error occurred while attempting to log in.",
+      type: ToastType.ERROR,
+    });
+    isSubmitting.value = false;
+  }
+};
+</script>
+
