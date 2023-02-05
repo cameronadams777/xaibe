@@ -55,7 +55,7 @@ func SendResetPasswordEmail(c *gin.Context) {
 		"ResetPasswordExpiry": time.Now().Add(time.Minute * 15),
 	}
 
-	updated_user, update_err := users_service.UpdateUserNullish(int(user.ID), updates)
+	updated_user, update_err := users_service.UpdateUserNullish(user.ID, updates)
 
 	if update_err != nil {
 		log.Panicln(update_err)
@@ -126,7 +126,7 @@ func ResetUserPassword(c *gin.Context) {
 	password, _ := bcrypt.GenerateFromPassword([]byte(input.Password), 14)
 
 	// Update user password as well as clear the reset psasword token and password expiry
-	_, update_err := users_service.UpdateUserNullish(int(user.ID), map[string]interface{}{"Password": string(password), "ResetPasswordCode": nil, "ResetPasswordExpiry": nil})
+	_, update_err := users_service.UpdateUserNullish(user.ID, map[string]interface{}{"Password": string(password), "ResetPasswordCode": nil, "ResetPasswordExpiry": nil})
 
 	if update_err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred during password reset process.", "data": false})

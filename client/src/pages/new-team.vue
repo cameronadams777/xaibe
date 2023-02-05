@@ -2,7 +2,7 @@
   <the-main-layout>
     <div class="w-full h-full flex flex-col justify-center items-center">
       <h2>Create a New Team</h2>
-      <team-details-form v-if="!paymentToken.length" @on-continue="getPaymentToken"/>
+      <new-team-details-form v-if="!paymentToken.length" @on-continue="getPaymentToken"/>
       <payment-form v-else/>
     </div>
   </the-main-layout>

@@ -16,7 +16,7 @@ func GetAllServiceTokens() []models.ServiceToken {
 	return tokens
 }
 
-func GetServiceTokenById(token_id int) (*models.ServiceToken, error) {
+func GetServiceTokenById(token_id uuid.UUID) (*models.ServiceToken, error) {
 	var token models.ServiceToken
 	err := database.DB.First(&token, token_id).Error
 	if err != nil {
@@ -27,16 +27,16 @@ func GetServiceTokenById(token_id int) (*models.ServiceToken, error) {
 
 // TODO: Refactor this so that we can just use `GetAllServiceTokens` rather than
 // having a completely separate function
-func GetAllServiceTokensByApplicationId(application_id int) []models.ServiceToken {
+func GetAllServiceTokensByApplicationId(application_id uuid.UUID) []models.ServiceToken {
 	var tokens []models.ServiceToken
-	database.DB.Find(&tokens, models.ServiceToken{ApplicationID: uint(application_id)})
+	database.DB.Find(&tokens, models.ServiceToken{ApplicationID: application_id})
 	return tokens
 }
 
-func CreateServiceToken(application_id int) (*models.ServiceToken, error) {
+func CreateServiceToken(application_id uuid.UUID) (*models.ServiceToken, error) {
 	new_token := models.ServiceToken{
 		Token:         uuid.NewString(),
-		ApplicationID: uint(application_id),
+		ApplicationID: uuid.UUID(application_id),
 		ExpiresAt:     time.Now().AddDate(1, 0, 0),
 	}
 	err := database.DB.Create(&new_token).Error
@@ -46,7 +46,7 @@ func CreateServiceToken(application_id int) (*models.ServiceToken, error) {
 	return &new_token, nil
 }
 
-func UpdateServiceToken(token_id int, updates models.ServiceToken) (*models.ServiceToken, error) {
+func UpdateServiceToken(token_id uuid.UUID, updates models.ServiceToken) (*models.ServiceToken, error) {
 	var token_to_update models.ServiceToken
 	err := database.DB.First(&token_to_update, token_id).Error
 

@@ -3,9 +3,11 @@ package alert_schemas_service
 import (
 	"api/initializers/database"
 	"api/models"
+
+  "github.com/google/uuid"
 )
 
-func GetAlertSchemaByApplicationId(application_id int) (*models.AlertSchema, error) {
+func GetAlertSchemaByApplicationId(application_id uuid.UUID) (*models.AlertSchema, error) {
 	var alert_schema models.AlertSchema
 	err := database.DB.Where("application_id = ?", application_id).First(&alert_schema).Error
 	if err != nil {

@@ -9,9 +9,9 @@ import (
 	"api/structs/invite_status"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
+  "github.com/google/uuid"
 )
 
 type CreateNewTeamInput struct {
@@ -19,8 +19,8 @@ type CreateNewTeamInput struct {
 }
 
 type InviteExistingUserToTeamInput struct {
-	UserId int `json:"user_id" binding:"required"`
-	TeamId int `json:"team_id" binding:"required"`
+	UserId string `json:"user_id" binding:"required"`
+	TeamId string `json:"team_id" binding:"required"`
 }
 
 type UpdateTeamInviteInput struct {
@@ -37,7 +37,7 @@ func GetAllTeams(c *gin.Context) {
 func GetTeamById(c *gin.Context) {
 	// Get ID from params
 	team_input_param := c.Param("team_id")
-	team_id, conv_err := strconv.Atoi(team_input_param)
+	team_id, conv_err := uuid.Parse(team_input_param)
 
 	if conv_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting team by id.", "data": nil})
@@ -55,7 +55,7 @@ func GetTeamById(c *gin.Context) {
 	data, _ := c.Get("authScope")
 	authScope := data.(structs.AuthScope)
 
-	membership_err := assertions.UserIsMemberOfTeam(team.ID, uint(authScope.UserID))
+	membership_err := assertions.UserIsMemberOfTeam(team.ID, authScope.UserID)
 
 	if membership_err != nil {
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "User not a member of the specified team.", "data": nil})
@@ -100,7 +100,7 @@ func CreateNewTeam(c *gin.Context) {
 
 func DeleteTeam(c *gin.Context) {
 	team_input_param := c.Param("team_id")
-	team_id, conv_err := strconv.Atoi(team_input_param)
+	team_id, conv_err := uuid.Parse(team_input_param)
 
 	if conv_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting team by id.", "data": nil})
@@ -122,7 +122,7 @@ func DeleteTeam(c *gin.Context) {
 	data, _ := c.Get("authScope")
 	authScope := data.(structs.AuthScope)
 
-	team_manager_err := assertions.UserIsManagerOfTeam(team_to_delete.ID, uint(authScope.UserID))
+	team_manager_err := assertions.UserIsManagerOfTeam(team_to_delete.ID, authScope.UserID)
 
 	if team_manager_err != nil {
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
@@ -136,10 +136,10 @@ func DeleteTeam(c *gin.Context) {
 
 func RemoveUserFromTeam(c *gin.Context) {
 	team_input_param := c.Param("team_id")
-	team_id, _ := strconv.Atoi(team_input_param)
+	team_id, _ := uuid.Parse(team_input_param)
 
 	user_input_param := c.Param("user_id")
-	user_id, _ := strconv.Atoi(user_input_param)
+	user_id, _ := uuid.Parse(user_input_param)
 
 	team, err := teams_service.GetTeamById(team_id)
 
@@ -156,7 +156,7 @@ func RemoveUserFromTeam(c *gin.Context) {
 		return
 	}
 
-	team_manager_err := assertions.UserIsManagerOfTeam(team.ID, uint(authScope.UserID))
+	team_manager_err := assertions.UserIsManagerOfTeam(team.ID, authScope.UserID)
 
 	if team_manager_err != nil {
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
@@ -166,7 +166,7 @@ func RemoveUserFromTeam(c *gin.Context) {
 	user_is_member_of_team := false
 
 	for _, user := range team.Users {
-		if int(user.ID) == user_id {
+		if user.ID == user_id {
 			user_is_member_of_team = true
 			break
 		}
@@ -221,7 +221,15 @@ func InviteExistingUserToTeam(c *gin.Context) {
 		return
 	}
 
-	user, find_user_err := users_service.GetUserById(input.UserId)
+  parsed_user_id, user_uuid_err := uuid.Parse(input.UserId)
+
+  if user_uuid_err != nil {
+    fmt.Println(user_uuid_err)
+    c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Invalid User ID", "data": nil})
+    return
+  }
+
+	user, find_user_err := users_service.GetUserById(parsed_user_id)
 
 	if find_user_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Could not find requested user.", "data": nil})
@@ -231,19 +239,27 @@ func InviteExistingUserToTeam(c *gin.Context) {
   data, _ := c.Get("authScope")
 	authScope := data.(structs.AuthScope)
 
-  if user.ID == uint(authScope.UserID) {
+  if user.ID == authScope.UserID {
  		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You cannot invite yourself to a team.", "data": nil})
 		return 
   }
 
-	team, find_team_err := teams_service.GetTeamById(input.TeamId)
+  parsed_team_id, team_uuid_err := uuid.Parse(input.TeamId)
+
+  if team_uuid_err != nil {
+    fmt.Println(team_uuid_err)
+    c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You cannot invite yourself to a team.", "data": nil})
+    return 
+  }
+
+	team, find_team_err := teams_service.GetTeamById(parsed_team_id)
 
 	if find_team_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting team by id.", "data": nil})
 		return
 	}
 	
-	team_manager_err := assertions.UserIsManagerOfTeam(team.ID, uint(authScope.UserID))
+	team_manager_err := assertions.UserIsManagerOfTeam(team.ID, authScope.UserID)
 
 	if team_manager_err != nil {
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
@@ -253,7 +269,7 @@ func InviteExistingUserToTeam(c *gin.Context) {
 	user_is_member_of_team := false
 
 	for _, user := range team.Users {
-		if int(user.ID) == input.UserId {
+		if user.ID == parsed_user_id {
 			user_is_member_of_team = true
 			break
 		}
@@ -264,14 +280,14 @@ func InviteExistingUserToTeam(c *gin.Context) {
 		return
 	}
 
-	_, invite_create_err := teams_service.CreateInvite(uint(input.TeamId), uint(authScope.UserID), user.Email)
+	_, invite_create_err := teams_service.CreateInvite(parsed_team_id, authScope.UserID, user.Email)
 
 	if invite_create_err != nil {
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "An error occurred inviting the requested user to your team.", "data": nil})
 		return
 	}
 
-	// TODO: ush new event to websocket notifying user that there is a pending invitation
+	// TODO: Push new event to websocket notifying user that there is a pending invitation
 }
 
 func UpdateTeamInviteStatus(c *gin.Context) {
@@ -297,7 +313,7 @@ func UpdateTeamInviteStatus(c *gin.Context) {
 
 	if invite_status.InviteStatus(input.Status) == invite_status.ACCEPTED {
 		// Associate user team id on invite
-		_, update_err := teams_service.AddUserToTeam(int(updated_invite.TeamID), authScope.UserID)
+		_, update_err := teams_service.AddUserToTeam(updated_invite.TeamID, authScope.UserID)
 
 		if update_err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred removing the user.", "data": nil})

@@ -3,7 +3,6 @@ package auth_service
 import (
 	"api/config"
 	"api/models"
-	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -17,7 +16,7 @@ type AuthenticationTokens struct {
 func CreateTokens(user models.User) (*AuthenticationTokens, error) {
 	// TODO: Migrate to RegisteredClaims
 	access_claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(user.ID)),
+		Issuer:    user.ID.String(),
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: (time.Now().Add(time.Minute * 45)).Unix(),
 	})
@@ -29,7 +28,7 @@ func CreateTokens(user models.User) (*AuthenticationTokens, error) {
 	}
 
 	refresh_claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(user.ID)),
+		Issuer:    user.ID.String(),
 		IssuedAt:  time.Now().Unix(),
 		ExpiresAt: (time.Now().Add(time.Hour * 24 * 7)).Unix(),
 	})

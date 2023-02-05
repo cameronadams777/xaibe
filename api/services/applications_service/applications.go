@@ -3,6 +3,8 @@ package applications_service
 import (
 	"api/initializers/database"
 	"api/models"
+
+  "github.com/google/uuid"
 )
 
 func GetAllApplications(filters models.Application) []models.Application {
@@ -11,7 +13,7 @@ func GetAllApplications(filters models.Application) []models.Application {
 	return applications
 }
 
-func GetApplicationById(application_id int) (*models.Application, error) {
+func GetApplicationById(application_id uuid.UUID) (*models.Application, error) {
 	var application models.Application
 	err := database.DB.Preload("AlertSchema").Find(&application, application_id).Error
 	if err != nil {
@@ -28,7 +30,7 @@ func CreateApplication(new_application models.Application) (*models.Application,
 	return &new_application, nil
 }
 
-func UpdateApplication(application_id int, updates models.Application) (*models.Application, error) {
+func UpdateApplication(application_id uuid.UUID, updates models.Application) (*models.Application, error) {
 	var application_to_update models.Application
 	err := database.DB.First(&application_to_update, application_id).Error
 
@@ -41,7 +43,7 @@ func UpdateApplication(application_id int, updates models.Application) (*models.
 	return &application_to_update, nil
 }
 
-func AddSchemaToApplication(application_id int, alert_schema models.AlertSchema) (*models.Application, error) {
+func AddSchemaToApplication(application_id uuid.UUID, alert_schema models.AlertSchema) (*models.Application, error) {
 	var application models.Application
 	application_err := database.DB.First(&application, application_id).Error
 
@@ -54,7 +56,7 @@ func AddSchemaToApplication(application_id int, alert_schema models.AlertSchema)
 	return &application, nil
 }
 
-func DeleteApplication(application_id int) (*models.Application, error) {
+func DeleteApplication(application_id uuid.UUID) (*models.Application, error) {
 	var application_to_delete models.Application
 	err := database.DB.First(&application_to_delete, application_id).Error
 

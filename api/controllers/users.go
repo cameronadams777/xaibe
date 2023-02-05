@@ -9,23 +9,23 @@ import (
 	"api/structs"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 // TODO: Write helper function that returns a JSON response but filters out sensitive data
 
 type UpdateUserInput struct {
-	UserId  int         `json:"userId" binding:"required"`
+	UserId  string      `json:"userId" binding:"required"`
 	Updates models.User `json:"user" binding:"-"`
 }
 
 type InviteNewUserInput struct {
 	Email  string `json:"email" binding:"required"`
-	TeamId *int   `json:"teamId" binding:"-"`
+	TeamId *string   `json:"teamId" binding:"-"`
 }
 
 func GetUserDetails(c *gin.Context) {
@@ -56,7 +56,7 @@ func GetAllUsers(c *gin.Context) {
 
 func GetUserById(c *gin.Context) {
 	user_input_param := c.Param("user_id")
-	user_id, conv_err := strconv.Atoi(user_input_param)
+	user_id, conv_err := uuid.Parse(user_input_param)
 
 	if conv_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting user by id.", "data": nil})
@@ -102,12 +102,20 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if int(current_user.ID) != input.UserId && !current_user.IsAdmin {
+  parsed_user_id, uuid_err := uuid.Parse(input.UserId)
+
+  if uuid_err != nil {
+    fmt.Println(uuid_err)
+    c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Invalid User ID", "data": nil})
+    return
+  }
+
+	if current_user.ID != parsed_user_id && !current_user.IsAdmin {
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to update this user's account", "data": nil})
 		return
 	}
 
-	updated_user, err := users_service.UpdateUser(input.UserId, input.Updates)
+	updated_user, err := users_service.UpdateUser(parsed_user_id, input.Updates)
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "User not found.", "data": nil})
@@ -119,7 +127,7 @@ func UpdateUser(c *gin.Context) {
 
 func DeleteUser(c *gin.Context) {
 	user_input_param := c.Param("user_id")
-	user_id, conv_err := strconv.Atoi(user_input_param)
+	user_id, conv_err := uuid.Parse(user_input_param)
 
 	if conv_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting user by id.", "data": nil})
@@ -138,7 +146,7 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	deleted_user, _ := users_service.UpdateUser(user_id, models.User{Model: gorm.Model{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
+  deleted_user, _ := users_service.UpdateUser(user_id, models.User{UUIDBaseModel: models.UUIDBaseModel{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
 
 	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User successfully deleted.", "data": gin.H{"user": deleted_user}})
 }
@@ -164,7 +172,10 @@ func InviteNewUser(c *gin.Context) {
 
 	if input.TeamId != nil {
 		// Add new record to invites table
-		teams_service.CreateInvite(uint(*input.TeamId), uint(authScope.UserID), input.Email)
+    parsed_team_id, uuid_err := uuid.Parse(*input.TeamId)
+    if uuid_err == nil {
+		  teams_service.CreateInvite(parsed_team_id, authScope.UserID, input.Email)
+    }
 	}
 
 	templateElements := ResetPasswordTemplateElements{

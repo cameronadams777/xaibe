@@ -8,16 +8,17 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
+  "github.com/google/uuid"
 	"github.com/gin-gonic/gin"
 )
 
 // TODO: Look into cleaning up this function
 func WebHook(c *gin.Context) {
 	application_input_param := c.Query("application_id")
-	application_id, conv_err := strconv.Atoi(application_input_param)
+	application_id, conv_err := uuid.Parse(application_input_param)
+
 	if conv_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Application not specified.", "data": nil})
 		return
@@ -57,10 +58,10 @@ func WebHook(c *gin.Context) {
 	// Store alert data for later in redis
 	var owner_id string
 	if application.TeamID != nil {
-		team_id := strconv.Itoa(int(*application.TeamID))
+		team_id := application.TeamID.String()
 		owner_id = "team_" + team_id
 	} else if application.UserID != nil {
-		user_id := strconv.Itoa(int(*application.UserID))
+		user_id := application.UserID.String()
 		owner_id = "user_" + user_id
 	} else {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred posting alert to application.", "data": nil})

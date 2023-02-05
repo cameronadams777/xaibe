@@ -4,6 +4,8 @@ import (
 	"api/initializers/database"
 	"api/models"
 	"time"
+
+  "github.com/google/uuid"
 )
 
 // TODO: Find way to specify preloads when querying, to prevent excess queries
@@ -14,7 +16,7 @@ func GetAllUsers() []models.User {
 	return users
 }
 
-func GetUserById(user_id int) (*models.User, error) {
+func GetUserById(user_id uuid.UUID) (*models.User, error) {
 	var user models.User
 	err := database.DB.Preload("Teams").Preload("Applications").First(&user, user_id).Error
 
@@ -47,7 +49,7 @@ func GetUserByPasswordCode(reset_password_code string, reset_password_expiry tim
 	return &user, nil
 }
 
-func UpdateUser(user_id int, updates models.User) (*models.User, error) {
+func UpdateUser(user_id uuid.UUID, updates models.User) (*models.User, error) {
 	// Get user that we want to update
 	var user_to_update models.User
 	err := database.DB.Preload("Teams").Preload("Applications").First(&user_to_update, user_id).Error
@@ -61,7 +63,7 @@ func UpdateUser(user_id int, updates models.User) (*models.User, error) {
 	return &user_to_update, nil
 }
 
-func UpdateUserNullish(user_id int, updates map[string]interface{}) (*models.User, error) {
+func UpdateUserNullish(user_id uuid.UUID, updates map[string]interface{}) (*models.User, error) {
 	// Get user that we want to update
 	var user_to_update models.User
 	err := database.DB.Preload("Teams").Preload("Applications").First(&user_to_update, user_id).Error

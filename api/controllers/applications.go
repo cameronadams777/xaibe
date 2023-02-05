@@ -10,7 +10,6 @@ import (
 	"api/structs"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -23,15 +22,15 @@ type AlertSchemaInput struct {
 }
 
 type CreateNewApplicationInput struct {
-	TeamId      *uint            `json:"teamId" binding:"required_without=UserId"`
-	UserId      *uint            `json:"userId" binding:"required_without=TeamId"`
+	TeamId      *string            `json:"teamId" binding:"required_without=UserId"`
+	UserId      *string            `json:"userId" binding:"required_without=TeamId"`
 	Name        string           `json:"applicationName" binding:"required"`
 	AlertSchema AlertSchemaInput `json:"alertSchema" binding:"-"`
 }
 
 func GetApplicationById(c *gin.Context) {
 	application_input_param := c.Param("application_id")
-	application_id, conv_err := strconv.Atoi(application_input_param)
+	application_id, conv_err := uuid.Parse(application_input_param)
 
 	if conv_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting application by id.", "data": nil})
@@ -48,8 +47,8 @@ func GetApplicationById(c *gin.Context) {
 	data, _ := c.Get("authScope")
 	authScope := data.(structs.AuthScope)
 
-	user_ownership_error := assertions.UserOwnsApplication(application.ID, uint(authScope.UserID))
-	team_membership_error := assertions.UserIsMemberOfTeamApplication(application.ID, uint(authScope.UserID))
+	user_ownership_error := assertions.UserOwnsApplication(application.ID, authScope.UserID)
+	team_membership_error := assertions.UserIsMemberOfTeamApplication(application.ID, authScope.UserID)
 
 	if user_ownership_error != nil && team_membership_error != nil {
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
@@ -68,9 +67,26 @@ func CreateNewApplication(c *gin.Context) {
 		return
 	}
 
+  parsed_user_id, user_uuid_err := uuid.Parse(*input.UserId)
+
+  if user_uuid_err != nil {
+    fmt.Println(user_uuid_err)
+    c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Invalid User ID", "data": nil})
+    return
+  }
+
+  parsed_team_id, team_uuid_err := uuid.Parse(*input.TeamId)
+
+  if team_uuid_err != nil {
+    fmt.Println(team_uuid_err)
+    c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Invalid Team ID", "data": nil})
+    return
+  }
+
+
 	new_application := models.Application{
-		UserID:   input.UserId,
-		TeamID:   input.TeamId,
+		UserID:   &parsed_user_id,
+		TeamID:   &parsed_team_id,
 		UniqueId: uuid.NewString(),
 		Name:     input.Name,
 	}
@@ -91,13 +107,13 @@ func CreateNewApplication(c *gin.Context) {
 		return
 	}
 
-	alert_schema, find_schema_err := alert_schemas_service.GetAlertSchemaByApplicationId(int(created_application.ID))
+	alert_schema, find_schema_err := alert_schemas_service.GetAlertSchemaByApplicationId(created_application.ID)
 
 	if find_schema_err == nil {
-		applications_service.UpdateApplication(int(created_application.ID), models.Application{AlertSchemaID: &alert_schema.ID})
+		applications_service.UpdateApplication(created_application.ID, models.Application{AlertSchemaID: &alert_schema.ID})
 	}
 
-	application_with_schema, _ := applications_service.GetApplicationById(int(created_application.ID))
+	application_with_schema, _ := applications_service.GetApplicationById(created_application.ID)
 
 	fmt.Println(helpers.PrettyPrint(application_with_schema))
 
@@ -106,7 +122,7 @@ func CreateNewApplication(c *gin.Context) {
 
 func DeleteApplication(c *gin.Context) {
 	application_input_param := c.Param("application_id")
-	application_id, conv_err := strconv.Atoi(application_input_param)
+	application_id, conv_err := uuid.Parse(application_input_param)
 
 	if conv_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting application by id.", "data": nil})
@@ -128,8 +144,8 @@ func DeleteApplication(c *gin.Context) {
 	data, _ := c.Get("authScope")
 	authScope := data.(structs.AuthScope)
 
-	user_ownership_error := assertions.UserOwnsApplication(application_to_delete.ID, uint(authScope.UserID))
-	team_manager_error := assertions.UserIsManagerOfTeamApplication(application_to_delete.ID, uint(authScope.UserID))
+	user_ownership_error := assertions.UserOwnsApplication(application_to_delete.ID, authScope.UserID)
+	team_manager_error := assertions.UserIsManagerOfTeamApplication(application_to_delete.ID, authScope.UserID)
 
 	if user_ownership_error != nil && team_manager_error != nil {
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
@@ -143,7 +159,7 @@ func DeleteApplication(c *gin.Context) {
 
 func AddSchemaToApplication(c *gin.Context) {
 	application_input_param := c.Param("application_id")
-	application_id, conv_err := strconv.Atoi(application_input_param)
+	application_id, conv_err := uuid.Parse(application_input_param)
 
 	if conv_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting application by id.", "data": nil})
@@ -168,8 +184,8 @@ func AddSchemaToApplication(c *gin.Context) {
 	data, _ := c.Get("authScope")
 	authScope := data.(structs.AuthScope)
 
-	user_ownership_error := assertions.UserOwnsApplication(application_to_update.ID, uint(authScope.UserID))
-	team_manager_error := assertions.UserIsManagerOfTeamApplication(application_to_update.ID, uint(authScope.UserID))
+	user_ownership_error := assertions.UserOwnsApplication(application_to_update.ID, authScope.UserID)
+	team_manager_error := assertions.UserIsManagerOfTeamApplication(application_to_update.ID, authScope.UserID)
 
 	if user_ownership_error != nil && team_manager_error != nil {
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
@@ -198,7 +214,7 @@ func AddSchemaToApplication(c *gin.Context) {
 
 func GetApplicationServiceTokens(c *gin.Context) {
 	application_input_param := c.Param("application_id")
-	application_id, conv_err := strconv.Atoi(application_input_param)
+	application_id, conv_err := uuid.Parse(application_input_param)
 
 	if conv_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting application by id.", "data": nil})

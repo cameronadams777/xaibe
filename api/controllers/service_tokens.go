@@ -7,15 +7,15 @@ import (
 	"api/structs"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
+  "github.com/google/uuid"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 type CreateNewTokenInput struct {
-	ApplicationID int `json:"applicationId" binding:"required"`
+	ApplicationID string `json:"applicationId" binding:"required"`
 }
 
 func CreateNewToken(c *gin.Context) {
@@ -28,11 +28,18 @@ func CreateNewToken(c *gin.Context) {
 		return
 	}
 
+  parsed_application_id, uuid_err := uuid.Parse(input.ApplicationID)
+
+  if uuid_err != nil {
+    fmt.Println(uuid_err)
+    c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Invalid Application ID", "data": nil})
+  }
+
 	data, _ := c.Get("authScope")
 	authScope := data.(structs.AuthScope)
 
-	user_ownership_error := assertions.UserOwnsApplication(uint(input.ApplicationID), uint(authScope.UserID))
-	team_manager_error := assertions.UserIsManagerOfTeamApplication(uint(input.ApplicationID), uint(authScope.UserID))
+	user_ownership_error := assertions.UserOwnsApplication(parsed_application_id, authScope.UserID)
+	team_manager_error := assertions.UserIsManagerOfTeamApplication(parsed_application_id, authScope.UserID)
 
 	if user_ownership_error != nil && team_manager_error != nil {
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
@@ -40,7 +47,7 @@ func CreateNewToken(c *gin.Context) {
 	}
 
 	// Create token
-	new_token, creation_err := service_tokens_service.CreateServiceToken(input.ApplicationID)
+	new_token, creation_err := service_tokens_service.CreateServiceToken(parsed_application_id)
 
 	if creation_err != nil {
 		fmt.Println(creation_err)
@@ -55,7 +62,7 @@ func CreateNewToken(c *gin.Context) {
 func DeleteToken(c *gin.Context) {
 	// Get token id from params
 	token_input_param := c.Param("token_id")
-	token_id, conv_err := strconv.Atoi(token_input_param)
+	token_id, conv_err := uuid.Parse(token_input_param)
 
 	if conv_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting token by id.", "data": nil})

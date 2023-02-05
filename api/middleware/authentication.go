@@ -6,9 +6,8 @@ import (
 
 	"fmt"
 	"net/http"
-	"strconv"
-
-	"github.com/gin-gonic/gin"
+  "github.com/google/uuid"
+  "github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -35,11 +34,17 @@ func Protected() gin.HandlerFunc {
 
 		claims := token.Claims.(jwt.MapClaims)
 
-		userId, _ := strconv.Atoi(claims["iss"].(string))
+		userId, _ := claims["iss"].(string)
+
+    parsedUserID, uuid_err := uuid.Parse(userId)
+
+    if uuid_err != nil {
+      c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "Invalid userId", "data": nil})
+    }
 
 		if token.Valid {
 			authScope := structs.AuthScope{
-				UserID: userId,
+				UserID: parsedUserID,
 			}
 			c.Set("authScope", authScope)
 			c.Next()

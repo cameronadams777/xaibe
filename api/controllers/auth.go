@@ -8,13 +8,12 @@ import (
 	"api/services/users_service"
 	"fmt"
 	"log"
-	"strconv"
 
 	"net/http"
 	"time"
-
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -36,7 +35,7 @@ func Login(c *gin.Context) {
 
 	database.DB.Where(&models.User{Email: input.Email}).First(&user)
 
-	if user.ID == 0 {
+	if user.ID.String() != "" {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "User not found.", "data": nil})
 		return
 	}
@@ -90,7 +89,7 @@ func Register(c *gin.Context) {
 
 	database.DB.Where(&models.User{Email: input.Email}).Find(&existingUser)
 
-	if existingUser.ID != 0 {
+	if existingUser.ID.String() != "" {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Error on register request.", "data": nil})
 		return
 	}
@@ -142,7 +141,7 @@ func RefreshToken(c *gin.Context) {
 
 	claims := verified_token.Claims.(jwt.MapClaims)
 
-	user_id, _ := strconv.Atoi(claims["iss"].(string))
+	user_id, _ := uuid.Parse(claims["iss"].(string))
 
 	user, get_user_err := users_service.GetUserById(user_id)
 

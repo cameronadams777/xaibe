@@ -10,10 +10,10 @@ import (
 	"api/structs"
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/google/uuid"
 )
 
 type QueryObject struct {
@@ -37,7 +37,7 @@ func GetAllAlerts(c *gin.Context) {
 	user, _ := users_service.GetUserById(authScope.UserID)
 
 	for _, a := range user.Applications {
-		application, err := applications_service.GetApplicationById(int(a.ID))
+		application, err := applications_service.GetApplicationById(a.ID)
 
 		if err != nil {
 			continue
@@ -45,18 +45,18 @@ func GetAllAlerts(c *gin.Context) {
 
 		applications = append(applications, QueryObject{
 			owner_type:  "user",
-			owner_id:    strconv.Itoa(int(user.ID)),
+			owner_id:    user.ID.String(),
 			application: *application,
 		})
 	}
 
 	for _, t := range user.Teams {
-		team, fetch_team_err := teams_service.GetTeamById(int(t.ID))
+		team, fetch_team_err := teams_service.GetTeamById(t.ID)
 		if fetch_team_err != nil {
 			continue
 		}
 		for _, a := range team.Applications {
-			application, err := applications_service.GetApplicationById(int(a.ID))
+			application, err := applications_service.GetApplicationById(a.ID)
 
 			if err != nil {
 				continue
@@ -64,7 +64,7 @@ func GetAllAlerts(c *gin.Context) {
 
 			applications = append(applications, QueryObject{
 				owner_type:  "team",
-				owner_id:    strconv.Itoa(int(user.ID)),
+				owner_id:    user.ID.String(),
 				application: *application,
 			})
 		}
@@ -73,7 +73,7 @@ func GetAllAlerts(c *gin.Context) {
 	alerts_as_json := make(map[string]ApplicationAlertResponse)
 
 	for _, queryObject := range applications {
-		application_id := strconv.Itoa(int(queryObject.application.ID))
+		application_id := queryObject.application.ID.String()
 		scan_key := queryObject.owner_type + "_" + queryObject.owner_id + ":" + "application_" + application_id + ":" + queryObject.application.UniqueId + ":*"
 
 		var alerts []map[string]interface{}
@@ -102,7 +102,7 @@ func GetAllAlerts(c *gin.Context) {
 
 func GetApplicationAlerts(c *gin.Context) {
 	application_input_param := c.Param("application_id")
-	application_id, conv_err := strconv.Atoi(application_input_param)
+	application_id, conv_err := uuid.Parse(application_input_param)
 
 	if conv_err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting application by id.", "data": nil})
@@ -119,10 +119,10 @@ func GetApplicationAlerts(c *gin.Context) {
 	var owner_id string
 
 	if application.TeamID != nil {
-		team_id := strconv.Itoa(int(*application.TeamID))
+		team_id := application.TeamID.String()
 		owner_id = "team_" + team_id
 	} else if application.UserID != nil {
-		user_id := strconv.Itoa(int(*application.UserID))
+		user_id := application.UserID.String()
 		owner_id = "user_" + user_id
 	} else {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred retrieving alerts for application.", "data": nil})
@@ -132,8 +132,8 @@ func GetApplicationAlerts(c *gin.Context) {
 	data, _ := c.Get("authScope")
 	authScope := data.(structs.AuthScope)
 
-	user_ownership_error := assertions.UserOwnsApplication(application.ID, uint(authScope.UserID))
-	team_membership_error := assertions.UserIsMemberOfTeamApplication(application.ID, uint(authScope.UserID))
+	user_ownership_error := assertions.UserOwnsApplication(application.ID, authScope.UserID)
+	team_membership_error := assertions.UserIsMemberOfTeamApplication(application.ID, authScope.UserID)
 
 	if user_ownership_error != nil && team_membership_error != nil {
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})

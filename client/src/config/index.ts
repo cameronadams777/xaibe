@@ -6,6 +6,7 @@ const configSchema = z.object({
   mixpanelToken: z.string(),
   mixpanelDebug: z.boolean(),
   stripePublishableKey: z.string(),
+  stripeClientSecret: z.string(),
 });
 
 export const config: z.infer<typeof configSchema> = configSchema.parse({
@@ -14,6 +15,7 @@ export const config: z.infer<typeof configSchema> = configSchema.parse({
   mixpanelToken: import.meta.env.VITE_MIXPANEL_TOKEN,
   mixpanelDebug: import.meta.env.VITE_MIXPANEL_DEBUG === "true",
   stripePublishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
+  stripeClientSecret: import.meta.env.VITE_STRIPE_SECRET_KEY
 });
 
 

@@ -4,10 +4,12 @@ import (
 	"api/services/applications_service"
 	"api/services/teams_service"
 	"errors"
+  
+  "github.com/google/uuid"
 )
 
-func UserOwnsApplication(application_id uint, user_id uint) error {
-	application, app_find_err := applications_service.GetApplicationById(int(application_id))
+func UserOwnsApplication(application_id uuid.UUID, user_id uuid.UUID) error {
+	application, app_find_err := applications_service.GetApplicationById(application_id)
 	if app_find_err != nil {
 		return errors.New("UserOwnsApplication: Application does not exist")
 	}
@@ -23,8 +25,8 @@ func UserOwnsApplication(application_id uint, user_id uint) error {
 	return errors.New("UserOwnsApplication: User does not own this application")
 }
 
-func UserIsMemberOfTeamApplication(application_id uint, user_id uint) error {
-	application, app_find_err := applications_service.GetApplicationById(int(application_id))
+func UserIsMemberOfTeamApplication(application_id uuid.UUID, user_id uuid.UUID) error {
+	application, app_find_err := applications_service.GetApplicationById(application_id)
 	if app_find_err != nil {
 		return errors.New("UserIsManagerOfTeamApplication: Application does not exist")
 	}
@@ -33,7 +35,7 @@ func UserIsMemberOfTeamApplication(application_id uint, user_id uint) error {
 		return errors.New("UserIsManagerOfTeamApplication: Application does not belong to a team")
 	}
 
-	team, _ := teams_service.GetTeamById(int(*application.TeamID))
+	team, _ := teams_service.GetTeamById(*application.TeamID)
 
 	for _, user := range team.Users {
 		if user.ID == user_id {
@@ -44,8 +46,8 @@ func UserIsMemberOfTeamApplication(application_id uint, user_id uint) error {
 	return errors.New("UserIsManagerOfTeamApplication: User is not a member of the team that owns this application")
 }
 
-func UserIsManagerOfTeamApplication(application_id uint, user_id uint) error {
-	application, app_find_err := applications_service.GetApplicationById(int(application_id))
+func UserIsManagerOfTeamApplication(application_id uuid.UUID, user_id uuid.UUID) error {
+	application, app_find_err := applications_service.GetApplicationById(application_id)
 	if app_find_err != nil {
 		return errors.New("UserIsManagerOfTeamApplication: Application does not exist")
 	}
@@ -54,7 +56,7 @@ func UserIsManagerOfTeamApplication(application_id uint, user_id uint) error {
 		return errors.New("UserIsManagerOfTeamApplication: Application does not belong to a team")
 	}
 
-	team, _ := teams_service.GetTeamById(int(*application.TeamID))
+	team, _ := teams_service.GetTeamById(*application.TeamID)
 
 	for _, manager := range team.Managers {
 		if manager.ID == user_id {
@@ -65,8 +67,8 @@ func UserIsManagerOfTeamApplication(application_id uint, user_id uint) error {
 	return errors.New("UserIsManagerOfTeamApplication: User is not a manager of the team that owns this application")
 }
 
-func UserIsManagerOfTeam(team_id uint, user_id uint) error {
-	team, team_find_err := teams_service.GetTeamById(int(team_id))
+func UserIsManagerOfTeam(team_id uuid.UUID, user_id uuid.UUID) error {
+	team, team_find_err := teams_service.GetTeamById(team_id)
 	if team_find_err != nil {
 		return errors.New("UserIsManagerOfTeam: Team does not exist")
 	}
@@ -80,8 +82,8 @@ func UserIsManagerOfTeam(team_id uint, user_id uint) error {
 	return errors.New("UserIsManagerOfTeam: User not a manager of the specified team")
 }
 
-func UserIsMemberOfTeam(team_id uint, user_id uint) error {
-	team, team_find_err := teams_service.GetTeamById(int(team_id))
+func UserIsMemberOfTeam(team_id uuid.UUID, user_id uuid.UUID) error {
+	team, team_find_err := teams_service.GetTeamById(team_id)
 	if team_find_err != nil {
 		return errors.New("UserIsMemberOfTeam: Team does not exist")
 	}

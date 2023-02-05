@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -31,7 +31,7 @@ func ServeWS(c *gin.Context) {
 		return []byte(config.Get("AUTH_TOKEN_SECRET")), nil
 	})
 	claims := token.Claims.(jwt.MapClaims)
-	user_id, _ := strconv.Atoi(claims["iss"].(string))
+	user_id, _ := uuid.Parse(claims["iss"].(string))
 	current_user, _ := users_service.GetUserById(user_id)
 
 	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
@@ -43,7 +43,7 @@ func ServeWS(c *gin.Context) {
 	conn := &websockets.Connection{Send: make(chan []byte, 256), Socket: ws}
 	// TODO: Also take into account team applications
 	for _, application := range current_user.Applications {
-		room_id := strconv.Itoa(int(application.ID)) + ":" + application.UniqueId
+		room_id := application.ID.String() + ":" + application.UniqueId
 		s := websockets.Subscription{Conn: conn, Room: room_id}
 		websockets.Pool.Register <- s
 		go s.WritePump()

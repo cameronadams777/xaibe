@@ -4,6 +4,8 @@ import (
 	"api/initializers/database"
 	"api/models"
 	"api/structs/invite_status"
+
+  "github.com/google/uuid"
 )
 
 // TODO: Find way to specify preloads when querying, to prevent excess queries
@@ -23,7 +25,7 @@ func GetTeamByName(name string) (*models.Team, error) {
 	return &team, nil
 }
 
-func GetTeamById(team_id int) (*models.Team, error) {
+func GetTeamById(team_id uuid.UUID) (*models.Team, error) {
 	var team models.Team
 	err := database.DB.Preload("Users").Preload("Managers").Preload("Applications").First(&team, team_id).Error
 	if err != nil {
@@ -45,7 +47,7 @@ func CreateTeam(name string, creating_user models.User) (*models.Team, error) {
 	return &team, nil
 }
 
-func UpdateTeam(team_id int, updates models.Team) (*models.Team, error) {
+func UpdateTeam(team_id uuid.UUID, updates models.Team) (*models.Team, error) {
 	var team_to_update models.Team
 	err := database.DB.First(&team_to_update, team_id).Error
 
@@ -58,7 +60,7 @@ func UpdateTeam(team_id int, updates models.Team) (*models.Team, error) {
 	return &team_to_update, nil
 }
 
-func DeleteTeam(team_id int) (*models.Team, error) {
+func DeleteTeam(team_id uuid.UUID) (*models.Team, error) {
 	var team_to_delete models.Team
 	err := database.DB.First(&team_to_delete, team_id).Error
 
@@ -71,7 +73,7 @@ func DeleteTeam(team_id int) (*models.Team, error) {
 	return &team_to_delete, nil
 }
 
-func AddUserToTeam(team_id int, user_id int) (*models.Team, error) {
+func AddUserToTeam(team_id uuid.UUID, user_id uuid.UUID) (*models.Team, error) {
 	var team models.Team
 	team_err := database.DB.First(&team, team_id).Error
 
@@ -91,7 +93,7 @@ func AddUserToTeam(team_id int, user_id int) (*models.Team, error) {
 	return &team, nil
 }
 
-func RemoveUserFromTeam(team_id int, user_id int) (*models.Team, error) {
+func RemoveUserFromTeam(team_id uuid.UUID, user_id uuid.UUID) (*models.Team, error) {
 	var team models.Team
 	team_err := database.DB.First(&team, team_id).Error
 
@@ -121,7 +123,7 @@ func GetPendingTeamInvites(email string) (*[]models.TeamInvite, error) {
 	return &invites, nil
 }
 
-func CreateInvite(team_id uint, sender_id uint, email string) (*models.TeamInvite, error) {
+func CreateInvite(team_id uuid.UUID, sender_id uuid.UUID, email string) (*models.TeamInvite, error) {
 	invite := models.TeamInvite{
 		TeamID:   team_id,
 		SenderID: sender_id,
