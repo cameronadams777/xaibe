@@ -30,13 +30,13 @@ const navigateToNewTeamPage = () => {
       </base-fab-button>
       <base-button
         text="Create New Application"
-        :variant="ButtonVariant.WHITE"
+        :variant="ButtonVariant.PRIMARY"
         class="w-1/2"
         @click="navigateToNewAppPage"
       />
       <base-button
         text="Create New Team"
-        :variant="ButtonVariant.WHITE"
+        :variant="ButtonVariant.PRIMARY"
         class="w-1/2"
         @click="navigateToNewTeamPage"
       />
