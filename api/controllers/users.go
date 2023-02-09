@@ -35,23 +35,25 @@ func GetUserDetails(c *gin.Context) {
 	_, current_user_err := users_service.GetUserById(authScope.UserID)
 
 	if current_user_err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An unknown error occurred.", "data": nil})
+    fmt.Println(current_user_err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An unknown error occurred."})
 		return
 	}
 
 	user, err := users_service.GetUserById(authScope.UserID)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "User not found.", "data": nil})
+    fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusNotFound, structs.ErrorMessage{Message: "User not found."})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User found.", "data": user})
+	c.JSON(http.StatusOK, user)
 }
 
 func GetAllUsers(c *gin.Context) {
 	users := users_service.GetAllUsers()
-	c.JSON(http.StatusOK, gin.H{"status": "error", "message": "", "data": users})
+	c.JSON(http.StatusOK, users)
 }
 
 func GetUserById(c *gin.Context) {
@@ -59,7 +61,8 @@ func GetUserById(c *gin.Context) {
 	user_id, conv_err := uuid.Parse(user_input_param)
 
 	if conv_err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting user by id.", "data": nil})
+    fmt.Println(conv_err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Error requesting user by id."})
 		return
 	}
 
@@ -69,18 +72,20 @@ func GetUserById(c *gin.Context) {
 	_, current_user_err := users_service.GetUserById(authScope.UserID)
 
 	if current_user_err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An unknown error occurred.", "data": nil})
+    fmt.Println(current_user_err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An unknown error occurred."})
 		return
 	}
 
 	user, err := users_service.GetUserById(user_id)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "User not found.", "data": nil})
+    fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusNotFound, structs.ErrorMessage{Message: "User not found."})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User found.", "data": gin.H{"user": user}})
+	c.JSON(http.StatusOK, user)
 }
 
 func UpdateUser(c *gin.Context) {
@@ -88,7 +93,7 @@ func UpdateUser(c *gin.Context) {
 
 	if err := c.BindJSON(&input); err != nil {
 		fmt.Println(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Invalid request body."})
 		return
 	}
 
@@ -98,7 +103,7 @@ func UpdateUser(c *gin.Context) {
 	current_user, current_user_err := users_service.GetUserById(authScope.UserID)
 
 	if current_user_err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An unknown error occurred.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An unknown error occurred."})
 		return
 	}
 
@@ -106,23 +111,23 @@ func UpdateUser(c *gin.Context) {
 
   if uuid_err != nil {
     fmt.Println(uuid_err)
-    c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Invalid User ID", "data": nil})
+    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Invalid User ID"})
     return
   }
 
 	if current_user.ID != parsed_user_id && !current_user.IsAdmin {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to update this user's account", "data": nil})
+		c.AbortWithStatusJSON(http.StatusForbidden, structs.ErrorMessage{Message: "You do not have permission to update this user's account"})
 		return
 	}
 
 	updated_user, err := users_service.UpdateUser(parsed_user_id, input.Updates)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "User not found.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusNotFound, structs.ErrorMessage{Message: "User not found."})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User successfully updated.", "data": gin.H{"user": updated_user}})
+	c.JSON(http.StatusOK, updated_user)
 }
 
 func DeleteUser(c *gin.Context) {
@@ -130,25 +135,27 @@ func DeleteUser(c *gin.Context) {
 	user_id, conv_err := uuid.Parse(user_input_param)
 
 	if conv_err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting user by id.", "data": nil})
+    fmt.Println(conv_err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Error requesting user by id."})
 		return
 	}
 
 	user_to_delete, err := users_service.GetUserById(user_id)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "User not found.", "data": nil})
+    fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusNotFound, structs.ErrorMessage{Message: "User not found."})
 		return
 	}
 
 	if user_to_delete.DeletedAt.Valid {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "User has already been deleted.", "data": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "User has already been deleted."})
 		return
 	}
 
   deleted_user, _ := users_service.UpdateUser(user_id, models.User{UUIDBaseModel: models.UUIDBaseModel{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User successfully deleted.", "data": gin.H{"user": deleted_user}})
+	c.JSON(http.StatusOK, deleted_user)
 }
 
 func InviteNewUser(c *gin.Context) {
@@ -156,7 +163,7 @@ func InviteNewUser(c *gin.Context) {
 
 	if err := c.BindJSON(&input); err != nil {
 		fmt.Println(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Invalid request body."})
 		return
 	}
 
@@ -166,7 +173,7 @@ func InviteNewUser(c *gin.Context) {
 	_, find_existing_user_err := users_service.GetUserByEmail(input.Email)
 
 	if find_existing_user_err == nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "A user with that email already exists.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "A user with that email already exists."})
 		return
 	}
 

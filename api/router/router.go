@@ -24,9 +24,6 @@ func SetupRouter(app *gin.Engine) {
 	reset_password.POST("/validate", controllers.ValidateResetPasswordCode)
 	reset_password.POST("/reset", controllers.ResetUserPassword)
 
-	email := api.Group("/email")
-	email.POST("/subscribe", controllers.SubscribeNewUser)
-
 	users := api.Group("/users", middleware.Protected())
 	users.GET("/me", controllers.GetUserDetails)
 	users.GET("/", controllers.GetAllUsers)

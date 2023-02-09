@@ -4,6 +4,8 @@ import (
 	"api/config"
 	"api/services/sparkpost_service"
 	"api/services/users_service"
+  "api/structs"
+  "fmt"
 	"log"
 	"net/http"
 	"time"
@@ -37,7 +39,7 @@ func SendResetPasswordEmail(c *gin.Context) {
 	var input SendResetPasswordEmailInput
 
 	if err := c.BindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": err})
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Invalid request body."})
 		return
 	}
 	// See if user exists based on email
@@ -45,7 +47,7 @@ func SendResetPasswordEmail(c *gin.Context) {
 
 	if err != nil {
 		log.Panicln(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred sending password reset email."})
 		return
 	}
 
@@ -59,7 +61,7 @@ func SendResetPasswordEmail(c *gin.Context) {
 
 	if update_err != nil {
 		log.Panicln(update_err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred sending password reset email."})
 		return
 	}
 
@@ -73,11 +75,11 @@ func SendResetPasswordEmail(c *gin.Context) {
 
 	if send_err != nil {
 		log.Panicln(send_err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred sending password reset email.", "data": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred sending password reset email."})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Email sent.", "data": nil})
+	c.JSON(http.StatusOK, nil)
 }
 
 func ValidateResetPasswordCode(c *gin.Context) {
@@ -85,7 +87,8 @@ func ValidateResetPasswordCode(c *gin.Context) {
 	var input ValidateResetPasswordCodeInput
 
 	if err := c.BindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": err})
+    fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Invalid request body."})
 		return
 	}
 
@@ -93,11 +96,12 @@ func ValidateResetPasswordCode(c *gin.Context) {
 	_, err := users_service.GetUserByPasswordCode(input.Code, time.Now())
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "error", "message": "Password reset token is invalid or has expired.", "data": false})
+    fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, structs.ErrorMessage{Message: "Password reset token is invalid or has expired."})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Validated.", "data": true})
+	c.JSON(http.StatusOK, true)
 }
 
 func ResetUserPassword(c *gin.Context) {
@@ -105,12 +109,13 @@ func ResetUserPassword(c *gin.Context) {
 	var input ResetUserPasswordInput
 
 	if err := c.BindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": err})
+    fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Invalid request body."})
 		return
 	}
 
 	if input.Password != input.PasswordConfirmation {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Password and Confirmation do not match.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Password and Confirmation do not match."})
 		return
 	}
 
@@ -118,7 +123,8 @@ func ResetUserPassword(c *gin.Context) {
 	user, err := users_service.GetUserByPasswordCode(input.Code, time.Now())
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"status": "error", "message": "Password reset token is invalid or has expired.", "data": false})
+    fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, structs.ErrorMessage{Message: "Password reset token is invalid or has expired."})
 		return
 	}
 
@@ -129,10 +135,11 @@ func ResetUserPassword(c *gin.Context) {
 	_, update_err := users_service.UpdateUserNullish(user.ID, map[string]interface{}{"Password": string(password), "ResetPasswordCode": nil, "ResetPasswordExpiry": nil})
 
 	if update_err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred during password reset process.", "data": false})
+    fmt.Println(update_err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred during password reset process."})
 		return
 	}
 
 	// Return success
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Password updated.", "data": true})
+	c.JSON(http.StatusOK, true)
 }

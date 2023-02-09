@@ -6,6 +6,7 @@ import (
 	"api/models"
 	"api/services/auth_service"
 	"api/services/users_service"
+  "api/structs"
 	"fmt"
 	"log"
 
@@ -27,7 +28,7 @@ func Login(c *gin.Context) {
 
 	if err := c.BindJSON(&input); err != nil {
 		fmt.Println(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error on login request.", "data": err})
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Error on login request."})
 		return
 	}
 
@@ -36,32 +37,33 @@ func Login(c *gin.Context) {
 	database.DB.Where(&models.User{Email: input.Email}).First(&user)
 
 	if user.ID.String() != "" {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "User not found.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "User not found."})
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
 		fmt.Println(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "error": "Incorrect email and password combination."})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Incorrect email and password combination."})
 		return
 	}
 
 	tokens, err := auth_service.CreateTokens(user)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Error on register request.", "data": err})
+    fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Error on register request."})
 		return
 	}
 
 	if err != nil {
 		fmt.Println(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Error on login request.", "data": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Error on login request."})
 		return
 	}
 
 	c.SetCookie("ucid", tokens.RefreshToken, int((time.Now().Add(time.Hour * 24 * 14)).Unix()), "/api/refresh_token", "localhost", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User logged in.", "data": tokens.AccessToken})
+	c.JSON(http.StatusOK, tokens.AccessToken)
 }
 
 func Register(c *gin.Context) {
@@ -76,12 +78,13 @@ func Register(c *gin.Context) {
 	var input RegisterInput
 
 	if err := c.BindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error on register request.", "data": err})
+    fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Error on register request."})
 		return
 	}
 
 	if input.Password != input.PasswordConfirmation {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Password and Confirmation do not match.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Password and Confirmation do not match."})
 		return
 	}
 
@@ -90,7 +93,7 @@ func Register(c *gin.Context) {
 	database.DB.Where(&models.User{Email: input.Email}).Find(&existingUser)
 
 	if existingUser.ID.String() != "" {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Error on register request.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Error on register request."})
 		return
 	}
 
@@ -108,13 +111,13 @@ func Register(c *gin.Context) {
 	tokens, err := auth_service.CreateTokens(user)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Error on register request.", "data": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Error on register request."})
 		return
 	}
 
 	c.SetCookie("ucid", tokens.RefreshToken, int((time.Now().Add(time.Hour * 24 * 14)).Unix()), "/api/refresh_token", "localhost", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User registered", "data": tokens.AccessToken})
+	c.JSON(http.StatusOK, tokens.AccessToken)
 }
 
 func RefreshToken(c *gin.Context) {
@@ -122,7 +125,7 @@ func RefreshToken(c *gin.Context) {
 
 	if err != nil {
 		log.Println(err)
-		c.JSON(http.StatusOK, gin.H{"token": ""})
+		c.JSON(http.StatusOK, "")
 		return
 	}
 
@@ -135,7 +138,7 @@ func RefreshToken(c *gin.Context) {
 	})
 
 	if jwt_err != nil {
-		c.JSON(http.StatusOK, gin.H{"token": ""})
+		c.JSON(http.StatusOK, "")
 		return
 	}
 
@@ -146,18 +149,18 @@ func RefreshToken(c *gin.Context) {
 	user, get_user_err := users_service.GetUserById(user_id)
 
 	if get_user_err != nil {
-		c.JSON(http.StatusOK, gin.H{"token": ""})
+		c.JSON(http.StatusOK, "")
 		return
 	}
 
 	tokens, tokens_err := auth_service.CreateTokens(*user)
 
 	if tokens_err != nil {
-		c.JSON(http.StatusOK, gin.H{"token": ""})
+		c.JSON(http.StatusOK, "")
 		return
 	}
 
 	c.SetCookie("ucid", tokens.RefreshToken, int((time.Now().Add(time.Hour * 24 * 14)).Unix()), "/api/refresh_token", "localhost", false, true)
 
-	c.JSON(http.StatusOK, gin.H{"token": tokens.AccessToken})
+	c.JSON(http.StatusOK, tokens.AccessToken)
 }

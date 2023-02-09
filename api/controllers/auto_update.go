@@ -1,6 +1,7 @@
 package controllers
 
 import (
+  "api/structs"
 	"encoding/json"
 	"errors"
 	"log"
@@ -100,7 +101,7 @@ func CheckLatestAppVersion(c *gin.Context) {
 
   if fetch_rel_err != nil {
     log.Fatal(fetch_rel_err)
-    c.AbortWithStatusJSON(http.StatusInternalServerError, "")
+    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: ""})
     return
   }
 

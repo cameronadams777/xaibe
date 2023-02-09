@@ -31,7 +31,7 @@ type UpdateTeamInviteInput struct {
 func GetAllTeams(c *gin.Context) {
 	// Fetch paginated teams list
 	teams := teams_service.GetAllTeams()
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Teams found.", "data": teams})
+	c.JSON(http.StatusOK, teams)
 }
 
 func GetTeamById(c *gin.Context) {
@@ -40,7 +40,8 @@ func GetTeamById(c *gin.Context) {
 	team_id, conv_err := uuid.Parse(team_input_param)
 
 	if conv_err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting team by id.", "data": nil})
+    fmt.Println(conv_err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Error requesting team by id."})
 		return
 	}
 
@@ -48,7 +49,7 @@ func GetTeamById(c *gin.Context) {
 	team, err := teams_service.GetTeamById(team_id)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Team not found.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusNotFound, structs.ErrorMessage{Message: "Team not found."})
 		return
 	}
 
@@ -58,12 +59,12 @@ func GetTeamById(c *gin.Context) {
 	membership_err := assertions.UserIsMemberOfTeam(team.ID, authScope.UserID)
 
 	if membership_err != nil {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "User not a member of the specified team.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusForbidden, structs.ErrorMessage{Message: "User not a member of the specified team."})
 		return
 	}
 
 	// Return team info
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Team found.", "data": team})
+	c.JSON(http.StatusOK, team)
 }
 
 func CreateNewTeam(c *gin.Context) {
@@ -73,7 +74,7 @@ func CreateNewTeam(c *gin.Context) {
 
 	if err := c.BindJSON(&input); err != nil {
 		fmt.Println(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Invalid request body."})
 		return
 	}
 
@@ -83,7 +84,8 @@ func CreateNewTeam(c *gin.Context) {
 	current_user, current_user_err := users_service.GetUserById(authScope.UserID)
 
 	if current_user_err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An unknown error occurred.", "data": nil})
+    fmt.Println(current_user_err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An unknown error occurred."})
 		return
 	}
 
@@ -91,11 +93,11 @@ func CreateNewTeam(c *gin.Context) {
 
 	if creation_err != nil {
 		fmt.Println(creation_err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred while creating the requested team.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred while creating the requested team."})
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"status": "success", "message": "Team created.", "data": created_team})
+	c.JSON(http.StatusCreated, created_team)
 }
 
 func DeleteTeam(c *gin.Context) {
@@ -103,19 +105,21 @@ func DeleteTeam(c *gin.Context) {
 	team_id, conv_err := uuid.Parse(team_input_param)
 
 	if conv_err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting team by id.", "data": nil})
+    fmt.Println(conv_err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Error requesting team by id."})
 		return
 	}
 
 	team_to_delete, err := teams_service.GetTeamById(team_id)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Team not found.", "data": nil})
+    fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusNotFound, structs.ErrorMessage{Message: "Team not found."})
 		return
 	}
 
 	if team_to_delete.DeletedAt.Valid {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Team has already been deleted.", "data": err})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Team has already been deleted."})
 		return
 	}
 
@@ -144,7 +148,7 @@ func RemoveUserFromTeam(c *gin.Context) {
 	team, err := teams_service.GetTeamById(team_id)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Team not found.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusNotFound, structs.ErrorMessage{Message: "Team not found."})
 		return
 	}
 
@@ -152,14 +156,15 @@ func RemoveUserFromTeam(c *gin.Context) {
 	authScope := data.(structs.AuthScope)
 
 	if user_id == authScope.UserID {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You cannot remove yourself from a team.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusForbidden, structs.ErrorMessage{Message: "You cannot remove yourself from a team."})
 		return
 	}
 
 	team_manager_err := assertions.UserIsManagerOfTeam(team.ID, authScope.UserID)
 
 	if team_manager_err != nil {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
+    fmt.Println(team_manager_err)
+		c.AbortWithStatusJSON(http.StatusForbidden, structs.ErrorMessage{Message: "You do not have permission to perform that action."})
 		return
 	}
 
@@ -180,11 +185,12 @@ func RemoveUserFromTeam(c *gin.Context) {
 	updated_team, update_err := teams_service.RemoveUserFromTeam(team_id, user_id)
 
 	if update_err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred removing the user.", "data": nil})
+    fmt.Println(update_err)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred removing the user."})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "User successfully removed.", "data": updated_team})
+	c.JSON(http.StatusOK, updated_team)
 }
 
 func GetTeamInvites(c *gin.Context) {
@@ -196,7 +202,7 @@ func GetTeamInvites(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred retrieving current user.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred retrieving current user."})
 		return
 	}
 
@@ -204,11 +210,11 @@ func GetTeamInvites(c *gin.Context) {
 
 	if invite_err != nil {
 		fmt.Println(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred retrieving the user's invites.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred retrieving the user's invites."})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Invites retrieved.", "data": &invites})
+	c.JSON(http.StatusOK, &invites)
 }
 
 func InviteExistingUserToTeam(c *gin.Context) {
@@ -217,7 +223,7 @@ func InviteExistingUserToTeam(c *gin.Context) {
 
 	if err := c.BindJSON(&input); err != nil {
 		fmt.Println(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Invalid request body."})
 		return
 	}
 
@@ -225,14 +231,15 @@ func InviteExistingUserToTeam(c *gin.Context) {
 
   if user_uuid_err != nil {
     fmt.Println(user_uuid_err)
-    c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "Invalid User ID", "data": nil})
+    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Invalid User ID"})
     return
   }
 
 	user, find_user_err := users_service.GetUserById(parsed_user_id)
 
 	if find_user_err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Could not find requested user.", "data": nil})
+    fmt.Println(find_user_err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Could not find requested user."})
 		return
 	}
 
@@ -240,7 +247,7 @@ func InviteExistingUserToTeam(c *gin.Context) {
 	authScope := data.(structs.AuthScope)
 
   if user.ID == authScope.UserID {
- 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You cannot invite yourself to a team.", "data": nil})
+ 		c.AbortWithStatusJSON(http.StatusForbidden, structs.ErrorMessage{Message: "You cannot invite yourself to a team."})
 		return 
   }
 
@@ -248,21 +255,23 @@ func InviteExistingUserToTeam(c *gin.Context) {
 
   if team_uuid_err != nil {
     fmt.Println(team_uuid_err)
-    c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You cannot invite yourself to a team.", "data": nil})
+    c.AbortWithStatusJSON(http.StatusForbidden, structs.ErrorMessage{Message: "You cannot invite yourself to a team."})
     return 
   }
 
 	team, find_team_err := teams_service.GetTeamById(parsed_team_id)
 
 	if find_team_err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting team by id.", "data": nil})
+    fmt.Println(find_team_err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Error requesting team by id."})
 		return
 	}
 	
 	team_manager_err := assertions.UserIsManagerOfTeam(team.ID, authScope.UserID)
 
 	if team_manager_err != nil {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
+    fmt.Println(team_manager_err)
+		c.AbortWithStatusJSON(http.StatusForbidden, structs.ErrorMessage{Message: "You do not have permission to perform that action."})
 		return
 	}
 
@@ -283,7 +292,8 @@ func InviteExistingUserToTeam(c *gin.Context) {
 	_, invite_create_err := teams_service.CreateInvite(parsed_team_id, authScope.UserID, user.Email)
 
 	if invite_create_err != nil {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "An error occurred inviting the requested user to your team.", "data": nil})
+    fmt.Println(invite_create_err)
+		c.AbortWithStatusJSON(http.StatusForbidden, structs.ErrorMessage{Message: "An error occurred inviting the requested user to your team."})
 		return
 	}
 
@@ -296,7 +306,7 @@ func UpdateTeamInviteStatus(c *gin.Context) {
 
 	if err := c.BindJSON(&input); err != nil {
 		fmt.Println(err)
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Invalid request body.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Invalid request body."})
 		return
 	}
 
@@ -307,7 +317,7 @@ func UpdateTeamInviteStatus(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println(err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred while updating your invite status.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred while updating your invite status."})
 		return
 	}
 
@@ -316,10 +326,11 @@ func UpdateTeamInviteStatus(c *gin.Context) {
 		_, update_err := teams_service.AddUserToTeam(updated_invite.TeamID, authScope.UserID)
 
 		if update_err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred removing the user.", "data": nil})
+      fmt.Println(update_err)
+			c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred removing the user."})
 			return
 		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Status updated.", "data": updated_invite})
+	c.JSON(http.StatusOK, updated_invite)
 }

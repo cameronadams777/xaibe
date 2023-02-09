@@ -105,14 +105,14 @@ func GetApplicationAlerts(c *gin.Context) {
 	application_id, conv_err := uuid.Parse(application_input_param)
 
 	if conv_err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Error requesting application by id.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Error requesting application by id."})
 		return
 	}
 
 	application, err := applications_service.GetApplicationById(application_id)
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Application not found when requesting alerts.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusNotFound, structs.ErrorMessage{Message: "Application not found when requesting alerts."})
 		return
 	}
 
@@ -125,7 +125,7 @@ func GetApplicationAlerts(c *gin.Context) {
 		user_id := application.UserID.String()
 		owner_id = "user_" + user_id
 	} else {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred retrieving alerts for application.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred retrieving alerts for application."})
 		return
 	}
 
@@ -136,7 +136,7 @@ func GetApplicationAlerts(c *gin.Context) {
 	team_membership_error := assertions.UserIsMemberOfTeamApplication(application.ID, authScope.UserID)
 
 	if user_ownership_error != nil && team_membership_error != nil {
-		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"status": "error", "message": "You do not have permission to perform that action.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusForbidden, structs.ErrorMessage{Message: "You do not have permission to perform that action."})
 		return
 	}
 
@@ -155,8 +155,7 @@ func GetApplicationAlerts(c *gin.Context) {
 		}
 	}
 	if iter_err := iter.Err(); iter_err != nil {
-		panic(iter_err)
-	}
+		panic(iter_err) }
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Alerts retrieved.", "data": alerts_as_json})
+	c.JSON(http.StatusOK, alerts_as_json)
 }

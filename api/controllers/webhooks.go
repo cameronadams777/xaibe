@@ -3,8 +3,11 @@ package controllers
 import (
 	"api/initializers/cache"
 	"api/services/applications_service"
+  "api/structs"
 	"api/websockets"
+
 	"encoding/json"
+  "fmt"
 	"io"
 	"log"
 	"net/http"
@@ -20,13 +23,15 @@ func WebHook(c *gin.Context) {
 	application_id, conv_err := uuid.Parse(application_input_param)
 
 	if conv_err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "Application not specified.", "data": nil})
+    fmt.Println(conv_err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Application not specified."})
 		return
 	}
 
 	body_as_byte_array, err := io.ReadAll(c.Request.Body)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"status": "error", "message": "An error occurred posting alert to application.", "data": nil})
+    fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "An error occurred posting alert to application."})
 		return
 	}
 
@@ -38,7 +43,8 @@ func WebHook(c *gin.Context) {
 	application, retrieve_app_error := applications_service.GetApplicationById(application_id)
 
 	if retrieve_app_error != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"status": "error", "message": "Could not find application to post alert to.", "data": nil})
+    fmt.Println(retrieve_app_error)
+		c.AbortWithStatusJSON(http.StatusNotFound, structs.ErrorMessage{Message: "Could not find application to post alert to."})
 		return
 	}
 
@@ -64,7 +70,7 @@ func WebHook(c *gin.Context) {
 		user_id := application.UserID.String()
 		owner_id = "user_" + user_id
 	} else {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred posting alert to application.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred posting alert to application."})
 		return
 	}
 
@@ -74,9 +80,9 @@ func WebHook(c *gin.Context) {
 	redis_err := cache.RedisClient.Set(cache_key, string(body_as_byte_array), time.Duration(one_month_expiration)).Err()
 	if redis_err != nil {
 		log.Println(redis_err)
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"status": "error", "message": "An error occurred persisting alert.", "data": nil})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred persisting alert."})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success", "message": "Alert posted.", "data": nil})
+	c.JSON(http.StatusOK, nil)
 }
