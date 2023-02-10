@@ -6,39 +6,27 @@ interface ICreateNewTeamInput {
   teamName: string;
 }
 
-interface ICreateNewTeamResponse {
-  status: string;
-  message: string;
-  data?: ITeam;
-}
-
 export const createNewTeam = async ({
   teamName,
-}: ICreateNewTeamInput): Promise<ITeam | undefined> => {
-  const response = await http.post<ICreateNewTeamResponse>({
+}: ICreateNewTeamInput): Promise<ITeam> => {
+  const response = await http.post<ITeam>({
     url: `api/teams`,
     body: { teamName },
   });
-  return response.data;
+  return response;
 };
 
 interface IFetchTeamByIdInput {
   teamId: number;
 }
 
-interface IFetchTeamByIdResponse {
-  status: string;
-  message: string;
-  data?: ITeam;
-}
-
 export const fetchTeamById = async ({
   teamId,
-}: IFetchTeamByIdInput): Promise<ITeam | undefined> => {
-  const response = await http.get<IFetchTeamByIdResponse>({
+}: IFetchTeamByIdInput): Promise<ITeam> => {
+  const response = await http.get<ITeam>({
     url: `api/teams/${teamId}`,
   });
-  return response.data;
+  return response;
 };
 
 interface IInviteExistingUserToTeamInput {
@@ -47,7 +35,6 @@ interface IInviteExistingUserToTeamInput {
 }
 
 export const inviteExistingUserToTeam = async ({ userId, teamId }: IInviteExistingUserToTeamInput): Promise<void> => {
-  console.log(userId, teamId)
   return http.post({ 
     url: "api/teams/invites", 
     body: { 
@@ -96,17 +83,11 @@ export interface IUpdateInviteStatusInput {
   status: InviteStatus;
 }
 
-interface IUpdateInviteStatusResponse {
-  status: string;
-  message: string;
-  data?: ITeamInvite;
-}
-
 export const updateInviteStatus = async ({
   inviteId,
   status,
-}: IUpdateInviteStatusInput): Promise<ITeamInvite | undefined> => {
-  const response = await http.patch<IUpdateInviteStatusResponse>({
+}: IUpdateInviteStatusInput): Promise<ITeamInvite> => {
+  const response = await http.patch<ITeamInvite>({
     url: "api/teams/invites",
     options: {
       body: Body.json({
@@ -115,5 +96,5 @@ export const updateInviteStatus = async ({
       }),
     },
   });
-  return response.data;
+  return response;
 };

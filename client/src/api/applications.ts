@@ -7,19 +7,13 @@ interface IFetchApplicationByIdInput {
   applicationId: number;
 }
 
-interface IFetchApplicationByIdResponse {
-  status: string;
-  message: string;
-  data: IApplication;
-}
-
 export const fetchApplicationById = async ({
   applicationId,
-}: IFetchApplicationByIdInput): Promise<IApplication | undefined> => {
-  const response = await http.get<IFetchApplicationByIdResponse>({
+}: IFetchApplicationByIdInput): Promise<IApplication> => {
+  const response = await http.get<IApplication>({
     url: `api/applications/${applicationId}`
   })
-  return response.data;
+  return response;
 };
 
 export interface ICreateNewApplicationInput {
@@ -29,18 +23,12 @@ export interface ICreateNewApplicationInput {
   userId?: number;
 }
 
-interface ICreateNewApplicationResponse {
-  status: string;
-  message: string;
-  data?: IApplication;
-}
-
 export const createNewApplication = async ({
   teamId,
   userId,
   applicationName,
   alertSchema,
-}: ICreateNewApplicationInput): Promise<IApplication | undefined> => {
+}: ICreateNewApplicationInput): Promise<IApplication> => {
   let body: Record<string, any> = {
     applicationName,
   };
@@ -56,12 +44,12 @@ export const createNewApplication = async ({
     body.alertSchema = camelizeKeys(alertSchema);
   }
 
-  const response = await http.post<ICreateNewApplicationResponse>({
+  const response = await http.post<IApplication>({
     url: "api/applications",
     body
   });
   
-  return response.data;
+  return response;
 };
 
 export interface IAddSchemaToApplicationInput {
@@ -71,23 +59,17 @@ export interface IAddSchemaToApplicationInput {
   link: string;
 }
 
-interface IAddSchemaToApplicationResponse {
-  status: string;
-  message: string;
-  data: IApplication;
-}
-
 export const addSchemaToApplication = async (
   input: IAddSchemaToApplicationInput
 ): Promise<IApplication> => {
   const { applicationId, ...rest } = input;
-  const response = await http.patch<IAddSchemaToApplicationResponse>({
+  const response = await http.patch<IApplication>({
     url: `api/applications/${applicationId}/alert_schema`,
     options: {
       body: Body.json(rest)
     }
   });
-  return response.data;
+  return response;
 };
 
 interface IDeleteApplicationInput {

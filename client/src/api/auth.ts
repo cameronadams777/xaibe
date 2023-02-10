@@ -7,17 +7,11 @@ export interface ILoginInput {
   password: string;
 }
 
-interface ILoginResponse {
-  status: string;
-  message: string;
-  data: string;
-}
-
 export const login = async ({
   email,
   password,
 }: ILoginInput): Promise<string> => {
-  const response = await http.rawPost<ILoginResponse>({
+  const response = await http.rawPost<string>({
     url: `api/login`, 
     body: {
       email,
@@ -26,10 +20,10 @@ export const login = async ({
   });
   const cookies = deserializeCookie(response.headers['set-cookie']);
   await invoke('store_tokens', {
-    authToken: response.data.data,
+    authToken: response.data,
     refreshToken: cookies.ucid
   });
-  return response.data.data;
+  return response.data;
 };
 
 export interface IRegisterUserInput {
@@ -40,20 +34,14 @@ export interface IRegisterUserInput {
   passwordConfirmation: string;
 }
 
-interface IRegisterUserResponse {
-  status: string;
-  message: string;
-  data: string;
-}
-
 export const registerUser = async (
   input: IRegisterUserInput
 ): Promise<string> => {
-  const response = await http.post<IRegisterUserResponse>({
+  const response = await http.post<string>({
     url: "api/register",
     body: input
   });
-  return response.data;
+  return response;
 };
 
 interface ISubmitResetPasswordRequestInput {
@@ -73,15 +61,11 @@ export const logoutUser = async (): Promise<void> => {
   await invoke("logout_user");
 };
 
-interface IFetchAuthTokenResponse {
-  token: string;
-}
-
 export const fetchAuthToken = async (): Promise<string> => {
   const refreshToken = await invoke<string>("get_stored_refresh_token");
   if (!refreshToken?.length) return "";
   const response = await http
-    .rawPost<IFetchAuthTokenResponse>({
+    .rawPost<string>({
       url: "api/refresh_token",
       body: {},
       options: {
@@ -91,8 +75,8 @@ export const fetchAuthToken = async (): Promise<string> => {
       }
     });
   await invoke('store_tokens', {
-    authToken: response.data.token ?? "", 
+    authToken: response.data ?? "", 
     refreshToken
   });
-  return response.data.token;
+  return response.data;
 };

@@ -6,19 +6,11 @@ export interface ICachedAlerts {
   Alerts: IAlert[];
 }
 
-interface IFetchCacheAlertsResponse {
-  status: string;
-  message: string;
-  data: {
-    string: ICachedAlerts;
-  };
-}
-
 export const fetchAllCachedAlerts = async (): Promise<{
   string: ICachedAlerts;
 }> => {
-  const response = await http.get<IFetchCacheAlertsResponse>({ url: "api/alerts" })
-  return response.data;
+  const response = await http.get<{string: ICachedAlerts}>({ url: "api/alerts" })
+  return response;
 };
 
 interface IFetchCachedAlertsInput {
