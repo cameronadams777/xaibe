@@ -1,3 +1,17 @@
+<template>
+  <div>
+    <div class="flex justify-between items-center">
+      <h3>{{ formTitle }}</h3>
+      <base-button v-if="currentStep !== 0" text="Back" @click="goBack" />
+    </div>
+    <alert-schema-tree-builder
+      root-key=""
+      :schema-object="baseObject"
+      @on-element-select="sendSchemaObject"
+    />
+  </div>
+</template>
+
 <script lang="ts" setup>
 /**
  * 1. Take in object as prop that resembles an alert received for
@@ -8,13 +22,13 @@
  *    their path to the root up as a concatenated string
  */
 import { computed, reactive, ref } from "vue";
-import AlertSchemaTreeBuilder from "./alert-schema-tree-builder.vue";
 import { useApplicationsStore, useToastStore } from "src/state";
 import { ToastType } from "src/types";
 import { mixpanelWrapper } from "src/tools/mixpanel";
+import AlertSchemaTreeBuilder from "./alert-schema-tree-builder.vue";
 
 const props = defineProps<{
-  applicationId: number;
+  applicationId: string;
   baseObject: Record<any, any>;
 }>();
 
@@ -76,16 +90,3 @@ const sendSchemaObject = async (key: string) => {
 };
 </script>
 
-<template>
-  <div>
-    <div class="flex justify-between items-center">
-      <h3>{{ formTitle }}</h3>
-      <base-button v-if="currentStep !== 0" text="Back" @click="goBack" />
-    </div>
-    <alert-schema-tree-builder
-      root-key=""
-      :schema-object="baseObject"
-      @on-element-select="sendSchemaObject"
-    />
-  </div>
-</template>

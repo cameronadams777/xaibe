@@ -15,7 +15,7 @@ const { setActiveToast } = useToastStore();
 
 const attemptToDeleteTeam = async () => {
   try {
-    const teamId = parseInt(route.params.teamId as string);
+    const teamId = route.params.teamId as string;
     await deleteTeam({ teamId });
     setIsDeleteTeamConfirmationModalShown(false);
 

@@ -1,7 +1,8 @@
-import * as http from "src/helpers/http";
-import { IUser } from "src/types";
+import { User, UserSchema } from "src/types";
+import * as http from "./http";
 
-export const fetchActiveUser = async (): Promise<IUser> => {
-  const response = await http.get<IUser>({ url: "api/users/me" });
+export const fetchActiveUser = async (): Promise<User> => {
+  const response = await http.get<User>({ url: "api/users/me" });
+  UserSchema.parse(response);
   return response;
 };

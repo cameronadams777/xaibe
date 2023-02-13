@@ -7,14 +7,14 @@
       <div
         v-if="members.length"
         v-for="member in members"
-        :key="member.ID"
+        :key="member.id"
         class="p-4 flex justify-between items-center border-b border-gray-300 font-bold text-black no-underline transition-all duration-300"
       >
-        {{ member.FirstName }} {{ member.LastName }}
+        {{ member.first_name }} {{ member.last_name }}
         <button
-          v-if="managerControlsVisible && activeUser?.ID !== member.ID"
+          v-if="managerControlsVisible && activeUser?.id !== member.id"
           class="p-0 hover:text-red-500 rounded-full border-none bg-white flex justify-center items-center cursor-pointer"
-          @click="displayRemoveUserConfirmationModal(member.ID)"
+          @click="displayRemoveUserConfirmationModal(member.id)"
         >
           <x-mark-icon class="h-full w-4" />
         </button>
@@ -37,11 +37,11 @@
 import { XMarkIcon, PlusIcon } from "@heroicons/vue/24/solid";
 import { storeToRefs } from "pinia";
 import { useActiveUserStore, useModalStore } from "src/state";
-import { IUser } from "src/types";
+import { User } from "src/types";
 
 const props = defineProps<{
-  teamId: number;
-  members: IUser[];
+  teamId: string;
+  members: User[];
   managerControlsVisible: boolean;
 }>();
 
@@ -57,7 +57,7 @@ const displayAddUserModal = () =>
     isOpen: true,
   });
 
-const displayRemoveUserConfirmationModal = (userId: number) =>
+const displayRemoveUserConfirmationModal = (userId: string) =>
   setRemoveUserConfirmationProps({
     teamId: props.teamId,
     userId,

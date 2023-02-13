@@ -44,7 +44,7 @@ const { setActiveToast } = useToastStore();
 const applicationType = ref<ApplicationType | undefined>(undefined);
 const isSubmitting = ref(false);
 
-const submitForm = async (applicationName: string, teamId?: number) => {
+const submitForm = async (applicationName: string, teamId?: string) => {
   try {
     isSubmitting.value = true;
     // TODO: Move this logic to application state
@@ -56,7 +56,7 @@ const submitForm = async (applicationName: string, teamId?: number) => {
 
     const application = await createNewApplication({
       alertSchema: getAppSchemaByType(applicationType.value),
-      userId: activeUser.value.ID,
+      userId: activeUser.value.id,
       applicationName,
       teamId,
     });
@@ -66,7 +66,7 @@ const submitForm = async (applicationName: string, teamId?: number) => {
     mixpanelWrapper.client.track("New application created");
     cacheApplication(application);
     await activeUserStore.getActiveUser();
-    router.push(`/applications/${application.ID}`);
+    router.push(`/applications/${application.id}`);
     isSubmitting.value = false;
   } catch (error) {
     console.log(error);

@@ -2,7 +2,7 @@
   <the-main-layout>
     <div v-if="activeTeam != null" class="w-full h-full p-4">
       <div class="flex justify-between items-center">
-        <h2 class="capitalize">{{ activeTeam?.Name }}</h2>
+        <h2 class="capitalize">{{ activeTeam?.name }}</h2>
         <base-fab-button
           v-if="managerControlsVisible"
           aria-label="Delete Team"
@@ -13,12 +13,12 @@
       </div>
       <div class="flex">
         <div class="w-full h-48 lg:h-96 lg:w-1/4 mr-4 mb-4">
-          <applications-list :applications="activeTeam?.Applications || []" />
+          <applications-list :applications="activeTeam?.applications || []" />
         </div>
         <div class="w-full h-48 lg:h-96 lg:w-1/4 mr-4 mb-4">
           <team-member-list
-            :team-id="activeTeam.ID"
-            :members="activeTeam?.Users || []"
+            :team-id="activeTeam.id"
+            :members="activeTeam?.users || []"
             :manager-controls-visible="managerControlsVisible"
           />
         </div>
@@ -36,7 +36,7 @@ import ApplicationsList from "src/components/applications-list.vue";
 import TeamMemberList from "src/components/team-member-list.vue";
 import { fetchTeamById } from "src/api/teams";
 import { useModalStore } from "src/state/modals";
-import { ITeam, ToastType } from "src/types";
+import { Team, ToastType } from "src/types";
 import { useActiveUserStore, useToastStore } from "src/state";
 import { storeToRefs } from "pinia";
 
@@ -49,16 +49,16 @@ const { setActiveToast } = useToastStore();
 
 const managerControlsVisible = computed(
   () =>
-    activeTeam.value?.Managers.some(
-      (manager) => manager.ID === activeUser?.value?.ID
+    activeTeam.value?.managers.some(
+      (manager) => manager.id === activeUser?.value?.id
     ) || false
 );
 
-const activeTeam = ref<ITeam | undefined>(undefined);
+const activeTeam = ref<Team | undefined>(undefined);
 
 onMounted(async () => {
   try {
-    const teamId = parseInt(route.params.teamId as string);
+    const teamId = route.params.teamId as string;
     const team = await fetchTeamById({ teamId });
     if (!team) {
       setActiveToast({

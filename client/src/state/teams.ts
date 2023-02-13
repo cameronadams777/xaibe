@@ -4,15 +4,15 @@ import {
   IUpdateInviteStatusInput,
   updateInviteStatus as updateTeamInviteStatus,
 } from "src/api/teams";
-import { ITeam, ITeamInvite } from "src/types";
+import { Team, TeamInvite } from "src/types";
 
-interface ITeamsState {
-  pendingTeamInvites: ITeamInvite[];
-  activeTeam?: ITeam;
+interface TeamsState {
+  pendingTeamInvites: TeamInvite[];
+  activeTeam?: Team;
 }
 
 export const useTeamsStore = defineStore("teams_store", {
-  state(): ITeamsState {
+  state(): TeamsState {
     return {
       activeTeam: undefined,
       pendingTeamInvites: [],
@@ -26,7 +26,7 @@ export const useTeamsStore = defineStore("teams_store", {
       const invite = await updateTeamInviteStatus({ inviteId, status });
       if (!invite) throw new Error("Galata Error: Invite not found.");
       const inviteIndex = this.pendingTeamInvites.findIndex(
-        (pendingInvite) => pendingInvite.ID === inviteId
+        (pendingInvite) => pendingInvite.id === inviteId
       );
       this.pendingTeamInvites[inviteIndex] = invite;
     },

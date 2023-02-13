@@ -1,26 +1,27 @@
-import * as http from "src/helpers/http";
 import { Body } from "@tauri-apps/api/http";
-import { IAlertSchema, IApplication } from "src/types";
 import { camelizeKeys } from "humps";
+import { AlertSchema, Application, ApplicationSchema } from "src/types";
+import * as http from "./http";
 
 interface IFetchApplicationByIdInput {
-  applicationId: number;
+  applicationId: string;
 }
 
 export const fetchApplicationById = async ({
   applicationId,
-}: IFetchApplicationByIdInput): Promise<IApplication> => {
-  const response = await http.get<IApplication>({
+}: IFetchApplicationByIdInput): Promise<Application> => {
+  const response = await http.get<Application>({
     url: `api/applications/${applicationId}`
-  })
+  });
+  ApplicationSchema.parse(response);
   return response;
 };
 
 export interface ICreateNewApplicationInput {
   applicationName: string;
-  alertSchema?: IAlertSchema;
-  teamId?: number;
-  userId?: number;
+  alertSchema?: AlertSchema;
+  teamId?: string;
+  userId?: string;
 }
 
 export const createNewApplication = async ({
@@ -28,7 +29,7 @@ export const createNewApplication = async ({
   userId,
   applicationName,
   alertSchema,
-}: ICreateNewApplicationInput): Promise<IApplication> => {
+}: ICreateNewApplicationInput): Promise<Application> => {
   let body: Record<string, any> = {
     applicationName,
   };
@@ -44,16 +45,18 @@ export const createNewApplication = async ({
     body.alertSchema = camelizeKeys(alertSchema);
   }
 
-  const response = await http.post<IApplication>({
+  const response = await http.post<Application>({
     url: "api/applications",
     body
   });
   
+  ApplicationSchema.parse(response);
+
   return response;
 };
 
 export interface IAddSchemaToApplicationInput {
-  applicationId: number;
+  applicationId: string;
   title: string;
   description: string;
   link: string;
@@ -61,19 +64,20 @@ export interface IAddSchemaToApplicationInput {
 
 export const addSchemaToApplication = async (
   input: IAddSchemaToApplicationInput
-): Promise<IApplication> => {
+): Promise<Application> => {
   const { applicationId, ...rest } = input;
-  const response = await http.patch<IApplication>({
+  const response = await http.patch<Application>({
     url: `api/applications/${applicationId}/alert_schema`,
     options: {
       body: Body.json(rest)
     }
   });
+  ApplicationSchema.parse(response);
   return response;
 };
 
 interface IDeleteApplicationInput {
-  applicationId: number;
+  applicationId: string;
 }
 
 export const deleteApplication = async ({

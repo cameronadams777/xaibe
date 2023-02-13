@@ -1,3 +1,51 @@
+<template>
+  <the-main-layout>
+    <div class="w-full h-full p-4">
+      <div class="flex justify-between items-center">
+        <h2 class="capitalize">{{ activeApplication?.name }}</h2>
+        <base-fab-button
+          aria-label="Delete Application"
+          @click="setIsDeleteApplicationConfirmationModalShown(true)"
+        >
+          <trash-icon class="w-5 h-5 text-red-500" />
+        </base-fab-button>
+      </div>
+      <div
+        v-if="
+          activeApplication != null &&
+          activeApplication.alert_schema?.id.length &&
+          applicationAlerts.length > 0
+        "
+        class="w-full lg:w-1/3 h-48 lg:h-96"
+      >
+        <alerts-list-by-application
+          :alerts="applicationAlerts"
+          :alert-schema="activeApplication.alert_schema"
+        />
+      </div>
+      <alert-schema-form
+        v-else-if="
+          activeApplication != null &&
+          applicationAlerts?.length
+        "
+        :application-id="activeApplication?.id"
+        :base-object="applicationAlerts[0]"
+      />
+      <div v-else>
+        <h3>Let's Get Started!</h3>
+        <p>Utilize the following url to begin receiving applications:</p>
+        <p>{{ applicationUrl }}</p>
+        <p>
+          Need more information? Checkout our docs
+          <a href="https://galata.app/docs/applications/setup" target="_blank"
+            >here</a
+          >.
+        </p>
+      </div>
+    </div>
+  </the-main-layout>
+</template>
+
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
@@ -12,7 +60,7 @@ import {
 import TheMainLayout from "src/layouts/the-main-layout.vue";
 import AlertSchemaForm from "src/components/alert-schema-form.vue";
 import AlertsListByApplication from "src/components/alerts-list-by-application.vue";
-import { IApplication, ToastType } from "src/types";
+import { Application, ToastType } from "src/types";
 import { fetchApplicationById } from "src/api/applications";
 import { config } from "src/config";
 
@@ -22,15 +70,15 @@ const { localCacheAlerts } = storeToRefs(alertStore);
 const { setIsDeleteApplicationConfirmationModalShown } = useModalStore();
 const { setActiveToast } = useToastStore();
 
-const activeApplication = ref<IApplication | undefined>(undefined);
+const activeApplication = ref<Application | undefined>(undefined);
 const applicationUrl = ref("");
 
-const applicationAlerts = computed(() => localCacheAlerts.value?.[`application_${activeApplication.value?.ID}`] ?? []);
+const applicationAlerts = computed(() => localCacheAlerts.value?.[`application_${activeApplication.value?.id}`] ?? []);
 
 const router = useRouter();
 const route = useRoute();
 
-const getActiveApplication = async (applicationId: number) => {
+const getActiveApplication = async (applicationId: string) => {
   const cachedApplication = getCachedApplication(applicationId);
   if (cachedApplication != null) {
     activeApplication.value = cachedApplication;
@@ -56,7 +104,7 @@ const getActiveApplication = async (applicationId: number) => {
 };
 
 onMounted(async () => {
-  const applicationId = parseInt(route.params.applicationId as string);
+  const applicationId = route.params.applicationId as string;
   // TODO: Introduce loading component while data is being fetched and then Promise.all these requests
   await getActiveApplication(applicationId);
   await getCachedApplicationAlerts({
@@ -66,50 +114,4 @@ onMounted(async () => {
 
 </script>
 
-<template>
-  <the-main-layout>
-    <div class="w-full h-full p-4">
-      <div class="flex justify-between items-center">
-        <h2 class="capitalize">{{ activeApplication?.Name }}</h2>
-        <base-fab-button
-          aria-label="Delete Application"
-          @click="setIsDeleteApplicationConfirmationModalShown(true)"
-        >
-          <trash-icon class="w-5 h-5 text-red-500" />
-        </base-fab-button>
-      </div>
-      <div
-        v-if="
-          activeApplication != null &&
-          activeApplication.AlertSchema?.ID !== 0 &&
-          applicationAlerts.length > 0
-        "
-        class="w-full lg:w-1/3 h-48 lg:h-96"
-      >
-        <alerts-list-by-application
-          :alerts="applicationAlerts"
-          :alert-schema="activeApplication.AlertSchema"
-        />
-      </div>
-      <alert-schema-form
-        v-else-if="
-          activeApplication != null &&
-          applicationAlerts?.length
-        "
-        :application-id="activeApplication?.ID"
-        :base-object="applicationAlerts[0]"
-      />
-      <div v-else>
-        <h3>Let's Get Started!</h3>
-        <p>Utilize the following url to begin receiving applications:</p>
-        <p>{{ applicationUrl }}</p>
-        <p>
-          Need more information? Checkout our docs
-          <a href="https://galata.app/docs/applications/setup" target="_blank"
-            >here</a
-          >.
-        </p>
-      </div>
-    </div>
-  </the-main-layout>
-</template>
+

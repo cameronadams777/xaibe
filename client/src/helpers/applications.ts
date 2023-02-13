@@ -1,8 +1,8 @@
-import { ApplicationType, IAlertSchema } from "src/types";
+import { ApplicationType, AlertSchema } from "src/types";
 
 export const getAppSchemaByType = (
   appType: ApplicationType
-): IAlertSchema | undefined => {
+): AlertSchema | undefined => {
   if (appType === ApplicationType.OTHER) return;
 
   const applicationSchemasByType: Record<string, any> = {

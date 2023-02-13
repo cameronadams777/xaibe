@@ -8,8 +8,8 @@ export const emptyRemoveUserConfirmationProps: IRemoveUserConfirmationProps = {
 
 interface IRemoveUserConfirmationProps {
   isOpen: boolean;
-  userId: number | undefined;
-  teamId: number | undefined;
+  userId: string | undefined;
+  teamId: string | undefined;
 }
 
 export const emptyAddUserToTeamProps: IAddUserToTeamProps = {
@@ -19,7 +19,7 @@ export const emptyAddUserToTeamProps: IAddUserToTeamProps = {
 
 interface IAddUserToTeamProps {
   isOpen: boolean;
-  teamId: number | undefined;
+  teamId: string | undefined;
 }
 
 interface IModalStoreState {

@@ -43,7 +43,7 @@ const submitForm = async () => {
     await getActiveUser();
     mixpanelWrapper.client.track("New team created");
     isSubmitting.value = false;
-    router.push(`/teams/${team.ID}`);
+    router.push(`/teams/${team.id}`);
   } catch (error) {
     setActiveToast({
       message: "An error occurred while creating your new team.",

@@ -1,6 +1,6 @@
 import { Body } from "@tauri-apps/api/http";
-import * as http from "src/helpers/http";
-import { InviteStatus, ITeam, ITeamInvite } from "src/types";
+import { Team, TeamInvite, TeamInviteSchema, TeamSchema } from "src/types";
+import * as http from "./http";
 
 interface ICreateNewTeamInput {
   teamName: string;
@@ -8,30 +8,32 @@ interface ICreateNewTeamInput {
 
 export const createNewTeam = async ({
   teamName,
-}: ICreateNewTeamInput): Promise<ITeam> => {
-  const response = await http.post<ITeam>({
+}: ICreateNewTeamInput): Promise<Team> => {
+  const response = await http.post<Team>({
     url: `api/teams`,
     body: { teamName },
   });
+  TeamSchema.parse(response);
   return response;
 };
 
 interface IFetchTeamByIdInput {
-  teamId: number;
+  teamId: string;
 }
 
 export const fetchTeamById = async ({
   teamId,
-}: IFetchTeamByIdInput): Promise<ITeam> => {
-  const response = await http.get<ITeam>({
+}: IFetchTeamByIdInput): Promise<Team> => {
+  const response = await http.get<Team>({
     url: `api/teams/${teamId}`,
   });
+  TeamSchema.parse(response);
   return response;
 };
 
 interface IInviteExistingUserToTeamInput {
-  userId: number;
-  teamId: number;
+  userId: string;
+  teamId: string;
 }
 
 export const inviteExistingUserToTeam = async ({ userId, teamId }: IInviteExistingUserToTeamInput): Promise<void> => {
@@ -45,8 +47,8 @@ export const inviteExistingUserToTeam = async ({ userId, teamId }: IInviteExisti
 }
 
 interface IRemoveUserFromTeamInput {
-  teamId: number;
-  userId: number;
+  teamId: string;
+  userId: string;
 }
 
 export const removeUserFromTeam = async (
@@ -56,7 +58,7 @@ export const removeUserFromTeam = async (
 };
 
 interface IDeleteTeamInput {
-  teamId: number;
+  teamId: string;
 }
 
 export const deleteTeam = async ({
@@ -65,29 +67,24 @@ export const deleteTeam = async ({
   await http.del({ url: `api/teams/${teamId}` });
 };
 
-interface IFetchPendingTeamInvitesResponse {
-  status: string;
-  message: string;
-  data: ITeamInvite[];
-}
-
-export const fetchPendingTeamInvites = async (): Promise<ITeamInvite[]> => {
-  const response = await http.get<IFetchPendingTeamInvitesResponse>({
+export const fetchPendingTeamInvites = async (): Promise<TeamInvite[]> => {
+  const response = await http.get<TeamInvite[]>({
     url: "api/teams/invites",
   });
-  return response.data;
+  TeamInviteSchema.parse(response);
+  return response;
 };
 
 export interface IUpdateInviteStatusInput {
   inviteId: number;
-  status: InviteStatus;
+  status: number;
 }
 
 export const updateInviteStatus = async ({
   inviteId,
   status,
-}: IUpdateInviteStatusInput): Promise<ITeamInvite> => {
-  const response = await http.patch<ITeamInvite>({
+}: IUpdateInviteStatusInput): Promise<TeamInvite> => {
+  const response = await http.patch<TeamInvite>({
     url: "api/teams/invites",
     options: {
       body: Body.json({
@@ -96,5 +93,6 @@ export const updateInviteStatus = async ({
       }),
     },
   });
+  TeamInviteSchema.parse(response);
   return response;
 };

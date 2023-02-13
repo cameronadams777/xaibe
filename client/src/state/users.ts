@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
 import { fetchAllUsers } from "src/api/users";
-import { IUser } from "src/types";
+import { User } from "src/types";
 
 interface IGalataUsersState {
-  users: IUser[];
+  users: User[];
 }
 
 export const useGalataUsersStore = defineStore("galata_users", {
@@ -11,7 +11,7 @@ export const useGalataUsersStore = defineStore("galata_users", {
     return { users: [] };
   },
   actions: {
-    async getAllUsers(): Promise<IUser[]> {
+    async getAllUsers(): Promise<User[]> {
       const users = await fetchAllUsers();
       this.users = users ?? [];
       return users ?? [];

@@ -1,6 +1,5 @@
-import type { RequestOptions, Response } from "@tauri-apps/api/http";
 import { invoke } from "@tauri-apps/api/tauri";
-import { Body, getClient } from "@tauri-apps/api/http";
+import { Body, getClient, RequestOptions, Response } from "@tauri-apps/api/http";
 import { config } from "src/config";
 
 const getToken = async () => {

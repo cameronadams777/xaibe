@@ -51,11 +51,11 @@ let applicationAlertsMappedToSchema = computed(() => {
       if (!alert.Alerts) return [];
       const alertsByApp = compact(alert.Alerts).map((a) => {
         const titleKeys = alert.AlertSchema.title.split(".");
-        const title = getElByKey(a, titleKeys);
+        const Title = getElByKey(a, titleKeys);
         const descriptionKeys = alert.AlertSchema.description.split(".");
-        const description = getElByKey(a, descriptionKeys);
+        const Description = getElByKey(a, descriptionKeys);
         const linkKeys = alert.AlertSchema.link.split(".");
-        const link = getElByKey(a, linkKeys);
+        const Link = getElByKey(a, linkKeys);
 
         return { title, description, link } as IAlert;
       });

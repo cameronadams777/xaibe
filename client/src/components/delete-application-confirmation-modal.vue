@@ -15,7 +15,7 @@ const { setActiveToast } = useToastStore();
 
 const attemptToDeleteApplication = async () => {
   try {
-    const applicationId = parseInt(route.params.applicationId as string);
+    const applicationId = route.params.applicationId as string;
     await deleteApplication(applicationId);
     setIsDeleteApplicationConfirmationModalShown(false);
     setActiveToast({

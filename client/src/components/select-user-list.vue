@@ -8,25 +8,25 @@
         'w-full m-0 p-2 border-0 transition-colors duration-300 cursor-pointer': true,
         'border-b-1 border-gray-400': index !== users.length && users.length > 1,
         'bg-white hover:bg-gray-600 hover:text-white':
-          user.ID !== selectedUserId,
-        'bg-gray-600 text-white': user.ID === selectedUserId,
+          user.id !== selectedUserId,
+        'bg-gray-600 text-white': user.id === selectedUserId,
       }"
-      @click="emits('onSelect', user.ID)"
+      @click="emits('onSelect', user.id)"
     >
-      {{ user.FirstName }} {{ user.LastName }}
+      {{ user.first_name }} {{ user.last_name }}
     </button>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { IUser } from "src/types";
+import { User } from "src/types";
 
 defineProps<{
-  selectedUserId?: number;
-  users: IUser[];
+  selectedUserId?: string;
+  users: User[];
 }>();
 
 const emits = defineEmits<{
-  (event: "onSelect", userId: number): void;
+  (event: "onSelect", userId: string): void;
 }>();
 </script>

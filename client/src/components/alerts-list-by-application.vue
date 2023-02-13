@@ -12,11 +12,11 @@
           class="p-4 flex justify-between items-center border-b border-gray-300"
         >
           <div>
-            <span class="font-bold">{{ alert.Title }}</span>
-            <p class="m-0">{{ alert.Description }}</p>
+            <span class="font-bold">{{ alert.title }}</span>
+            <p class="m-0">{{ alert.description }}</p>
           </div>
           <a
-            :href="alert.Link"
+            :href="alert.link"
             target="_blank"
             class="text-gray-400 hover:text-gray-800"
           >
@@ -38,22 +38,22 @@
 <script lang="ts" setup>
 import { computed, toRaw } from "vue";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/vue/24/outline";
-import { IAlert, IAlertSchema } from "src/types";
+import { IAlert, AlertSchema } from "src/types";
 import { getElByKey } from "src/helpers";
 
-const props = defineProps<{ alertSchema: IAlertSchema; alerts: IAlert[] }>();
+const props = defineProps<{ alertSchema: AlertSchema; alerts: IAlert[] }>();
 
 const applicationAlertsMappedToSchema = computed(() =>
   props.alerts
     .map((alert) => {
-      const titleKeys = props.alertSchema.Title.split(".");
-      const Title = getElByKey(toRaw(alert), titleKeys);
-      const descriptionKeys = props.alertSchema.Description.split(".");
-      const Description = getElByKey(toRaw(alert), descriptionKeys);
-      const linkKeys = props.alertSchema.Link.split(".");
-      const Link = getElByKey(toRaw(alert), linkKeys);
+      const titleKeys = props.alertSchema.title.split(".");
+      const title = getElByKey(toRaw(alert), titleKeys);
+      const descriptionKeys = props.alertSchema.description.split(".");
+      const description = getElByKey(toRaw(alert), descriptionKeys);
+      const linkKeys = props.alertSchema.link.split(".");
+      const link = getElByKey(toRaw(alert), linkKeys);
 
-      return { Title, Description, Link } as IAlert;
+      return { title, description, link } as IAlert;
     })
     .filter((alert) => Object.values(alert).every((value) => !!value))
 );

@@ -1,11 +1,14 @@
 import { invoke } from "@tauri-apps/api/tauri";
+import { z } from "zod"; 
 import { deserializeCookie } from "src/helpers";
-import * as http from "src/helpers/http";
+import * as http from "./http";
 
 export interface ILoginInput {
   email: string;
   password: string;
 }
+
+const LoginResponseSchema = z.string();
 
 export const login = async ({
   email,
@@ -23,6 +26,7 @@ export const login = async ({
     authToken: response.data,
     refreshToken: cookies.ucid
   });
+  LoginResponseSchema.parse(response.data);
   return response.data;
 };
 
@@ -34,6 +38,8 @@ export interface IRegisterUserInput {
   passwordConfirmation: string;
 }
 
+const RegisterUserResponse = z.string();
+
 export const registerUser = async (
   input: IRegisterUserInput
 ): Promise<string> => {
@@ -41,6 +47,7 @@ export const registerUser = async (
     url: "api/register",
     body: input
   });
+  RegisterUserResponse.parse(response);
   return response;
 };
 
@@ -61,6 +68,8 @@ export const logoutUser = async (): Promise<void> => {
   await invoke("logout_user");
 };
 
+const FetchAuthTokenResponse = z.string();
+
 export const fetchAuthToken = async (): Promise<string> => {
   const refreshToken = await invoke<string>("get_stored_refresh_token");
   if (!refreshToken?.length) return "";
@@ -74,6 +83,7 @@ export const fetchAuthToken = async (): Promise<string> => {
         }
       }
     });
+  FetchAuthTokenResponse.parse(response.data);
   await invoke('store_tokens', {
     authToken: response.data ?? "", 
     refreshToken

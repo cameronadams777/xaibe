@@ -13,7 +13,7 @@ import TheGlobalModal from "./components/the-global-modal.vue";
 import TheToastMessage from "./components/the-toast-message.vue";
 import { config } from "./config";
 import { useAlertsStore, useAuthStore } from "./state";
-import { IAlertSchema } from "./types";
+import { AlertSchema } from "./types";
 
 const route = useRoute();
 const { pushAlertToApplication } = useAlertsStore();
@@ -33,7 +33,7 @@ watch(token, async (tokenValue) => {
     `${config.apiWSUrl}/api/ws?token=${token.value}`
   );
 
-  function heartbeat() {
+  function heartbeat(): void {
     if (!socket) return;
     if (socket.readyState !== 1) return;
     socket.send("heartbeat");
@@ -42,21 +42,21 @@ watch(token, async (tokenValue) => {
 
   heartbeat();
 
-  socket.onopen = function (e) {
+  socket.onopen = function (): void {
     console.log("[open] Connection established");
     hasConnected.value = true;
   };
-  socket.onmessage = function (event) {
+  socket.onmessage = function (event): void {
     if (!event.data || !event.data.length) return;
     const alertResponseData = JSON.parse(event.data);
     const applicationId = alertResponseData.application_id;
-    const schema = alertResponseData.alert_schema as IAlertSchema;
+    const schema = alertResponseData.alert_schema as AlertSchema;
 
     const { alert_schema, ...rest } = alertResponseData;
 
     pushAlertToApplication(applicationId, rest); 
 
-    if (schema?.ID === 0) {
+    if (!schema?.id.length) {
       // TODO: Make this more informative
       invoke("notify_user", {
         title: "New Alert!",
@@ -65,16 +65,14 @@ watch(token, async (tokenValue) => {
       return;
     }
 
-    const titleKeys = schema.Title.split(".");
+    const titleKeys = schema.title.split(".");
     const title = getElByKey(alertResponseData, titleKeys);
-    const descriptionKeys = schema.Description.split(".");
+    const descriptionKeys = schema.description.split(".");
     const description = getElByKey(alertResponseData, descriptionKeys);
-    const linkKeys = schema.Link.split(".");
-    const link = getElByKey(alertResponseData, linkKeys);
 
     invoke("notify_user", { title, body: description });
   };
-  socket.onerror = function (event) {
+  socket.onerror = function () {
     console.log("[error] A socket error occurred.");
   };
   socket.onclose = function (event) {

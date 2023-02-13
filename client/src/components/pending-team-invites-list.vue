@@ -8,15 +8,15 @@
       }"
     >
       <div>
-        <p class="font-bold m-0 p-0">{{ invite.Team.Name }}</p>
-        <p class="text-gray-400 m-0 p-0">{{ toInviteEnum(invite.Status) }}</p>
+        <p class="font-bold m-0 p-0">{{ invite.team.name }}</p>
+        <p class="text-gray-400 m-0 p-0">{{ toInviteEnum(invite.status) }}</p>
       </div>
-      <div v-if="invite.Status === InviteStatus.PENDING" class="flex items-center">
+      <div v-if="invite.status === InviteStatus.PENDING" class="flex items-center">
         <button
           class="p-1 border-0 bg-red-500 hover:bg-red-700 text-white rounded-sm flex justify-center items-center cursor-pointer transition-color duration-300"
           @click="
             updateInviteStatusAndFetchTeams({
-              inviteId: invite.ID,
+              inviteId: invite.id,
               status: InviteStatus.REJECTED,
             })
           "
@@ -27,7 +27,7 @@
           class="p-1 border-0 bg-green-500 hover:bg-green-700 text-white rounded-sm flex justify-center items-center cursor-pointer transition-color duration-300"
           @click="
             updateInviteStatusAndFetchTeams({
-              inviteId: invite.ID,
+              inviteId: invite.id,
               status: InviteStatus.ACCEPTED,
             })
           "
@@ -68,7 +68,7 @@ const updateInviteStatusAndFetchTeams = async ({
   }
 };
 
-const toInviteEnum = (status: InviteStatus) => {
+const toInviteEnum = (status: number) => {
   const statuses = {
     [InviteStatus.PENDING]: "PENDING",
     [InviteStatus.ACCEPTED]: "ACCEPTED",

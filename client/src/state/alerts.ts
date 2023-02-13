@@ -8,7 +8,7 @@ interface IAlertStoreState {
 }
 
 interface IGetApplicationAlertsInput {
-  applicationId: number;
+  applicationId: string;
 }
 
 export const useAlertsStore = defineStore("alerts", {

@@ -9,7 +9,7 @@
       </h2>
       <div v-if="usersList.length" class="w-9/10 mb-4">
         <select-user-list
-          :active-user-id="activeUser?.ID"
+          :active-user-id="activeUser?.id"
           :selected-user-id="userId"
           :users="usersList"
           @on-select="selectUser"
@@ -61,14 +61,14 @@ import {
   useToastStore,
   useGalataUsersStore,
 } from "src/state";
-import { ButtonVariant, IUser, ToastType } from "src/types";
+import { ButtonVariant, User, ToastType } from "src/types";
 import { inviteNewUser } from "src/api/users";
 import { inviteExistingUserToTeam } from 'src/api/teams';
 import { mixpanelWrapper } from "src/tools/mixpanel";
 
 const props = defineProps<{
   isOpen: boolean;
-  teamId?: number;
+  teamId?: string;
 }>();
 
 const { getAllUsers } = useGalataUsersStore();
@@ -78,10 +78,10 @@ const { setAddUserToTeamProps } = useModalStore();
 const { setActiveToast } = useToastStore();
 
 const newUserEmail = ref("");
-const usersList = ref<IUser[]>([]);
-const userId = ref<number | undefined>(undefined);
+const usersList = ref<User[]>([]);
+const userId = ref<string | undefined>(undefined);
 
-const selectUser = (selectedUserId: number) => (userId.value = selectedUserId);
+const selectUser = (selectedUserId: string) => (userId.value = selectedUserId);
 
 const confirm = async () => {
   try {
@@ -124,7 +124,7 @@ const close = () => setAddUserToTeamProps(emptyAddUserToTeamProps);
 onMounted(async () => {
   try {
     const users = await getAllUsers();
-    usersList.value = users.filter(user => user.ID !== activeUser?.value?.ID) ?? [];
+    usersList.value = users.filter(user => user.id !== activeUser?.value?.id) ?? [];
   } catch (error) {
     console.error(error);
     setActiveToast({

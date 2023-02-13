@@ -1,4 +1,4 @@
-<template>
+<template> 
   <div>
     <base-input v-model="formValues.numberOfSeats" type="number" label="How many seats do you want to include?" />
     <base-input v-model="formValues.businessName" label="Business/Institution name *" />
@@ -18,6 +18,8 @@
 <script setup lang="ts">
   import { reactive } from "vue";
   import { z } from "zod"; 
+  
+  const emit = defineEmits<{ onContinue: (formValues: any) => void; }>();
 
   const newTeamFormValuesSchema = z.object({
     numberOfSeats: z.number(),

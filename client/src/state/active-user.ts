@@ -1,9 +1,9 @@
 import { defineStore } from "pinia";
 import { fetchActiveUser } from "../api/active-user";
-import { IUser } from "../types";
+import { User } from "../types";
 
 interface IActiveUserState {
-  activeUser?: IUser;
+  activeUser?: User;
 }
 
 export const useActiveUserStore = defineStore("active_user", {

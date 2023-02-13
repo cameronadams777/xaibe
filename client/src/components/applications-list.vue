@@ -7,11 +7,11 @@
       <router-link
         v-if="applications.length"
         v-for="application in applications"
-        :key="application.ID"
-        :to="`/applications/${application.ID}`"
+        :key="application.id"
+        :to="`/applications/${application.id}`"
         class="p-4 flex justify-between items-center border-b border-gray-300 hover:bg-gray-600 hover:border-gray-600 hover:text-white font-bold text-black no-underline transition-all duration-300"
       >
-        {{ application.Name }}
+        {{ application.name }}
         <chevron-right-icon class="h-full w-4" />
       </router-link>
       <div v-else class="w-full h-full flex justify-center items-center">
@@ -23,7 +23,7 @@
 
 <script lang="ts" setup>
 import { ChevronRightIcon } from "@heroicons/vue/24/solid";
-import { IApplication } from "src/types";
+import { Application } from "src/types";
 
-defineProps<{ applications: IApplication[] }>();
+defineProps<{ applications: Application[] }>();
 </script>
