@@ -1,7 +1,7 @@
 <template>
   <StripeElements
     v-if="stripeLoaded"
-    v-slot="{ elements, instance }"
+    v-slot="{ elements }"
     ref="elms"
     :stripe-key="config.stripePublishableKey"
     :elements-options="elementsOptions"

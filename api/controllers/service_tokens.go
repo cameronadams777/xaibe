@@ -97,7 +97,7 @@ func DeleteToken(c *gin.Context) {
 		return
 	}
 
-	deleted_token, _ := service_tokens_service.UpdateServiceToken(token_id, models.ServiceToken{Model: gorm.Model{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
+  deleted_token, _ := service_tokens_service.UpdateServiceToken(token_id, models.ServiceToken{UUIDBaseModel: models.UUIDBaseModel{DeletedAt: gorm.DeletedAt{Time: time.Now()}}})
 
 	c.JSON(http.StatusOK, deleted_token)
 }
