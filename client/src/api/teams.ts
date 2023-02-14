@@ -76,7 +76,7 @@ export const fetchPendingTeamInvites = async (): Promise<TeamInvite[]> => {
 };
 
 export interface IUpdateInviteStatusInput {
-  inviteId: number;
+  inviteId: string;
   status: number;
 }
 

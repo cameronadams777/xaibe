@@ -13,7 +13,7 @@
       }"
       @click="emits('onSelect', user.id)"
     >
-      {{ user.first_name }} {{ user.last_name }}
+      {{ user.firstName }} {{ user.lastName }}
     </button>
   </div>
 </template>

@@ -9,10 +9,10 @@ import (
 )
 
 type UUIDBaseModel struct {
-  ID        uuid.UUID      `gorm:"primary_key" json:"id"`
-  CreatedAt time.Time      `json:"created_at"` 
-  UpdatedAt time.Time      `json:"updated_at"`
-  DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at"`
+  ID        uuid.UUID      `gorm:"primaryKey" json:"id"`
+  CreatedAt time.Time      `json:"createdAt"` 
+  UpdatedAt time.Time      `json:"updatedAt"`
+  DeletedAt gorm.DeletedAt `gorm:"index" json:"deletedAt"`
 }
 
 func (base *UUIDBaseModel) BeforeCreate(tx *gorm.DB) error {
@@ -23,15 +23,15 @@ func (base *UUIDBaseModel) BeforeCreate(tx *gorm.DB) error {
 
 type User struct {
   UUIDBaseModel
-  FirstName           string                                  `json:"first_name"`
-	LastName            string                                  `json:"last_name"`
+  FirstName           string                                  `json:"firstName"`
+	LastName            string                                  `json:"lastName"`
   Email               string                                  `json:"email"`
   Password            string                                  `json:"password"`
-  StripeId            string                                  `json:"stripe_id"`
-  IsAdmin             bool                                    `json:"is_admin"`
-  IsVerified          bool                                    `json:"is_verified"`
-  ResetPasswordCode   string                                  `json:"reset_password_code"`
-  ResetPasswordExpiry time.Time                               `json:"reset_password_expiry"`
+  StripeId            string                                  `json:"stripeId"`
+  IsAdmin             bool                                    `json:"isAdmin"`
+  IsVerified          bool                                    `json:"isVerified"`
+  ResetPasswordCode   string                                  `json:"resetPasswordCode"`
+  ResetPasswordExpiry time.Time                               `json:"resetPasswordExpiry"`
   Applications        []Application                           `json:"applications"`
   Teams               []*Team `gorm:"many2many:team_users;"`  `json:"teams"`
 }
@@ -47,37 +47,37 @@ type Team struct {
 type Application struct {
   UUIDBaseModel
   Name          string                                                               `json:"name"`
-  TeamID        *uuid.UUID                                                           `json:"team_id"`
+  TeamID        *uuid.UUID                                                           `json:"teamId"`
   Team          *Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`        `json:"team"`
-  UserID        *uuid.UUID                                                           `json:"user_id"` 
+  UserID        *uuid.UUID                                                           `json:"userId"` 
   User          *User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`        `json:"user"`
-  UniqueId      string                                                               `json:"unique_id"`
-  AlertSchemaID *uuid.UUID                                                           `json:"alert_schema_id"`
-  AlertSchema   AlertSchema `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`  `json:"alert_schema"`
-  ServiceTokens []ServiceToken                                                       `json:"service_tokens"`
+  UniqueId      string                                                               `json:"uniqueId"`
+  AlertSchemaID *uuid.UUID                                                           `json:"alertSchemaId"`
+  AlertSchema   AlertSchema `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`  `json:"alertSchema"`
+  ServiceTokens []ServiceToken                                                       `json:"serviceTokens"`
 }
 
 type ServiceToken struct {
-	gorm.Model
+  UUIDBaseModel
   Token         string                                                               `json:"token"`
-  ApplicationID uuid.UUID                                                            `json:"application_id"`
+  ApplicationID uuid.UUID                                                            `json:"applicationId"`
   Application   Application `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`  `json:"application"`
-  ExpiresAt     time.Time                                                            `json:"expires_at"`
+  ExpiresAt     time.Time                                                            `json:"expiresAt"`
 }
 
 type AlertSchema struct {
   UUIDBaseModel
-  ApplicationID uuid.UUID  `json:"application_id"`
+  ApplicationID uuid.UUID  `json:"applicationId"`
   Title         string     `json:"title"`
   Description   string     `json:"description"`
   Link          string     `json:"link"`
 }
 
 type TeamInvite struct {
-	gorm.Model
-  SenderID uuid.UUID                                                      `json:"sender_id"`
+  UUIDBaseModel
+  SenderID uuid.UUID                                                      `json:"senderId"`
   Sender   User `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`   `json:"sender"`
-  TeamID   uuid.UUID                                                      `json:"team_id"`
+  TeamID   uuid.UUID                                                      `json:"teamId"`
   Team     Team `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`   `json:"team"`
   Email    string                                                         `json:"email"`
   Status   invite_status.InviteStatus                                     `json:"status"`

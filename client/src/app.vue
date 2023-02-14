@@ -49,8 +49,8 @@ watch(token, async (tokenValue) => {
   socket.onmessage = function (event): void {
     if (!event.data || !event.data.length) return;
     const alertResponseData = JSON.parse(event.data);
-    const applicationId = alertResponseData.application_id;
-    const schema = alertResponseData.alert_schema as AlertSchema;
+    const applicationId = alertResponseData.applicationId;
+    const schema = alertResponseData.alertSchema as AlertSchema;
 
     const { alert_schema, ...rest } = alertResponseData;
 

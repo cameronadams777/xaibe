@@ -13,14 +13,14 @@
       <div
         v-if="
           activeApplication != null &&
-          activeApplication.alert_schema?.id.length &&
+          activeApplication.alertSchema?.id.length &&
           applicationAlerts.length > 0
         "
         class="w-full lg:w-1/3 h-48 lg:h-96"
       >
         <alerts-list-by-application
           :alerts="applicationAlerts"
-          :alert-schema="activeApplication.alert_schema"
+          :alert-schema="activeApplication.alertSchema"
         />
       </div>
       <alert-schema-form

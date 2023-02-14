@@ -8,17 +8,17 @@ export const InviteStatus = {
 
 export const UserSchema = z.object({
   id: z.string(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date(),
-  first_name: z.string(),
-  last_name: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date(),
+  firstName: z.string(),
+  lastName: z.string(),
   email: z.string(),
-  stripe_id: z.string(),
-  is_admin: z.boolean(),
-  is_verified: z.boolean(),
-  reset_password_code: z.string(),
-  reset_password_expiry: z.date(),
+  stripeId: z.string(),
+  isAdmin: z.boolean(),
+  isVerified: z.boolean(),
+  resetPasswordCode: z.string(),
+  resetPasswordExpiry: z.date(),
   applications: z.any(),
   teams: z.any(),
 });
@@ -27,9 +27,9 @@ export type User = z.infer<typeof UserSchema>;
 
 export const TeamSchema = z.object({
   id: z.string(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date(),
   name: z.string(),
   users: z.lazy(() => z.array(UserSchema)),
   managers: z.lazy(() => z.array(UserSchema)),
@@ -40,28 +40,28 @@ export type Team = z.infer<typeof TeamSchema>;
 
 export const ApplicationSchema = z.object({
   id: z.string(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date(),
   name: z.string(),
-  team_id: z.string().optional(),
+  teamId: z.string().optional(),
   team: z.lazy(() => TeamSchema).optional(),
-  user_id: z.string().optional(),
+  userId: z.string().optional(),
   user: z.lazy(() => UserSchema).optional(),
-  unique_id: z.string(),
-  alert_schema_id: z.string().optional(),
-  alert_schema: z.lazy(() => AlertSchemaSchema),
-  service_tokens: z.lazy(() => z.array(ServiceTokenSchema)),
+  uniqueId: z.string(),
+  alertSchemaId: z.string().optional(),
+  alertSchema: z.lazy(() => AlertSchemaSchema),
+  serviceTokens: z.lazy(() => z.array(ServiceTokenSchema)),
 });
 
 export type Application = z.infer<typeof ApplicationSchema>;
 
 export const AlertSchemaSchema = z.object({
   id: z.string(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date(),
-  application_id: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date(),
+  applicationId: z.string(),
   title: z.string(),
   description: z.string(),
   link: z.string(),
@@ -70,26 +70,26 @@ export const AlertSchemaSchema = z.object({
 export type AlertSchema = z.infer<typeof AlertSchemaSchema>;
 
 export const ServiceTokenSchema = z.object({
-  id: z.number(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date(),
+  id: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date(),
   token: z.string(),
-  application_id: z.string(),
+  applicationId: z.string(),
   application: z.any(),
-  expires_at: z.date(),
+  expiresAt: z.date(),
 });
 
 export type ServiceToken = z.infer<typeof ServiceTokenSchema>;
 
 export const TeamInviteSchema = z.object({
-  id: z.number(),
-  created_at: z.date(),
-  updated_at: z.date(),
-  deleted_at: z.date(),
-  sender_id: z.string(),
+  id: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date(),
+  senderId: z.string(),
   sender: z.lazy(() => UserSchema),
-  team_id: z.string(),
+  teamId: z.string(),
   team: z.lazy(() => TeamSchema),
   email: z.string(),
   status: z.number(),

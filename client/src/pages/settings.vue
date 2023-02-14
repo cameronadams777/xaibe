@@ -10,7 +10,7 @@ const { activeUser } = storeToRefs(activeUserStore);
 <template>
   <the-main-layout>
     <div class="p-4">
-      <h2>{{ activeUser?.first_name }} {{ activeUser?.last_name }}</h2>
+      <h2>{{ activeUser?.firstName }} {{ activeUser?.lastName }}</h2>
     </div>
   </the-main-layout>
 </template>
