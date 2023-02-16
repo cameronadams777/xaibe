@@ -18,12 +18,20 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Login(c *gin.Context) {
-	type LoginInput struct {
-		Email    string `json:"email" binding:"required"`
-		Password string `json:"password" binding:"required"`
-	}
+type LoginInput struct {
+  Email    string `json:"email" binding:"required"`
+  Password string `json:"password" binding:"required"`
+}
 
+type RegisterInput struct {
+  FirstName            string `json:"firstName" binding:"required"`
+  LastName             string `json:"lastName" binding:"required"`
+  Email                string `json:"email" binding:"required"`
+  Password             string `json:"password" binding:"required"`
+  PasswordConfirmation string `json:"passwordConfirmation" binding:"required"`
+}
+
+func Login(c *gin.Context) {
 	var input LoginInput
 
 	if err := c.BindJSON(&input); err != nil {
@@ -36,7 +44,7 @@ func Login(c *gin.Context) {
 
 	database.DB.Where(&models.User{Email: input.Email}).First(&user)
 
-	if user.ID.String() != "" {
+	if user.ID != uuid.Nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "User not found."})
 		return
 	}
@@ -67,14 +75,6 @@ func Login(c *gin.Context) {
 }
 
 func Register(c *gin.Context) {
-	type RegisterInput struct {
-		FirstName            string `json:"firstName" binding:"required"`
-		LastName             string `json:"lastName" binding:"required"`
-		Email                string `json:"email" binding:"required"`
-		Password             string `json:"password" binding:"required"`
-		PasswordConfirmation string `json:"passwordConfirmation" binding:"required"`
-	}
-
 	var input RegisterInput
 
 	if err := c.BindJSON(&input); err != nil {
@@ -90,9 +90,9 @@ func Register(c *gin.Context) {
 
 	var existingUser models.User
 
-	database.DB.Where(&models.User{Email: input.Email}).Find(&existingUser)
+	database.DB.Where(&models.User{Email: input.Email}).Find(&existingUser) 
 
-	if existingUser.ID.String() != "" {
+	if existingUser.ID != uuid.Nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Error on register request."})
 		return
 	}

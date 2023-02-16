@@ -1,46 +1,3 @@
-<script lang="ts" setup>
-import { useRouter } from "vue-router";
-import { ref } from "vue";
-import { ToastType } from "../types";
-import { useAuthStore, useToastStore } from "../state";
-import { mixpanelWrapper } from "src/tools/mixpanel";
-
-const router = useRouter();
-const { setActiveToast } = useToastStore();
-const { registerUser } = useAuthStore();
-
-const firstName = ref("");
-const lastName = ref("");
-const email = ref("");
-const password = ref("");
-const confirmPassword = ref("");
-const isSubmitting = ref(false);
-
-const submitForm = async () => {
-  try {
-    isSubmitting.value = true;
-    await registerUser({
-      firstName: firstName.value,
-      lastName: lastName.value,
-      email: email.value,
-      password: password.value,
-      passwordConfirmation: confirmPassword.value,
-    });
-    mixpanelWrapper.client.track("Register user");
-    isSubmitting.value = false;
-    router.push("/");
-  } catch (error) {
-    console.log(error);
-    isSubmitting.value = false;
-    setActiveToast({
-      message:
-        "An error occurred while trying to create your account. Please try again later.",
-      type: ToastType.ERROR,
-    });
-  }
-};
-</script>
-
 <template>
   <div class="w-full h-full flex flex-col justify-center items-center">
     <h2>Nice to meet you!</h2>
@@ -90,6 +47,16 @@ const submitForm = async () => {
         class="p-1.5"
       />
     </div>
+    <div class="mb-4 flex items-center">
+      <input
+        v-model="allowTelemetry"
+        id="allowTelemetry"
+        name="allowTelemetry"
+        type="checkbox"
+        class="mr-2"
+      />
+      <label for="allowTelemetry">Allow Anonymous Telemetry</label>
+    </div>
     <base-button
       text="Register"
       class="w-1/4"
@@ -105,3 +72,50 @@ const submitForm = async () => {
     >
   </div>
 </template>
+
+
+<script lang="ts" setup>
+import { useRouter } from "vue-router";
+import { ref } from "vue";
+import { ToastType } from "../types";
+import { useAuthStore, useToastStore } from "../state";
+import { mixpanelWrapper } from "src/tools/mixpanel";
+
+const router = useRouter();
+const { setActiveToast } = useToastStore();
+const { registerUser } = useAuthStore();
+
+const firstName = ref("");
+const lastName = ref("");
+const email = ref("");
+const password = ref("");
+const confirmPassword = ref("");
+const allowTelemetry = ref(true);
+const isSubmitting = ref(false);
+
+const submitForm = async () => {
+  try {
+    isSubmitting.value = true;
+    localStorage.setItem("allowTelemetry", allowTelemetry.toString());
+    await registerUser({
+      firstName: firstName.value,
+      lastName: lastName.value,
+      email: email.value,
+      password: password.value,
+      passwordConfirmation: confirmPassword.value,
+    });
+    mixpanelWrapper.client.track("Register user");
+    isSubmitting.value = false;
+    router.push("/");
+  } catch (error) {
+    console.log(error);
+    isSubmitting.value = false;
+    setActiveToast({
+      message:
+        "An error occurred while trying to create your account. Please try again later.",
+      type: ToastType.ERROR,
+    });
+  }
+};
+</script>
+
