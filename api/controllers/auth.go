@@ -33,8 +33,8 @@ type RegisterInput struct {
 
 func Login(c *gin.Context) {
 	var input LoginInput
-
-	if err := c.BindJSON(&input); err != nil {
+	
+  if err := c.BindJSON(&input); err != nil {
 		fmt.Println(err)
 		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Error on login request."})
 		return
@@ -44,7 +44,7 @@ func Login(c *gin.Context) {
 
 	database.DB.Where(&models.User{Email: input.Email}).First(&user)
 
-	if user.ID != uuid.Nil {
+	if user.ID == uuid.Nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "User not found."})
 		return
 	}
