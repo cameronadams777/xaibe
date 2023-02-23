@@ -1,4 +1,5 @@
 import { Body } from "@tauri-apps/api/http";
+import { z } from "zod";
 import { Team, TeamInvite, TeamInviteSchema, TeamSchema } from "src/types";
 import * as http from "./http";
 
@@ -67,11 +68,13 @@ export const deleteTeam = async ({
   await http.del({ url: `api/teams/${teamId}` });
 };
 
+const FetchPendingTeamInvitesResponseSchema = z.array(TeamInviteSchema);
+
 export const fetchPendingTeamInvites = async (): Promise<TeamInvite[]> => {
   const response = await http.get<TeamInvite[]>({
     url: "api/teams/invites",
   });
-  TeamInviteSchema.parse(response);
+  FetchPendingTeamInvitesResponseSchema.parse(response);
   return response;
 };
 

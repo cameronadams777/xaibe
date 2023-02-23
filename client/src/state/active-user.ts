@@ -11,7 +11,7 @@ export const useActiveUserStore = defineStore("active_user", {
     return { activeUser: undefined };
   },
   actions: {
-    async getActiveUser() {
+    async getActiveUser(): Promise<void> {
       const user = await fetchActiveUser();
       this.activeUser = user;
     },
