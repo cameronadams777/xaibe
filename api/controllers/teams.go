@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"api/assertions"
+	"api/config"
 	"api/models"
+	"api/services/stripe_service"
 	"api/services/teams_service"
 	"api/services/users_service"
 	"api/structs"
@@ -11,21 +13,27 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-  "github.com/google/uuid"
+	"github.com/google/uuid"
 )
 
 type CreateNewTeamInput struct {
-	Name string `json:"teamName" binding:"required"`
+	Name            string `json:"teamName" binding:"required"`
+  NumberOfSeats   uint   `json:"numberOfSeats" binding:"required"`
 }
 
 type InviteExistingUserToTeamInput struct {
-	UserId string `json:"user_id" binding:"required"`
-	TeamId string `json:"team_id" binding:"required"`
+	UserId          string `json:"user_id" binding:"required"`
+	TeamId          string `json:"team_id" binding:"required"`
 }
 
 type UpdateTeamInviteInput struct {
-	InviteId int `json:"invite_id" binding:"required"`
-	Status   int `json:"invite_status" binding:"required"`
+	InviteId        int `json:"invite_id" binding:"required"`
+	Status          int `json:"invite_status" binding:"required"`
+}
+
+type CreateNewTeamResponse struct {
+  Team            *models.Team `json:"team"`
+  ClientSecret    string      `json:"clientSecret"`
 }
 
 func GetAllTeams(c *gin.Context) {
@@ -83,13 +91,12 @@ func CreateNewTeam(c *gin.Context) {
 
 	current_user, current_user_err := users_service.GetUserById(authScope.UserID)
 
-	if current_user_err != nil {
-    fmt.Println(current_user_err)
+	if current_user_err != nil || len(current_user.StripeId) != 0 {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An unknown error occurred."})
 		return
 	}
 
-	created_team, creation_err := teams_service.CreateTeam(input.Name, *current_user)
+	created_team, creation_err := teams_service.CreateTeam(input.Name, input.NumberOfSeats, *current_user)
 
 	if creation_err != nil {
 		fmt.Println(creation_err)
@@ -97,7 +104,34 @@ func CreateNewTeam(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, created_team)
+  subscription, subscription_create_err := stripe_service.CreateSubscription(stripe_service.SubscriptionData{
+    CustomerId: current_user.StripeId,
+    PriceId: config.Get("STRIPE_TEAM_PRODUCT_ID"),
+    Quantity: input.NumberOfSeats,
+    Metadata: map[string]string{
+      "TeamId": created_team.ID.String(),
+    },
+  })
+
+  if subscription_create_err != nil {
+    fmt.Println(subscription_create_err)
+    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred while creating the requested team."})
+    teams_service.PermDeleteTeam(created_team.ID)
+    return 
+  }
+
+  updated_team, update_err := teams_service.UpdateTeam(created_team.ID, models.Team{
+    SubscriptionId: subscription.ID,
+  })
+
+  if update_err != nil {
+    fmt.Println(subscription_create_err)
+    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred while creating the requested team."})
+    teams_service.PermDeleteTeam(created_team.ID)
+    return 
+  }
+
+  c.JSON(http.StatusCreated, CreateNewTeamResponse{Team: updated_team, ClientSecret: subscription.LatestInvoice.PaymentIntent.ClientSecret})
 }
 
 func DeleteTeam(c *gin.Context) {
@@ -111,6 +145,14 @@ func DeleteTeam(c *gin.Context) {
 	}
 
 	team_to_delete, err := teams_service.GetTeamById(team_id)
+
+  subscription_cancellation_err := stripe_service.CancelSubscription(team_to_delete.SubscriptionId)
+
+  if subscription_cancellation_err != nil {
+    fmt.Println(subscription_cancellation_err)
+    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred attempting to delete the requested team."})
+    return 
+  }
 
 	if err != nil {
     fmt.Println(err)

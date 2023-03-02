@@ -25,7 +25,9 @@ const emits = defineEmits<{ onFinish: () => void }>();
 
 const elementsOptions = ref({
   clientSecret: config.stripeClientSecret,
-  appearance: "stripe",
+  appearance: {
+    theme: "stripe", 
+  },
 });
 const cardOptions = ref({});
 const stripeLoaded = ref<boolean>(false);
