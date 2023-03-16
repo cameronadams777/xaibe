@@ -2,12 +2,12 @@ import { defineStore } from "pinia";
 import { fetchAllUsers } from "src/api/users";
 import { User } from "src/types";
 
-interface IGalataUsersState {
+interface IXaibeUsersState {
   users: User[];
 }
 
-export const useGalataUsersStore = defineStore("galata_users", {
-  state(): IGalataUsersState {
+export const useXaibeUsersStore = defineStore("xaibe_users", {
+  state(): IXaibeUsersState {
     return { users: [] };
   },
   actions: {

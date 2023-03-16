@@ -49,10 +49,10 @@ const submitForm = async (applicationName: string, teamId?: string) => {
     isSubmitting.value = true;
     // TODO: Move this logic to application state
     if (!activeUser?.value)
-      throw new Error("Galata Error: User data not available.");
+      throw new Error("Xaibe Error: User data not available.");
 
     if (!applicationType.value)
-      throw new Error("Galata Error: Application type not defined.");
+      throw new Error("Xaibe Error: Application type not defined.");
 
     const application = await createNewApplication({
       alertSchema: getAppSchemaByType(applicationType.value),
@@ -61,7 +61,7 @@ const submitForm = async (applicationName: string, teamId?: string) => {
       teamId,
     });
     if (!application)
-      throw new Error("Galata Error: Application not generated.");
+      throw new Error("Xaibe Error: Application not generated.");
 
     mixpanelWrapper.client.track("New application created");
     cacheApplication(application);

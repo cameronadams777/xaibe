@@ -38,7 +38,7 @@ func main() {
 		})
 	})
 
-  // Auto-Update Galata Desktop
+  // Auto-Update Xaibe Desktop
   app.GET("/auto_update/:platform/:current_version", controllers.CheckLatestAppVersion)
  
 

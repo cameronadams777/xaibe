@@ -47,7 +47,7 @@ const submitForm = async () => {
   try {
     isSubmitting.value = true;
     const team = await createNewTeam({ teamName: teamName.value });
-    if (!team) throw new Error("Galata Error: Team not generated.");
+    if (!team) throw new Error("Xaibe Error: Team not generated.");
     await getActiveUser();
     mixpanelWrapper.client.track("New team created");
     isSubmitting.value = false;
