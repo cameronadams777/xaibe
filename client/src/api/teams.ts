@@ -1,20 +1,20 @@
 import { Body } from "@tauri-apps/api/http";
 import { z } from "zod";
-import { Team, TeamInvite, TeamInviteSchema, TeamSchema } from "src/types";
+import { 
+  NewTeamSubscriptionFormSchema, 
+  NewTeamSubscriptionFormValidator, 
+  Team, 
+  TeamInvite, 
+  TeamInviteSchema, 
+  TeamSchema 
+} from "src/types";
 import * as http from "./http";
 
-interface ICreateNewTeamInput {
-  teamName: string;
-}
-
-export const createNewTeam = async ({
-  teamName,
-}: ICreateNewTeamInput): Promise<Team> => {
+export const createNewTeam = async (form: NewTeamSubscriptionFormSchema): Promise<{ team: Team, clientSecret: string }> => {
   const response = await http.post<Team>({
     url: `api/teams`,
-    body: { teamName },
+    body: { ...form },
   });
-  TeamSchema.parse(response);
   return response;
 };
 

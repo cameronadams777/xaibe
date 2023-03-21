@@ -91,7 +91,7 @@ func CreateNewTeam(c *gin.Context) {
 
 	current_user, current_user_err := users_service.GetUserById(authScope.UserID)
 
-	if current_user_err != nil || len(current_user.StripeId) != 0 {
+	if current_user_err != nil || len(current_user.StripeId) == 0 {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An unknown error occurred."})
 		return
 	}

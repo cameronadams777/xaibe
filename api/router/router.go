@@ -62,4 +62,5 @@ func SetupRouter(app *gin.Engine) {
 
   payments := api.Group("/payments", middleware.Protected())
   payments.POST("/create-customer", controllers.CreateNewStripeCustomer)
+  payments.POST("/create-new-team-subscription", controllers.CreateNewTeamSubscription)
 }

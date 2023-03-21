@@ -21,10 +21,11 @@ import { StripeElement, StripeElements } from "vue-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { config } from "src/config";
 
+const props = defineProps<{ clientSecret: string }>();
 const emits = defineEmits<{ onFinish: () => void }>(); 
 
 const elementsOptions = ref({
-  clientSecret: config.stripeClientSecret,
+  clientSecret: props.clientSecret,
   appearance: {
     theme: "stripe", 
   },

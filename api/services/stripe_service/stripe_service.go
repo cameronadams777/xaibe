@@ -1,9 +1,8 @@
 package stripe_service
 
 import (
+  "api/initializers/stripe_client"
 	"github.com/stripe/stripe-go/v74"
-	"github.com/stripe/stripe-go/v74/customer"
-	"github.com/stripe/stripe-go/v74/subscription"
 )
 
 type CustomerMetadata struct {
@@ -36,7 +35,7 @@ func CreateCustomer(metadata CustomerMetadata) (*stripe.Customer, error) {
       Country: stripe.String(metadata.Country),
     }, 
   }
-  customer, err := customer.New(params);
+  customer, err := stripe_client.StripeClient.Customers.New(params);
 
   if err != nil {
     return nil, err
@@ -67,7 +66,7 @@ func CreateSubscription(metadata SubscriptionData) (*stripe.Subscription, error)
     subscription_params.AddMetadata(k, v)
   }
 
-  subscription, err := subscription.New(subscription_params)
+  subscription, err := stripe_client.StripeClient.Subscriptions.New(subscription_params)
 
   if err != nil {
     return nil, err
@@ -82,7 +81,7 @@ func UpdateSubscription() {
 }
 
 func CancelSubscription(subscription_id string) error {
-  _, err := subscription.Cancel(subscription_id, nil)
+  _, err := stripe_client.StripeClient.Subscriptions.Cancel(subscription_id, nil)
   
   if err != nil {
     return err

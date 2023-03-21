@@ -5,6 +5,7 @@ import (
 	"api/initializers/cache"
 	"api/initializers/database"
 	"api/initializers/sparkpost"
+	"api/initializers/stripe_client"
 	"api/router"
 	"api/websockets"
 
@@ -21,6 +22,9 @@ func main() {
 
 	// Create SparkPost Client
 	sparkpost.CreateSparkPostClient()
+
+  // Create Stripe Client
+  stripe_client.CreateStripeClient();
 
 	// Connect to postgres database
 	database.ConnectDB()
