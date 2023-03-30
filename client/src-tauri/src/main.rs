@@ -158,7 +158,6 @@ async fn main() {
 
 #[tauri::command]
 fn get_stored_auth_token() -> String {
-  println!("{}", get_auth_token());
   return get_auth_token();
 }
 

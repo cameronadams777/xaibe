@@ -18,38 +18,25 @@
 
 <script setup lang="ts">
 import { reactive } from "vue";
-import { useToastStore } from "src/state";
-import { 
-  ToastType, 
-} from "src/types";
 
 const emits = defineEmits<{
   (event: "onContinue", formValues: any): void;
 }>();
 
-const { setActiveToast } = useToastStore();
-
 const formValues = reactive({
-  teamName: "",
+  teamName: "Dev",
   numberOfSeats: 1,
-  businessName: "",
-  addressLineOne: "",
+  businessName: "Galata.app",
+  addressLineOne: "5319 Vermilion Ct",
   addressLineTwo: "",
-  city: "",
-  state: "",
-  country: "",
-  postalCode: "",
-  billingEmail: ""
+  city: "Dickinson",
+  state: "Texas",
+  country: "United States",
+  postalCode: "77539",
+  billingEmail: "cameron.adams@hey.com"
 });
 
 const submitForm = (): void => {
-  try {
-    emits("onContinue", formValues);
-  } catch (error) {
-    setActiveToast({
-      type: ToastType.ERROR,
-      message: "An error occurred submitting the team details."
-    });
-  }
+  emits("onContinue", formValues);
 }
 </script>

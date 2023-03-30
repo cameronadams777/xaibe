@@ -4,8 +4,7 @@ import (
 	"api/initializers/database"
 	"api/models"
 	"api/structs/invite_status"
-
-  "github.com/google/uuid"
+	"github.com/google/uuid"
 )
 
 // TODO: Find way to specify preloads when querying, to prevent excess queries
@@ -40,7 +39,7 @@ func CreateTeam(name string, numberOfSeats uint,  creating_user models.User) (*m
 		Users:    []*models.User{&creating_user},
 		Managers: []*models.User{&creating_user},
 	}
-	err := database.DB.Create(&team).Error
+	err := database.DB.Create(team).Error
 	if err != nil {
 		return nil, err
 	}

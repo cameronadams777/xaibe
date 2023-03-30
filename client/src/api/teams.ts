@@ -1,17 +1,13 @@
 import { Body } from "@tauri-apps/api/http";
-import { z } from "zod";
 import { 
   NewTeamSubscriptionFormSchema, 
-  NewTeamSubscriptionFormValidator, 
   Team, 
   TeamInvite, 
-  TeamInviteSchema, 
-  TeamSchema 
 } from "src/types";
 import * as http from "./http";
 
 export const createNewTeam = async (form: NewTeamSubscriptionFormSchema): Promise<{ team: Team, clientSecret: string }> => {
-  const response = await http.post<Team>({
+  const response = await http.post<{ team: Team, clientSecret: string }>({
     url: `api/teams`,
     body: { ...form },
   });
@@ -28,7 +24,6 @@ export const fetchTeamById = async ({
   const response = await http.get<Team>({
     url: `api/teams/${teamId}`,
   });
-  TeamSchema.parse(response);
   return response;
 };
 
@@ -68,13 +63,11 @@ export const deleteTeam = async ({
   await http.del({ url: `api/teams/${teamId}` });
 };
 
-const FetchPendingTeamInvitesResponseSchema = z.array(TeamInviteSchema);
 
 export const fetchPendingTeamInvites = async (): Promise<TeamInvite[]> => {
   const response = await http.get<TeamInvite[]>({
     url: "api/teams/invites",
   });
-  FetchPendingTeamInvitesResponseSchema.parse(response);
   return response;
 };
 
@@ -96,6 +89,5 @@ export const updateInviteStatus = async ({
       }),
     },
   });
-  TeamInviteSchema.parse(response);
   return response;
 };

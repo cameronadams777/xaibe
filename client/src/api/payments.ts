@@ -3,7 +3,7 @@ import { rawPost } from "./http";
 
 export const createNewStripeCustomer = async (formValues: NewTeamDetailsFormSchema): Promise<boolean> => {
   const response = await rawPost({ 
-    url: "/api/create-customer", 
+    url: "api/payments/create-customer", 
     body: {
       ...formValues
     }
@@ -13,7 +13,22 @@ export const createNewStripeCustomer = async (formValues: NewTeamDetailsFormSche
 
 export const createNewTeamSubscription = async (formValues: NewTeamDetailsFormSchema): Promise<boolean> => {
   const response = await rawPost({ 
-    url: "/api/create-new-team-subscription", 
+    url: "api/create-new-team-subscription", 
+    body: {
+      ...formValues
+    }
+  });
+  return response.ok;
+}
+
+interface ConfirmPaymentIntentSchema {
+  paymentIntent: string;
+  cardToken: string;
+}
+
+export const confirmPaymentIntent = async (formValues: ConfirmPaymentIntentSchema): Promise<boolean> => {
+  const response = await rawPost({
+    url: "api/payments/confirm-payment-intent",
     body: {
       ...formValues
     }

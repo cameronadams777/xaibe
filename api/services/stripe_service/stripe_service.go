@@ -75,6 +75,17 @@ func CreateSubscription(metadata SubscriptionData) (*stripe.Subscription, error)
   return subscription, nil
 }
 
+func ConfirmCardPayment(payment_intent string, card_token string) error {
+  params := &stripe.PaymentIntentConfirmParams{
+    PaymentMethod: stripe.String(card_token),
+  }
+  _, err := stripe_client.StripeClient.PaymentIntents.Confirm(payment_intent, params)
+  if err != nil {
+    return err
+  }
+  return nil
+}
+
 // TODO: Fill this in
 func UpdateSubscription() {
 

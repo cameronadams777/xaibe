@@ -13,15 +13,14 @@ export const fetchApplicationById = async ({
   const response = await http.get<Application>({
     url: `api/applications/${applicationId}`
   });
-  ApplicationSchema.parse(response);
   return response;
 };
 
 export interface ICreateNewApplicationInput {
   applicationName: string;
   alertSchema?: AlertSchema;
-  teamId?: string;
-  userId?: string;
+  teamId: string;
+  userId: string;
 }
 
 export const createNewApplication = async ({
@@ -33,8 +32,8 @@ export const createNewApplication = async ({
   let body: Record<string, any> = {
     applicationName,
   };
-  if (teamId != null) body.teamId = teamId;
-  else if (userId != null) body.userId = userId;
+  if (teamId.length) body.teamId = teamId;
+  else if (userId.length) body.userId = userId;
   else {
     throw new Error(
       "A teamId or userId must be provided when creating an application."
@@ -50,8 +49,6 @@ export const createNewApplication = async ({
     body
   });
   
-  ApplicationSchema.parse(response);
-
   return response;
 };
 
@@ -72,7 +69,6 @@ export const addSchemaToApplication = async (
       body: Body.json(rest)
     }
   });
-  ApplicationSchema.parse(response);
   return response;
 };
 
