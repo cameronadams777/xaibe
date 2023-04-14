@@ -1,7 +1,10 @@
 <template>
   <div
     class="h-full border-r-1 border-gray-300"
-    :class="{ 'flex flex-col w-full md:w-2/5 xl:w-1/5': isOpen }"
+    :class="{
+      'flex flex-col w-full md:w-2/5 xl:w-1/5': isOpen,
+      hidden: !isOpen,
+    }"
   >
     <router-link
       class="px-6 py-4 flex items-center justify-between font-bold text-md capitalize no-underline bg-white hover:bg-gray-200 text-gray-800 text-left border-x-0 border-t-0 border-b-1 border-gray-300 cursor-pointer"

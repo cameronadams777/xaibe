@@ -27,7 +27,7 @@ const toggleLeftNav = () => (isLeftNavOpen.value = !isLeftNavOpen.value);
 onMounted(async () => {
   try {
     await getActiveUser();
-  } catch(error) {
+  } catch (error) {
     console.error(error);
     router.push("/500");
   }
