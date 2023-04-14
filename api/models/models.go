@@ -69,10 +69,10 @@ type ServiceToken struct {
 
 type AlertSchema struct {
   UUIDBaseModel
-  ApplicationID uuid.UUID  `json:"applicationId"`
-  Title         string     `json:"title"`
-  Description   string     `json:"description"`
-  Link          string     `json:"link"`
+  ApplicationID uuid.UUID   `json:"applicationId"`
+  Title         string      `json:"title"`
+  Description   string      `json:"description"`
+  Link          string      `json:"link"`
 }
 
 type TeamInvite struct {

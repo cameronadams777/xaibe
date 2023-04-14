@@ -36,6 +36,8 @@ func WebHook(c *gin.Context) {
 	}
 
 	body_as_string := string(body_as_byte_array)
+  
+  fmt.Println("Test", body_as_string)
 
 	var body_as_json map[string]interface{}
 	json.Unmarshal([]byte(body_as_string), &body_as_json)

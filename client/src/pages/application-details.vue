@@ -13,7 +13,7 @@
       <div
         v-if="
           activeApplication != null &&
-          activeApplication.alertSchema?.id.length &&
+          activeApplication.alertSchemaId != null &&
           applicationAlerts.length > 0
         "
         class="w-full lg:w-1/3 h-48 lg:h-96"
@@ -24,10 +24,7 @@
         />
       </div>
       <alert-schema-form
-        v-else-if="
-          activeApplication != null &&
-          applicationAlerts?.length
-        "
+        v-else-if="activeApplication != null && applicationAlerts?.length"
         :application-id="activeApplication?.id"
         :base-object="applicationAlerts[0]"
       />
@@ -73,7 +70,10 @@ const { setActiveToast } = useToastStore();
 const activeApplication = ref<Application | undefined>(undefined);
 const applicationUrl = ref("");
 
-const applicationAlerts = computed(() => localCacheAlerts.value?.[`application_${activeApplication.value?.id}`] ?? []);
+const applicationAlerts = computed(
+  () =>
+    localCacheAlerts.value?.[`application_${activeApplication.value?.id}`] ?? []
+);
 
 const router = useRouter();
 const route = useRoute();
@@ -87,6 +87,7 @@ const getActiveApplication = async (applicationId: string) => {
   }
   try {
     const application = await fetchApplicationById({ applicationId });
+    console.log(application);
     if (!application) {
       router.push("/404");
       return;
@@ -111,7 +112,4 @@ onMounted(async () => {
     applicationId,
   });
 });
-
 </script>
-
-

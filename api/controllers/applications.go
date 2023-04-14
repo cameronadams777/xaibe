@@ -204,7 +204,7 @@ func AddSchemaToApplication(c *gin.Context) {
 		Link:          input.Link,
 	}
 
-	_, schema_create_err := alert_schemas_service.CreateNewAlertSchema(alert_schema_to_create)
+	created_schema, schema_create_err := alert_schemas_service.CreateNewAlertSchema(alert_schema_to_create)
 
 	if schema_create_err != nil {
 		fmt.Println(schema_create_err)
@@ -212,7 +212,15 @@ func AddSchemaToApplication(c *gin.Context) {
 		return
 	}
 
-	updated_application, _ := applications_service.GetApplicationById(application_id)
+  updated_application, update_err := applications_service.UpdateApplication(application_to_update.ID, models.Application{ 
+    AlertSchemaID: &created_schema.ID, 
+  })
+
+  if update_err != nil {
+    fmt.Println(update_err)
+    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred adding alert schema to application."})
+    return
+  }
 
 	c.JSON(http.StatusOK, updated_application)
 }
