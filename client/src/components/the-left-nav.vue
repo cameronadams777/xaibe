@@ -18,7 +18,7 @@
       :class="{ 'border-t-0': index !== 0, 'border-t-1': index === 0 }"
       :to="`/applications/${application.id}`"
     >
-      <span>{{ application.Name }}</span>
+      <span>{{ application.name }}</span>
       <chevron-right-icon class="h-full w-4" />
     </router-link>
     <div
@@ -57,4 +57,3 @@ defineProps<{ isOpen: boolean }>();
 const activeUserStore = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);
 </script>
-
