@@ -5,17 +5,20 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "Galata",
-    "version": "0.2.0"
+    "productName": "Xaibe",
+    "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
+      "shell": {
+        "open": true
+      },
       "http": {
         "request": true,
         "scope": [
           "http://localhost:5000/*",
-          "https://staging-api.galata.io/*",
-          "https://api.galata.io/*"
+          "https://staging-xaibe-api.galata.io/*",
+          "https://xaibe-api.galata.io/*"
         ]
       },
       "notification": {
@@ -37,7 +40,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "app.galata.desktop",
+      "identifier": "app.xaibe.desktop",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -76,7 +79,7 @@
         "fullscreen": false,
         "height": 600,
         "resizable": true,
-        "title": "Galata",
+        "title": "Xaibe",
         "width": 800
       }
     ]

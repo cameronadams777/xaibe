@@ -181,6 +181,20 @@ func InviteNewUser(c *gin.Context) {
 		// Add new record to invites table
     parsed_team_id, uuid_err := uuid.Parse(*input.TeamId)
     if uuid_err == nil {
+      
+      team, get_team_err := teams_service.GetTeamById(parsed_team_id)
+
+      if get_team_err != nil {
+        fmt.Println(get_team_err)
+        c.AbortWithStatusJSON(http.StatusNotFound, structs.ErrorMessage{Message: "Team not found."})
+        return 
+      }
+
+      if len(team.Users) + 1 > int(team.ActiveNumberOfSeats) {
+        c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Team's subscription does not support more users."})
+        return
+      }
+
 		  teams_service.CreateInvite(parsed_team_id, authScope.UserID, input.Email)
     }
 	}

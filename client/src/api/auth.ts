@@ -26,7 +26,6 @@ export const login = async ({
     authToken: response.data,
     refreshToken: cookies.ucid
   });
-  LoginResponseSchema.parse(response.data);
   return response.data;
 };
 
@@ -47,7 +46,6 @@ export const registerUser = async (
     url: "api/register",
     body: input
   });
-  RegisterUserResponse.parse(response);
   return response;
 };
 
@@ -83,7 +81,6 @@ export const fetchAuthToken = async (): Promise<string> => {
         }
       }
     });
-  FetchAuthTokenResponse.parse(response.data);
   await invoke('store_tokens', {
     authToken: response.data ?? "", 
     refreshToken

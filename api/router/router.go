@@ -59,4 +59,8 @@ func SetupRouter(app *gin.Engine) {
 	tokens := api.Group("/service_tokens", middleware.Protected())
 	tokens.POST("/:application_id", controllers.CreateNewToken)
 	tokens.DELETE("/:token_id", controllers.DeleteToken)
+
+  payments := api.Group("/payments", middleware.Protected())
+  payments.POST("/create-customer", controllers.CreateNewStripeCustomer)
+  payments.POST("/create-new-team-subscription", controllers.CreateNewTeamSubscription)
 }

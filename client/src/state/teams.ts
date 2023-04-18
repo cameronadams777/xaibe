@@ -24,7 +24,7 @@ export const useTeamsStore = defineStore("teams_store", {
       status,
     }: IUpdateInviteStatusInput): Promise<void> {
       const invite = await updateTeamInviteStatus({ inviteId, status });
-      if (!invite) throw new Error("Galata Error: Invite not found.");
+      if (!invite) throw new Error("Xaibe Error: Invite not found.");
       const inviteIndex = this.pendingTeamInvites.findIndex(
         (pendingInvite) => pendingInvite.id === inviteId
       );

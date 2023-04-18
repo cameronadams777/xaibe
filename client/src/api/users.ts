@@ -6,7 +6,6 @@ const FetchAllUsersResponseSchema = z.lazy(() => z.array(UserSchema));
 
 export const fetchAllUsers = async (): Promise<User[]> => {
   const response = await http.get<User[]>({ url: "api/users" });
-  FetchAllUsersResponseSchema.parse(response);
   return response;
 };
 

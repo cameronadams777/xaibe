@@ -35,7 +35,7 @@ fn get_or_build_config_dir() -> String {
 
   // Handle app directory
   let app_config_directory_name = match env::consts::OS {
-    "windows" => "\\.config\\galata",
+    "windows" => "\\.config\\xaibe",
     _ => "/.config/galata"
   };
 

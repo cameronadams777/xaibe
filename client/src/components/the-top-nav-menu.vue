@@ -15,7 +15,7 @@ const userNavigation = [
   {
     name: "Log Out",
     cb: async () => {
-      mixpanelWrapper.client.track("User logged out")
+      mixpanelWrapper.client.track("User logged out");
       await logoutUser();
       router.push("/login");
     },

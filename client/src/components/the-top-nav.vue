@@ -10,7 +10,7 @@ const { setIsNewElementModalShown } = useModalStore();
 </script>
 
 <template>
-  <div class="p-4 border-b border-gray-300 flex justify-between">
+  <div class="p-4 bg-white border-b border-gray-300 flex justify-between">
     <div class="flex justify-center">
       <base-fab-button @click="emits('onMenuClick')">
         <bars-3-icon class="h-full w-6" />

@@ -15,7 +15,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 5rPwU1=x9tUHyT=jiC+KL0ht
-      POSTGRES_DB: galataapp_db
+      POSTGRES_DB: xaibeapp_db
     networks:
       - db_network
     volumes:

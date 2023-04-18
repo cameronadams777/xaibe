@@ -20,9 +20,8 @@ export const useAlertsStore = defineStore("alerts", {
       return this.localCacheAlerts[`application_${applicationId}`];
     },
     pushAlertToApplication(applicationId: number, alert: IAlert) {
-      if(!this.localCacheAlerts[`application_${applicationId}`]) {
+      if (!this.localCacheAlerts[`application_${applicationId}`]) {
         this.localCacheAlerts[`application_${applicationId}`] = [alert];
-        console.log(this.localCacheAlerts);
         return;
       }
       this.localCacheAlerts[`application_${applicationId}`].push(alert);
@@ -31,7 +30,8 @@ export const useAlertsStore = defineStore("alerts", {
       applicationId,
     }: IGetApplicationAlertsInput): Promise<IAlert[]> {
       const alerts = await fetchCachedApplicationAlerts({ applicationId });
-      this.localCacheAlerts[`application_${applicationId}`] = compact(alerts) ?? [];
+      this.localCacheAlerts[`application_${applicationId}`] =
+        compact(alerts) ?? [];
       return compact(alerts) || [];
     },
   },

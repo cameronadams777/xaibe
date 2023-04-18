@@ -66,29 +66,33 @@ func CreateNewApplication(c *gin.Context) {
 		return
 	}
 
-  parsed_user_id, user_uuid_err := uuid.Parse(*input.UserId)
-
-  if user_uuid_err != nil {
-    fmt.Println(user_uuid_err)
-    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Invalid User ID"})
-    return
-  }
-
-  parsed_team_id, team_uuid_err := uuid.Parse(*input.TeamId)
-
-  if team_uuid_err != nil {
-    fmt.Println(team_uuid_err)
-    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Invalid Team ID"})
-    return
-  }
-
-
 	new_application := models.Application{
-		UserID:   &parsed_user_id,
-		TeamID:   &parsed_team_id,
 		UniqueId: uuid.NewString(),
 		Name:     input.Name,
 	}
+
+  if input.UserId != nil {
+    parsed_user_id, user_uuid_err := uuid.Parse(*input.UserId)
+
+    if user_uuid_err != nil {
+      fmt.Println(user_uuid_err)
+      c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Invalid User ID"})
+      return
+    }
+    new_application.UserID = &parsed_user_id
+  } else if input.TeamId != nil {
+    parsed_team_id, team_uuid_err := uuid.Parse(*input.TeamId)
+
+    if team_uuid_err != nil {
+      fmt.Println(team_uuid_err)
+      c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Invalid Team ID"})
+      return
+    }
+    new_application.TeamID = &parsed_team_id
+  } else {
+    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "A valid User ID or Team ID must be provided"})
+    return
+  }
 
 	if input.AlertSchema != (AlertSchemaInput{}) {
 		new_application.AlertSchema = models.AlertSchema{
@@ -200,7 +204,7 @@ func AddSchemaToApplication(c *gin.Context) {
 		Link:          input.Link,
 	}
 
-	_, schema_create_err := alert_schemas_service.CreateNewAlertSchema(alert_schema_to_create)
+	created_schema, schema_create_err := alert_schemas_service.CreateNewAlertSchema(alert_schema_to_create)
 
 	if schema_create_err != nil {
 		fmt.Println(schema_create_err)
@@ -208,7 +212,15 @@ func AddSchemaToApplication(c *gin.Context) {
 		return
 	}
 
-	updated_application, _ := applications_service.GetApplicationById(application_id)
+  updated_application, update_err := applications_service.UpdateApplication(application_to_update.ID, models.Application{ 
+    AlertSchemaID: &created_schema.ID, 
+  })
+
+  if update_err != nil {
+    fmt.Println(update_err)
+    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An error occurred adding alert schema to application."})
+    return
+  }
 
 	c.JSON(http.StatusOK, updated_application)
 }

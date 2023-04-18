@@ -25,7 +25,7 @@
         </div>
         <div v-else class="w-full h-full flex justify-center items-center">
           <p class="w-9/10 text-center">
-            There are no recent alerts to review. Remember, Galata will keep
+            There are no recent alerts to review. Remember, Xaibe will keep
             track of an applications most recent alerts for up to two weeks
             after it is received. Afterwards, the alert will be lost.
           </p>

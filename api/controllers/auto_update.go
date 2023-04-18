@@ -16,7 +16,7 @@ type PlatformResponse struct {
   URL string `json:"url"`
 }
 
-type GalataReleaseResponse struct {
+type XaibeReleaseResponse struct {
   Version string `json:"version"`
   Notes string `json:"notes"`
   PubDate string `json:"pub_date"`
@@ -50,9 +50,9 @@ var PLATFORMS = []string{
   "windows-x86_64",
 }
 
-const GALATA_DESKTOP_RELEASES_REPO = "Galata-App/galata-releases"
+const XAIBE_DESKTOP_RELEASES_REPO = "Galata-App/xaibe-releases"
   
-func get_latest_gh_release(repo string, requested_platform string) (*GalataReleaseResponse, error) {
+func get_latest_gh_release(repo string, requested_platform string) (*XaibeReleaseResponse, error) {
   github_latest_release_url := "https://api.github.com/repos/" + repo + "/releases/latest"; 
   
   var github_response GitHubResponse
@@ -70,7 +70,7 @@ func get_latest_gh_release(repo string, requested_platform string) (*GalataRelea
      return nil, decode_err 
   }
 
-  release_response := GalataReleaseResponse{
+  release_response := XaibeReleaseResponse{
     Version: github_response.TagName,
     Notes: github_response.Body,
     PubDate: github_response.PublishedAt,
@@ -87,7 +87,7 @@ func get_latest_gh_release(repo string, requested_platform string) (*GalataRelea
   }
 
   if len(release_response.Platforms) == 0 {
-    return nil, errors.New("Galata Error: Requested platform not supported")
+    return nil, errors.New("Xaibe Error: Requested platform not supported")
   }
 
   return &release_response, nil
@@ -97,7 +97,7 @@ func CheckLatestAppVersion(c *gin.Context) {
 	current_version := c.Param("current_version")
   requested_platform := c.Param("platform")
   
-  latest_release, fetch_rel_err := get_latest_gh_release(GALATA_DESKTOP_RELEASES_REPO, requested_platform)
+  latest_release, fetch_rel_err := get_latest_gh_release(XAIBE_DESKTOP_RELEASES_REPO, requested_platform)
 
   if fetch_rel_err != nil {
     log.Fatal(fetch_rel_err)

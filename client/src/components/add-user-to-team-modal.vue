@@ -59,7 +59,7 @@ import {
   useActiveUserStore,
   useModalStore,
   useToastStore,
-  useGalataUsersStore,
+  useXaibeUsersStore,
 } from "src/state";
 import { ButtonVariant, User, ToastType } from "src/types";
 import { inviteNewUser } from "src/api/users";
@@ -71,7 +71,7 @@ const props = defineProps<{
   teamId?: string;
 }>();
 
-const { getAllUsers } = useGalataUsersStore();
+const { getAllUsers } = useXaibeUsersStore();
 const activeUserStore = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);
 const { setAddUserToTeamProps } = useModalStore();

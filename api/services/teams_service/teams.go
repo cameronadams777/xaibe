@@ -4,8 +4,7 @@ import (
 	"api/initializers/database"
 	"api/models"
 	"api/structs/invite_status"
-
-  "github.com/google/uuid"
+	"github.com/google/uuid"
 )
 
 // TODO: Find way to specify preloads when querying, to prevent excess queries
@@ -34,13 +33,14 @@ func GetTeamById(team_id uuid.UUID) (*models.Team, error) {
 	return &team, nil
 }
 
-func CreateTeam(name string, creating_user models.User) (*models.Team, error) {
+func CreateTeam(name string, numberOfSeats uint,  creating_user models.User) (*models.Team, error) {
 	team := models.Team{
 		Name:     name,
-		Users:    []*models.User{&creating_user},
-		Managers: []*models.User{&creating_user},
+    ActiveNumberOfSeats: numberOfSeats,
+		Users:    []models.User{creating_user},
+		Managers: []models.User{creating_user},
 	}
-	err := database.DB.Create(&team).Error
+  err := database.DB.Omit("Users.*", "Managers.*").Create(&team).Error
 	if err != nil {
 		return nil, err
 	}
@@ -71,6 +71,23 @@ func DeleteTeam(team_id uuid.UUID) (*models.Team, error) {
 	database.DB.Delete(&team_to_delete)
 
 	return &team_to_delete, nil
+}
+
+func PermDeleteTeam(team_id uuid.UUID) error {
+	var team_to_delete models.Team
+	err := database.DB.First(&team_to_delete, team_id).Error
+
+	if err != nil {
+		return err
+	}
+
+  del_err := database.DB.Unscoped().Delete(team_to_delete).Error
+
+  if del_err != nil {
+    return del_err
+  }
+
+  return nil
 }
 
 func AddUserToTeam(team_id uuid.UUID, user_id uuid.UUID) (*models.Team, error) {
