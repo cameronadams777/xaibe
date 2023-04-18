@@ -33,16 +33,37 @@
         id="postalCode"
         label="Postal/Zip code"
       />
-      <base-input
-        v-model="formValues.country"
-        id="country"
-        label="Country/Region*"
-      />
-      <base-input
-        v-model="formValues.state"
-        id="state"
-        label="State/Province"
-      />
+      <div class="flex flex-col mb-2">
+        <label for="country" class="font-bold mb-2">Country</label>
+        <select
+          id="country"
+          v-model="formValues.country"
+          class="p-1 mb-2"
+          placeholder="Please Select One"
+        >
+          <option disabled value="">Please Select One</option>
+          <option
+            v-for="country of countriesList"
+            :id="country"
+            :value="country"
+          >
+            {{ country }}
+          </option>
+        </select>
+      </div>
+      <div class="flex flex-col mb-2">
+        <label for="state" class="font-bold mb-2">State</label>
+        <select
+          v-model="formValues.state"
+          :disabled="!states.length"
+          id="state"
+          class="p-1 mb-2"
+          placeholder="Please Select One"
+        >
+          <option disabled value="">Please Select One</option>
+          <option v-for="state of states" :value="state">{{ state }}</option>
+        </select>
+      </div>
     </div>
     <base-input
       v-model="formValues.billingEmail"
@@ -54,11 +75,23 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { countries } from "src/constants";
+import { computed, reactive } from "vue";
 
 const emits = defineEmits<{
   (event: "onContinue", formValues: any): void;
 }>();
+
+const countriesList = computed(() =>
+  countries.map((country) => country.country)
+);
+
+const states = computed(() =>
+  formValues.country.length
+    ? countries.find((country) => country.country === formValues.country)
+        ?.states ?? []
+    : []
+);
 
 const formValues = reactive({
   teamName: "",
@@ -74,7 +107,6 @@ const formValues = reactive({
 });
 
 const submitForm = (): void => {
-  console.log("here");
   emits("onContinue", formValues);
 };
 </script>
