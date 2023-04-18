@@ -17,7 +17,7 @@
         "request": true,
         "scope": [
           "http://localhost:5000/*",
-          "https://staging-xaibe-api.galata.io/*",
+          "https://staging-api.galata.io/*",
           "https://xaibe-api.galata.io/*"
         ]
       },
@@ -72,7 +72,7 @@
         "https://api.galata.io/auto_update/{{target}}-{{arch}}/{{current_version}}"
       ],
       "dialog": true,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IHJzaWduIGVuY3J5cHRlZCBzZWNyZXQga2V5ClJXUlRZMEl5aUdFZThtTzlRQ2xtM2hjSVlnK25MaUsxMXBqM00rMlBKcjk1WHAwZHpPRUFBQkFBQUFBQUFBQUFBQUlBQUFBQUNTNmdIenVHWWQ5eEU5Szk1TDF6d242V1I1Mi9hQ1VONno2ZUoyY1pQZ2FmMVN3MzBGTTZzSEtxVDUxR0w0bkltc0MyL1ZMOWpzSnczZWp1TVVFb2ZPRGFzWm9SSnlKVHhzYSt4Ukg3NVc4QVRrUWxWcmI4TFN6T3FpWGcrQzI2S1oyTlAvZ3BsTkk9Cg==%"
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQ4RTE0MDhENjg3QzdERjIKUldUeWZYeG9qVURoU05qeVdMNzhhaCtLMVRTL05XV2Y3aVA1MUUxamV5K2FDTjRUdFdtUDV6Y0oK%"
     },
     "windows": [
       {
