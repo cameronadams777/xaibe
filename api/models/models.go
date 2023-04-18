@@ -33,17 +33,17 @@ type User struct {
   ResetPasswordCode   string        `json:"resetPasswordCode"`
   ResetPasswordExpiry time.Time     `json:"resetPasswordExpiry"`
   Applications        []Application `json:"applications"`
-  Teams               []*Team       `gorm:"many2many:team_users;" json:"teams"`
+  Teams               []Team       `gorm:"many2many:team_users;" json:"teams"`
 }
 
 type Team struct {
   UUIDBaseModel
-  Name                string         `json:"name"`
-  SubscriptionId      string         `json:"subscriptionId"`
-  ActiveNumberOfSeats uint           `json:"activeNumberOfSeats"` 
-  Users               []*User        `gorm:"many2many:team_users;" json:"users"`
-  Managers            []*User        `gorm:"many2many:team_managers" json:"managers"`
-  Applications        []Application  `json:"applications"`
+  Name                string          `json:"name"`
+  SubscriptionId      *string         `json:"subscriptionId"`
+  ActiveNumberOfSeats uint            `json:"activeNumberOfSeats"` 
+  Users               []User          `gorm:"many2many:team_users;" json:"users"`
+  Managers            []User          `gorm:"many2many:team_managers" json:"managers"`
+  Applications        []Application   `json:"applications"`
 }
 
 type Application struct {

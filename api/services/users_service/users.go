@@ -3,7 +3,6 @@ package users_service
 import (
 	"api/initializers/database"
 	"api/models"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -51,10 +50,9 @@ func GetUserByPasswordCode(reset_password_code string, reset_password_expiry tim
 }
 
 func UpdateUser(user_id uuid.UUID, updates models.User) (*models.User, error) {
-  fmt.Println(user_id)
 	// Get user that we want to update
 	var user_to_update models.User
-	err := database.DB.Preload("Teams").Preload("Applications").First(&user_to_update, user_id).Error
+	err := database.DB.First(&user_to_update, user_id).Error
 
 	if err != nil {
 		return nil, err

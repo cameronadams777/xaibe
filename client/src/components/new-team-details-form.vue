@@ -74,6 +74,7 @@ const formValues = reactive({
 });
 
 const submitForm = (): void => {
+  console.log("here");
   emits("onContinue", formValues);
 };
 </script>

@@ -32,8 +32,9 @@ type UpdateTeamInviteInput struct {
 }
 
 type CreateNewTeamResponse struct {
-  Team            *models.Team `json:"team"`
-  ClientSecret    string      `json:"clientSecret"`
+  Team            *models.Team  `json:"team"`
+  IntentID        string        `json:"intentId"`
+  ClientSecret    string        `json:"clientSecret"`
 }
 
 func GetAllTeams(c *gin.Context) {
@@ -121,7 +122,7 @@ func CreateNewTeam(c *gin.Context) {
   }
 
   updated_team, update_err := teams_service.UpdateTeam(created_team.ID, models.Team{
-    SubscriptionId: subscription.ID,
+    SubscriptionId: &subscription.ID,
   })
 
   if update_err != nil {
@@ -131,7 +132,7 @@ func CreateNewTeam(c *gin.Context) {
     return 
   }
 
-  c.JSON(http.StatusCreated, CreateNewTeamResponse{Team: updated_team, ClientSecret: subscription.LatestInvoice.PaymentIntent.ClientSecret})
+  c.JSON(http.StatusCreated, CreateNewTeamResponse{Team: updated_team, IntentID: subscription.LatestInvoice.PaymentIntent.ID, ClientSecret: subscription.LatestInvoice.PaymentIntent.ClientSecret})
 }
 
 func DeleteTeam(c *gin.Context) {
@@ -146,7 +147,7 @@ func DeleteTeam(c *gin.Context) {
 
 	team_to_delete, err := teams_service.GetTeamById(team_id)
 
-  subscription_cancellation_err := stripe_service.CancelSubscription(team_to_delete.SubscriptionId)
+  subscription_cancellation_err := stripe_service.CancelSubscription(*team_to_delete.SubscriptionId)
 
   if subscription_cancellation_err != nil {
     fmt.Println(subscription_cancellation_err)

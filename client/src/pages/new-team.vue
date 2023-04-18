@@ -10,8 +10,8 @@
       />
       <PaymentForm
         v-else
-        :client-secret="stripeClientSecret"
-        @onSubmit="(token: Token) => submitForm(token)"
+        :stripe-client-secret="stripeClientSecret"
+        @onSubmit="(paymentIntent: PaymentIntent, token: Token) => submitForm(paymentIntent, token)"
       />
     </div>
   </the-main-layout>
@@ -33,7 +33,8 @@ import { useActiveUserStore } from "src/state/active-user";
 import { Team, ToastType } from "src/types";
 import { mixpanelWrapper } from "src/tools/mixpanel";
 import { storeToRefs } from "pinia";
-import { Token } from "@stripe/stripe-js";
+import { loadStripe, PaymentIntent, Token } from "@stripe/stripe-js";
+import { config } from "src/config";
 
 const stripeClientSecret = ref("");
 
@@ -77,17 +78,14 @@ const createNewTeamWithSubscription = async (
   }
 };
 
-const submitForm = async (apiToken: Token) => {
+const submitForm = async () => {
   try {
-    console.log(stripeClientSecret.value, team.value, apiToken);
-    if (!stripeClientSecret.value || !team.value || !apiToken?.card)
-      throw new Error();
-    isSubmitting.value = true;
-    const success = await confirmPaymentIntent({
-      paymentIntent: stripeClientSecret.value,
-      cardToken: apiToken.card.id,
+    if (!team.value)
+      throw new Error("Galata Error: Undefined team after payment processing");
+    setActiveToast({
+      type: ToastType.SUCCESS,
+      message: "New Team Created!",
     });
-    if (!success) throw new Error();
     await getActiveUser();
     mixpanelWrapper.client.track("New team created");
     isSubmitting.value = false;

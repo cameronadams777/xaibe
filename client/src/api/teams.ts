@@ -1,13 +1,15 @@
 import { Body } from "@tauri-apps/api/http";
-import { 
-  NewTeamSubscriptionFormSchema, 
-  Team, 
-  TeamInvite, 
-} from "src/types";
+import { NewTeamSubscriptionFormSchema, Team, TeamInvite } from "src/types";
 import * as http from "./http";
 
-export const createNewTeam = async (form: NewTeamSubscriptionFormSchema): Promise<{ team: Team, clientSecret: string }> => {
-  const response = await http.post<{ team: Team, clientSecret: string }>({
+export const createNewTeam = async (
+  form: NewTeamSubscriptionFormSchema
+): Promise<{ team: Team; intentId: string; clientSecret: string }> => {
+  const response = await http.post<{
+    team: Team;
+    intentId: string;
+    clientSecret: string;
+  }>({
     url: `api/teams`,
     body: { ...form },
   });
@@ -32,15 +34,18 @@ interface IInviteExistingUserToTeamInput {
   teamId: string;
 }
 
-export const inviteExistingUserToTeam = async ({ userId, teamId }: IInviteExistingUserToTeamInput): Promise<void> => {
-  return http.post({ 
-    url: "api/teams/invites", 
-    body: { 
-      user_id: userId, 
-      team_id: teamId
-    } 
+export const inviteExistingUserToTeam = async ({
+  userId,
+  teamId,
+}: IInviteExistingUserToTeamInput): Promise<void> => {
+  return http.post({
+    url: "api/teams/invites",
+    body: {
+      user_id: userId,
+      team_id: teamId,
+    },
   });
-}
+};
 
 interface IRemoveUserFromTeamInput {
   teamId: string;
@@ -62,7 +67,6 @@ export const deleteTeam = async ({
 }: IDeleteTeamInput): Promise<void> => {
   await http.del({ url: `api/teams/${teamId}` });
 };
-
 
 export const fetchPendingTeamInvites = async (): Promise<TeamInvite[]> => {
   const response = await http.get<TeamInvite[]>({

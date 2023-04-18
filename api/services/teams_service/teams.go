@@ -36,10 +36,11 @@ func GetTeamById(team_id uuid.UUID) (*models.Team, error) {
 func CreateTeam(name string, numberOfSeats uint,  creating_user models.User) (*models.Team, error) {
 	team := models.Team{
 		Name:     name,
-		Users:    []*models.User{&creating_user},
-		Managers: []*models.User{&creating_user},
+    ActiveNumberOfSeats: numberOfSeats,
+		Users:    []models.User{creating_user},
+		Managers: []models.User{creating_user},
 	}
-	err := database.DB.Create(team).Error
+  err := database.DB.Omit("Users.*", "Managers.*").Create(&team).Error
 	if err != nil {
 		return nil, err
 	}

@@ -1,7 +1,8 @@
 package stripe_service
 
 import (
-  "api/initializers/stripe_client"
+	"api/initializers/stripe_client"
+
 	"github.com/stripe/stripe-go/v74"
 )
 
@@ -93,10 +94,8 @@ func UpdateSubscription() {
 
 func CancelSubscription(subscription_id string) error {
   _, err := stripe_client.StripeClient.Subscriptions.Cancel(subscription_id, nil)
-  
   if err != nil {
     return err
   }
-
   return nil
 }

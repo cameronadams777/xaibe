@@ -31,11 +31,6 @@ type CreateNewTeamSubscriptionResponse struct {
   ClientSecret    string    `json:"clientSecret"`
 }
 
-type ConfirmPaymentIntentInput struct {
-  PaymentIntent string `json: paymentIntent`
-  CardToken     string `json: cardToken`
-}
-
 func CreateNewStripeCustomer(c *gin.Context) {
   var input CreateNewStripeCustomerInput
 
@@ -127,26 +122,3 @@ func CreateNewTeamSubscription(c *gin.Context) {
   c.JSON(http.StatusCreated, CreateNewTeamSubscriptionResponse{ClientSecret: subscription.LatestInvoice.PaymentIntent.ClientSecret})
 }
 
-func ConfirmPaymentIntent(c *gin.Context) {
-  var input ConfirmPaymentIntentInput
-  
-  if err := c.BindJSON(&input); err != nil {
-    fmt.Println(err)
-    c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{ Message: "Invalid Request Body" })
-    return
-  }
-
-  confirmation_err := stripe_service.ConfirmCardPayment(input.PaymentIntent, input.CardToken)
-  
-  if confirmation_err != nil {
-    fmt.Println("An error occurred confirming payment intent")
-    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An unknown error occurred."})
-    return
-  }
-
-  c.JSON(http.StatusOK, true)
-}
-
-func UpdateSubscription(c *gin.Context) {
-  
-}

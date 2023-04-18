@@ -38,7 +38,7 @@
       :class="{ 'border-t-0': index !== 0, 'border-t-1': index === 0 }"
       :to="`/teams/${team.id}`"
     >
-      <span>{{ team.Name }}</span>
+      <span>{{ team.name }}</span>
       <chevron-right-icon class="h-full w-4" />
     </router-link>
     <div
