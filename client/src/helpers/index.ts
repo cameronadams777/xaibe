@@ -26,3 +26,8 @@ export const deserializeCookie = (cookieString: string) => {
   const cookiesObject = fromPairs(cookieArray.map(cookie => cookie.split("="))); 
   return cookiesObject;
 }
+
+export const deserializeRawCookies = (cookiesArr: string[]) => {
+  const cookiesObject = fromPairs(cookiesArr.map(cookie => cookie.split("="))); 
+  return cookiesObject;
+}

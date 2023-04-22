@@ -36,12 +36,12 @@ fn get_or_build_config_dir() -> String {
   // Handle app directory
   let app_config_directory_name = match env::consts::OS {
     "windows" => "\\.config\\xaibe",
-    _ => "/.config/galata"
+    _ => "/.config/xaibe"
   };
 
   let config_path = format!("{}{}", home_path, app_config_directory_name);
 
-  let config_file_path = format!("{}{}", config_path, CONFIG_FILE_NAME);
+  let config_file_path = format!("{}/{}", config_path, CONFIG_FILE_NAME);
 
   if !Path::new(&config_path).is_dir() {
     fs::create_dir(config_path).unwrap();

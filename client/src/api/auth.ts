@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { z } from "zod"; 
-import { deserializeCookie } from "src/helpers";
+import { deserializeRawCookies } from "src/helpers";
 import * as http from "./http";
 
 export interface ILoginInput {
@@ -21,7 +21,8 @@ export const login = async ({
       password
     }
   });
-  const cookies = deserializeCookie(response.headers['set-cookie']);
+  console.log(response);
+  const cookies = deserializeRawCookies(response.rawHeaders['set-cookie']);
   await invoke('store_tokens', {
     authToken: response.data,
     refreshToken: cookies.ucid
