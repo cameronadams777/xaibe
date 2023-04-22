@@ -12,12 +12,14 @@ import { useRoute } from "vue-router";
 import TheGlobalModal from "./components/the-global-modal.vue";
 import TheToastMessage from "./components/the-toast-message.vue";
 import { config } from "./config";
-import { useAlertsStore, useAuthStore } from "./state";
-import { AlertSchema } from "./types";
+import { useAlertsStore, useAuthStore, useToastStore } from "./state";
+import { AlertSchema, ToastType } from "./types";
 
 const route = useRoute();
 const { pushAlertToApplication } = useAlertsStore();
+const { setActiveToast } = useToastStore();
 const authStore = useAuthStore();
+
 const { token } = storeToRefs(authStore);
 
 const hasConnected = ref(false);
@@ -49,16 +51,16 @@ watch(token, async (tokenValue) => {
   socket.onmessage = function (event): void {
     if (!event.data || !event.data.length) return;
     const alertResponseData = JSON.parse(event.data);
-    const applicationId = alertResponseData.applicationId;
-    const schema = alertResponseData.alertSchema as AlertSchema;
+    const applicationId = alertResponseData.application_id;
+    const schema = alertResponseData.alert_schema as AlertSchema;
 
     const { alert_schema, ...rest } = alertResponseData;
 
-    pushAlertToApplication(applicationId, rest); 
+    pushAlertToApplication(applicationId, rest);
 
-    if (!schema?.id.length) {
+    if (!schema.title.length && !schema.link.length && !schema.description.length) {
       // TODO: Make this more informative
-      invoke("notify_user", {
+      notifyUser({
         title: "New Alert!",
         body: "One of you applications just receive an alertResponseData for the first time!",
       });
@@ -70,7 +72,7 @@ watch(token, async (tokenValue) => {
     const descriptionKeys = schema.description.split(".");
     const description = getElByKey(alertResponseData, descriptionKeys);
 
-    invoke("notify_user", { title, body: description });
+    notifyUser({ title, body: description });
   };
   socket.onerror = function () {
     console.log("[error] A socket error occurred.");
@@ -84,6 +86,18 @@ watch(token, async (tokenValue) => {
     }
     console.log("[close] Connection died: ", event);
   };
+
+  const notifyUser = ({ title, body }: { title: string, body: string }) => {
+    console.log(title, body);
+    if(config.appEnv === "local") {
+      setActiveToast({
+        type: ToastType.INFO,
+        message: body,
+      });
+      return;
+    }
+    invoke("notify_user", { title, body });
+  }
 });
 </script>
 

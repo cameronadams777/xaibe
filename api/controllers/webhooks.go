@@ -19,6 +19,7 @@ import (
 
 // TODO: Look into cleaning up this function
 func WebHook(c *gin.Context) {
+  fmt.Println("Here")
 	application_input_param := c.Query("application_id")
 	application_id, conv_err := uuid.Parse(application_input_param)
 
@@ -41,6 +42,8 @@ func WebHook(c *gin.Context) {
 	json.Unmarshal([]byte(body_as_string), &body_as_json)
 
 	application, retrieve_app_error := applications_service.GetApplicationById(application_id)
+
+  fmt.Println(application)
 
 	if retrieve_app_error != nil {
     fmt.Println(retrieve_app_error)
