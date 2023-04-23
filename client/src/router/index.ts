@@ -5,29 +5,29 @@ const authenticatedRoutes = ["/"];
 const nonAuthenticatedRoutes = ["/login", "/register"];
 
 const routes: RouteRecordRaw[] = [
-  { path: "/", component: () => import("../pages/home.vue") },
-  { path: "/login", component: () => import("../pages/login.vue") },
-  { path: "/register", component: () => import("../pages/register.vue") },
+  { path: "/", component: () => import("../pages/Home.vue") },
+  { path: "/login", component: () => import("../pages/Login.vue") },
+  { path: "/register", component: () => import("../pages/Register.vue") },
   {
     path: "/forgot-password",
-    component: () => import("../pages/forgot-password.vue"),
+    component: () => import("../pages/ForgotPassword.vue.vue"),
   },
-  { path: "/teams/new", component: () => import("../pages/new-team.vue") },
+  { path: "/teams/new", component: () => import("../pages/NewTeam.vue") },
   {
     path: "/teams/:teamId",
-    component: () => import("../pages/team-details.vue"),
+    component: () => import("../pages/TeamDetails.vue"),
   },
   {
     path: "/applications/new",
-    component: () => import("../pages/new-application.vue"),
+    component: () => import("../pages/NewApplication.vue"),
   },
   {
     path: "/applications/:applicationId",
-    component: () => import("../pages/application-details.vue"),
+    component: () => import("../pages/ApplicationDetails.vue"),
   },
   {
     path: "/settings",
-    component: () => import("../pages/settings.vue"),
+    component: () => import("../pages/Settings.vue"),
   },
   {
     path: "/404",
