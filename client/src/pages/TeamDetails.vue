@@ -3,13 +3,21 @@
     <div v-if="activeTeam != null" class="w-full h-full p-4">
       <div class="flex justify-between items-center">
         <h2 class="capitalize">{{ activeTeam?.name }}</h2>
-        <BaseFabButton
-          v-if="managerControlsVisible"
-          aria-label="Delete Team"
-          @click="setIsDeleteTeamConfirmationModalShown(true)"
-        >
-          <TrashIcon class="w-5 h-5 text-red-500" />
-        </BaseFabButton>
+        <div class="flex">
+          <BaseFabButton
+            v-if="managerControlsVisible"
+            aria-label="View Team Details"  
+          >
+            <EllipsisVerticalIcon class="w-5 h-5 text-gray-700" /> 
+          </BaseFabButton>
+          <BaseFabButton
+            v-if="managerControlsVisible"
+            aria-label="Delete Team"
+            @click="setIsDeleteTeamConfirmationModalShown(true)"
+          >
+            <TrashIcon class="w-5 h-5 text-red-500" />
+          </BaseFabButton>
+        </div>
       </div>
       <div class="flex">
         <div class="w-full h-48 lg:h-96 lg:w-1/4 mr-4 mb-4">
@@ -30,7 +38,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { TrashIcon } from "@heroicons/vue/24/outline";
+import { EllipsisVerticalIcon, TrashIcon } from "@heroicons/vue/24/outline";
 import TheMainLayout from "src/layouts/TheMainLayout.vue";
 import ApplicationsList from "src/components/ApplicationsList.vue";
 import TeamMemberList from "src/components/TeamMemberList.vue";

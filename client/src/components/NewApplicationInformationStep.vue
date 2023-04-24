@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-col w-1/4 mb-3">
-    <label for="applicationname" class="font-bold mb-2">Application name</label>
+    <label for="applicationName" class="font-bold mb-2">Application name</label>
     <input
-      v-model="applicationname"
-      id="applicationname"
-      name="applicationname"
-      type="applicationname"
+      v-model="applicationName"
+      id="applicationName"
+      name="applicationName"
+      type="applicationName"
       placeholder="My Awesome App"
       class="p-1.5 mb-4"
     />
@@ -49,7 +49,7 @@
         class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
       >
         <option disabled value="">Please select one</option>
-        <option v-for="team of activeUser?.teams" :value="team.ID">
+        <option v-for="team of activeUser?.teams" :value="team.id">
           {{ team.name }}
         </option>
       </select>
@@ -79,7 +79,7 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  (event: "onCreate", applicationname: string, teamId?: string): void;
+  (event: "onCreate", applicationName: string, teamId?: string): void;
 }>();
 
 const activeUserStore = useActiveUserStore();
@@ -90,20 +90,20 @@ const applicationOwnershipMethods = [
   { id: "team", title: "Team" },
 ];
 
-const applicationname = ref("");
+const applicationName = ref("");
 const teamId = ref<string>("");
 const applyType = ref<NewApplicationApplyType>("user");
 
 onMounted(() => {
   if (props.applicationType === ApplicationType.AIRBRAKE)
-    applicationname.value = "Airbrake";
+    applicationName.value = "Airbrake";
   else if (props.applicationType === ApplicationType.NEWRELIC)
-    applicationname.value = "NewRelic";
+    applicationName.value = "NewRelic";
   else if (props.applicationType === ApplicationType.SENTRY)
-    applicationname.value = "Sentry";
+    applicationName.value = "Sentry";
 });
 
 const onCreate = () => {
-  emits("onCreate", applicationname.value, teamId.value);
+  emits("onCreate", applicationName.value, teamId.value);
 };
 </script>

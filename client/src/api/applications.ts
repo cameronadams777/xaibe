@@ -1,6 +1,6 @@
 import { Body } from "@tauri-apps/api/http";
 import { camelizeKeys } from "humps";
-import { AlertSchema, Application, ApplicationSchema } from "src/types";
+import { AlertSchema, Application } from "src/types";
 import * as http from "./http";
 
 interface IFetchApplicationByIdInput {
@@ -19,8 +19,8 @@ export const fetchApplicationById = async ({
 export interface ICreateNewApplicationInput {
   applicationName: string;
   alertSchema?: AlertSchema;
-  teamId: string;
-  userId: string;
+  teamId?: string;
+  userId?: string;
 }
 
 export const createNewApplication = async ({
@@ -32,8 +32,8 @@ export const createNewApplication = async ({
   let body: Record<string, any> = {
     applicationName,
   };
-  if (teamId.length) body.teamId = teamId;
-  else if (userId.length) body.userId = userId;
+  if (teamId?.length) body.teamId = teamId;
+  else if (userId?.length) body.userId = userId;
   else {
     throw new Error(
       "A teamId or userId must be provided when creating an application."

@@ -6,7 +6,7 @@
         v-if="applicationType == null"
         @on-continue="(type: ApplicationType) => applicationType = type"
       />
-      <OtherApplicationTypeStep
+      <NewApplicationInformationStep
         v-else
         :application-type="applicationType"
         :is-submitting="isSubmitting"
@@ -28,12 +28,10 @@ import {
 } from "src/state";
 import TheMainLayout from "src/layouts/TheMainLayout.vue";
 import ChooseApplicationStep from "src/components/NewApplicationChooseApplicationStep.vue";
-import OtherApplicationTypeStep from "src/components/NewApplicationOtherApplicationTypeStep.vue";
+import NewApplicationInformationStep from "src/components/NewApplicationInformationStep.vue";
 import { ToastType, ApplicationType } from "src/types";
 import { getAppSchemaByType } from "src/helpers";
 import { mixpanelWrapper } from "src/tools/mixpanel";
-
-// TODO: Allow users to create team application as well
 
 const router = useRouter();
 const { cacheApplication } = useApplicationsStore();

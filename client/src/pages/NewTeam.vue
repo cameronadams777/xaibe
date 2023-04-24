@@ -63,7 +63,7 @@ const createNewTeamWithSubscription = async (
     }
     const { team: newTeam, clientSecret } = await createNewTeam({
       teamName: formValues.teamName,
-      numberOfSeats: formValues.numberOfSeats,
+      numberOfSeats: parseInt(formValues.numberOfSeats, 10),
     });
     team.value = newTeam;
     stripeClientSecret.value = clientSecret;
