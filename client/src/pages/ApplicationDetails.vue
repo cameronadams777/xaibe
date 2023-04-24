@@ -54,9 +54,9 @@ import {
   useModalStore,
   useToastStore,
 } from "src/state";
-import TheMainLayout from "src/layouts/the-main-layout.vue";
-import AlertSchemaForm from "src/components/alert-schema-form.vue";
-import AlertsListByApplication from "src/components/alerts-list-by-application.vue";
+import TheMainLayout from "src/layouts/TheMainLayout.vue";
+import AlertSchemaForm from "src/components/AlertSchemaForm.vue";
+import AlertsListByApplication from "src/components/AlertsListByApplication.vue";
 import { Application, ToastType } from "src/types";
 import { fetchApplicationById } from "src/api/applications";
 import { config } from "src/config";

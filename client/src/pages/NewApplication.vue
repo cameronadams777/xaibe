@@ -26,9 +26,9 @@ import {
   useApplicationsStore,
   useToastStore,
 } from "src/state";
-import TheMainLayout from "src/layouts/the-main-layout.vue";
-import ChooseApplicationStep from "src/components/new-application-choose-application-step.vue";
-import OtherApplicationTypeStep from "src/components/new-application-other-application-type-step.vue";
+import TheMainLayout from "src/layouts/TheMainLayout.vue";
+import ChooseApplicationStep from "src/components/NewApplicationChooseApplicationStep.vue";
+import OtherApplicationTypeStep from "src/components/NewApplicationOtherApplicationTypeStep.vue";
 import { ToastType, ApplicationType } from "src/types";
 import { getAppSchemaByType } from "src/helpers";
 import { mixpanelWrapper } from "src/tools/mixpanel";

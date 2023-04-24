@@ -10,9 +10,9 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import TheTopNav from "src/components/the-top-nav.vue";
-import TheLeftNav from "src/components/the-left-nav.vue";
-import TheSpinner from "src/components/the-spinner.vue";
+import TheTopNav from "src/components/TheTopNav.vue";
+import TheLeftNav from "src/components/TheLeftNav.vue";
+import TheSpinner from "src/components/TheSpinner.vue";
 import { useActiveUserStore } from "src/state";
 
 defineProps<{ isLoading?: boolean }>();

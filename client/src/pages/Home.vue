@@ -20,9 +20,9 @@ import { onMounted, ref } from "vue";
 import { ToastType } from "src/types";
 import { fetchAllCachedAlerts, ICachedAlerts } from "src/api/alerts";
 import { useActiveUserStore, useTeamsStore, useToastStore } from "src/state";
-import TheMainLayout from "src/layouts/the-main-layout.vue";
-import PendingTeamInvitesList from "src/components/pending-team-invites-list.vue";
-import AllApplicationAlertsList from "src/components/all-application-alerts-list.vue";
+import TheMainLayout from "src/layouts/TheMainLayout.vue";
+import PendingTeamInvitesList from "src/components/PendingTeamInvitesList.vue";
+import AllApplicationAlertsList from "src/components/AllApplicationAlertsList.vue";
 
 const { getPendingTeamInvites } = useTeamsStore();
 const { setActiveToast } = useToastStore();

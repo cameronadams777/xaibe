@@ -21,7 +21,7 @@
 import { ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useActiveUserStore } from "../state/active-user";
-import TheMainLayout from "../layouts/the-main-layout.vue";
+import TheMainLayout from "../layouts/TheMainLayout.vue";
 
 const activeUserStore = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);

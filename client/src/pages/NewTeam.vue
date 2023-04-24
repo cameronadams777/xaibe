@@ -23,18 +23,16 @@ import { useRouter } from "vue-router";
 import { createNewTeam } from "src/api/teams";
 import {
   createNewStripeCustomer,
-  confirmPaymentIntent,
 } from "src/api/payments";
-import TheMainLayout from "src/layouts/the-main-layout.vue";
-import NewTeamDetailsForm from "src/components/new-team-details-form.vue";
-import PaymentForm from "src/components/payment-form.vue";
+import TheMainLayout from "src/layouts/TheMainLayout.vue";
+import NewTeamDetailsForm from "src/components/NewTeamDetailsForm.vue";
+import PaymentForm from "src/components/PaymentForm.vue";
 import { useToastStore } from "src/state";
 import { useActiveUserStore } from "src/state/active-user";
 import { Team, ToastType } from "src/types";
 import { mixpanelWrapper } from "src/tools/mixpanel";
 import { storeToRefs } from "pinia";
-import { loadStripe, PaymentIntent, Token } from "@stripe/stripe-js";
-import { config } from "src/config";
+import { PaymentIntent, Token } from "@stripe/stripe-js";
 
 const stripeClientSecret = ref("");
 

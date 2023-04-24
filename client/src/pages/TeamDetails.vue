@@ -31,9 +31,9 @@
 import { computed, onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { TrashIcon } from "@heroicons/vue/24/outline";
-import TheMainLayout from "src/layouts/the-main-layout.vue";
-import ApplicationsList from "src/components/applications-list.vue";
-import TeamMemberList from "src/components/team-member-list.vue";
+import TheMainLayout from "src/layouts/TheMainLayout.vue";
+import ApplicationsList from "src/components/ApplicationsList.vue";
+import TeamMemberList from "src/components/TeamMemberList.vue";
 import { fetchTeamById } from "src/api/teams";
 import { useModalStore } from "src/state/modals";
 import { Team, ToastType } from "src/types";
