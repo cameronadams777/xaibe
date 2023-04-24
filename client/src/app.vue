@@ -1,7 +1,7 @@
 <template>
   <router-view :key="route.fullPath" />
-  <the-global-modal />
-  <the-toast-message />
+  <TheGlobalModal />
+  <TheToastMessage />
 </template>
 
 <script lang="ts" setup>
@@ -9,8 +9,8 @@ import { invoke } from "@tauri-apps/api";
 import { storeToRefs } from "pinia";
 import { watch, ref } from "vue";
 import { useRoute } from "vue-router";
-import TheGlobalModal from "./components/the-global-modal.vue";
-import TheToastMessage from "./components/the-toast-message.vue";
+import TheGlobalModal from "./components/TheGlobalModal.vue";
+import TheToastMessage from "./components/TheToastMessage.vue";
 import { config } from "./config";
 import { useAlertsStore, useAuthStore, useToastStore } from "./state";
 import { AlertSchema, ToastType } from "./types";
