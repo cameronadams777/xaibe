@@ -6,6 +6,7 @@ const configSchema = z.object({
   apiWSUrl: z.string(),
   mixpanelToken: z.string(),
   mixpanelDebug: z.boolean(),
+  sentryDSN: z.string(),
   stripePublishableKey: z.string(),
 });
 
@@ -15,5 +16,6 @@ export const config: z.infer<typeof configSchema> = configSchema.parse({
   apiWSUrl: import.meta.env.VITE_API_WS_URL,
   mixpanelToken: import.meta.env.VITE_MIXPANEL_TOKEN,
   mixpanelDebug: import.meta.env.VITE_MIXPANEL_DEBUG === "true",
+  sentryDSN: import.meta.env.VITE_SENTRY_DSN,
   stripePublishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
 });

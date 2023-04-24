@@ -9,13 +9,25 @@ import (
 	"api/router"
 	"api/websockets"
 
+  "log"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+  "github.com/getsentry/sentry-go"
 )
 
 func main() {
+  err := sentry.Init(sentry.ClientOptions{
+    EnableTracing: true,
+		// Set TracesSampleRate to 1.0 to capture 100%
+		// of transactions for performance monitoring.
+		// We recommend adjusting this value in production,
+		TracesSampleRate: 1.0,
+  })
+	if err != nil {
+		log.Fatalf("sentry.Init: %s", err)
+	}
 
 	websockets.CreateNewPool()
 	go websockets.Pool.Run()

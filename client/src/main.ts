@@ -2,7 +2,9 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./app.vue";
 import router from "./router";
+import { config } from "./config";
 import { mixpanelWrapper } from "./tools/mixpanel";
+import * as Sentry from "@sentry/vue";
 import "uno.css";
 
 const pinia = createPinia();
@@ -25,6 +27,21 @@ Object.entries(components).forEach(([path, definition]) => {
 });
 
 mixpanelWrapper.setup();
+
+Sentry.init({
+  app,
+  dsn: config.sentryDSN,
+  environment: config.appEnv,
+  integrations: [
+    new Sentry.BrowserTracing({
+      routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+    }),
+  ],
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
+});
 
 app.use(router);
 app.use(pinia);
