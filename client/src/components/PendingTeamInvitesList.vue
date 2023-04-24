@@ -1,5 +1,5 @@
 <template>
-  <base-list v-if="pendingTeamInvites.length">
+  <BaseList v-if="pendingTeamInvites.length">
     <div
       v-for="invite of pendingTeamInvites"
       :class="{
@@ -21,7 +21,7 @@
             })
           "
         >
-          <x-mark-icon class="w-5 h-5" />
+          <XMarkIcon class="w-5 h-5" />
         </button>
         <button
           class="p-1 border-0 bg-green-500 hover:bg-green-700 text-white rounded-sm flex justify-center items-center cursor-pointer transition-color duration-300"
@@ -32,11 +32,11 @@
             })
           "
         >
-          <check-icon class="w-5 h-5" />
+          <CheckIcon class="w-5 h-5" />
         </button>
       </div>
     </div>
-  </base-list>
+  </BaseList>
 </template>
 
 <script lang="ts" setup>

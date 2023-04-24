@@ -8,8 +8,8 @@ import "uno.css";
 const pinia = createPinia();
 const app = createApp(App);
 
-// Make all components that follow the `base-*.vue` naming convention globally available
-const components = import.meta.glob("./components/base-*.vue", { eager: true });
+// Make all components that follow the `Base*.vue` naming convention globally available
+const components = import.meta.glob("./components/Base*.vue", { eager: true });
 Object.entries(components).forEach(([path, definition]) => {
   // Get name of component, based on filename
   // "./components/Fruits.vue" will become "Fruits"

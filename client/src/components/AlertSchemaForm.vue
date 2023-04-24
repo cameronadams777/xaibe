@@ -2,9 +2,9 @@
   <div>
     <div class="flex justify-between items-center">
       <h3>{{ formTitle }}</h3>
-      <base-button v-if="currentStep !== 0" text="Back" @click="goBack" />
+      <BaseButton v-if="currentStep !== 0" text="Back" @click="goBack" />
     </div>
-    <alert-schema-tree-builder
+    <AlertSchemaTreeBuilder
       root-key=""
       :schema-object="baseObject"
       @on-element-select="sendSchemaObject"
@@ -25,7 +25,7 @@ import { computed, reactive, ref } from "vue";
 import { useApplicationsStore, useToastStore } from "src/state";
 import { ToastType } from "src/types";
 import { mixpanelWrapper } from "src/tools/mixpanel";
-import AlertSchemaTreeBuilder from "./alert-schema-tree-builder.vue";
+import AlertSchemaTreeBuilder from "./AlertSchemaTreeBuilder.vue";
 
 const props = defineProps<{
   applicationId: string;

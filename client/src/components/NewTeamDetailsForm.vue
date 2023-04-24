@@ -1,34 +1,34 @@
 <template>
   <div>
-    <base-input
+    <BaseInput
       v-model="formValues.numberOfSeats"
       id="numberOfSeats"
       type="number"
       label="How many seats do you want to include?"
     />
-    <base-input
+    <BaseInput
       v-model="formValues.businessName"
       id="businessName"
       label="Business/Institution name *"
     />
-    <base-input
+    <BaseInput
       v-model="formValues.teamName"
       id="teamName"
       label="Team Name *"
     />
     <div class="grid grid-cols-2 gap-4">
-      <base-input
+      <BaseInput
         v-model="formValues.addressLineOne"
         id="addressOne"
         label="Address (P.O. box, company name, c/o) *"
       />
-      <base-input
+      <BaseInput
         v-model="formValues.addressLineTwo"
         id="addressTwo"
         label="Address line 2 (Apartment, suite, unit)"
       />
-      <base-input v-model="formValues.city" id="city" label="City *" />
-      <base-input
+      <BaseInput v-model="formValues.city" id="city" label="City *" />
+      <BaseInput
         v-model="formValues.postalCode"
         id="postalCode"
         label="Postal/Zip code"
@@ -65,12 +65,12 @@
         </select>
       </div>
     </div>
-    <base-input
+    <BaseInput
       v-model="formValues.billingEmail"
       id="billingEmail"
       label="Billing Email *"
     />
-    <base-button text="Continue to payment method" @click="submitForm" />
+    <BaseButton text="Continue to payment method" @click="submitForm" />
   </div>
 </template>
 

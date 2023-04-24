@@ -1,5 +1,5 @@
 <template>
-  <the-main-layout>
+  <TheMainLayout>
     <div class="p-4">
       <h2>{{ activeUser?.firstName }} {{ activeUser?.lastName }}</h2>
       <div class="flex flex-col items-start">
@@ -14,7 +14,7 @@
         </select>
       </div>
     </div>
-  </the-main-layout>
+  </TheMainLayout>
 </template>
 
 <script lang="ts" setup>

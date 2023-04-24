@@ -17,7 +17,7 @@
         <span class="text-lg font-bold">{{ application.name }}</span>
       </button>
     </div>
-    <base-button
+    <BaseButton
       text="Continue"
       :text-size="ButtonTextSize.LARGE"
       aria-label="proceed to next form step"

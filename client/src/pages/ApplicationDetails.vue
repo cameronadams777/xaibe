@@ -1,14 +1,14 @@
 <template>
-  <the-main-layout>
+  <TheMainLayout>
     <div class="w-full h-full p-4">
       <div class="flex justify-between items-center">
         <h2 class="capitalize">{{ activeApplication?.name }}</h2>
-        <base-fab-button
+        <BaseFabButton
           aria-label="Delete Application"
           @click="setIsDeleteApplicationConfirmationModalShown(true)"
         >
-          <trash-icon class="w-5 h-5 text-red-500" />
-        </base-fab-button>
+          <TrashIcon class="w-5 h-5 text-red-500" />
+        </BaseFabButton>
       </div>
       <div
         v-if="
@@ -18,12 +18,12 @@
         "
         class="w-full lg:w-1/3 h-48 lg:h-96"
       >
-        <alerts-list-by-application
+        <AlertsListByApplication
           :alerts="applicationAlerts"
           :alert-schema="activeApplication.alertSchema"
         />
       </div>
-      <alert-schema-form
+      <AlertSchemaForm
         v-else-if="activeApplication != null && applicationAlerts?.length"
         :application-id="activeApplication?.id"
         :base-object="applicationAlerts[0]"
@@ -40,7 +40,7 @@
         </p>
       </div>
     </div>
-  </the-main-layout>
+  </TheMainLayout>
 </template>
 
 <script lang="ts" setup>

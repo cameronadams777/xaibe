@@ -1,3 +1,28 @@
+<template>
+  <BaseModal :is-open="isOpen">
+    <div class="relative h-full flex flex-col justify-center items-center">
+      <BaseFabButton
+        class="absolute top-2 right-2"
+        @click="setIsNewElementModalShown(false)"
+      >
+        <XMarkIcon class="w-8 h-8" />
+      </BaseFabButton>
+      <BaseButton
+        text="Create New Application"
+        :variant="ButtonVariant.PRIMARY"
+        class="w-1/2"
+        @click="navigateToNewAppPage"
+      />
+      <BaseButton
+        text="Create New Team"
+        :variant="ButtonVariant.PRIMARY"
+        class="w-1/2"
+        @click="navigateToNewTeamPage"
+      />
+    </div>
+  </BaseModal>
+</template>
+
 <script lang="ts" setup>
 import { useRouter } from "vue-router";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
@@ -19,27 +44,3 @@ const navigateToNewTeamPage = () => {
 };
 </script>
 
-<template>
-  <base-modal :is-open="isOpen">
-    <div class="relative h-full flex flex-col justify-center items-center">
-      <base-fab-button
-        class="absolute top-2 right-2"
-        @click="setIsNewElementModalShown(false)"
-      >
-        <x-mark-icon class="w-8 h-8" />
-      </base-fab-button>
-      <base-button
-        text="Create New Application"
-        :variant="ButtonVariant.PRIMARY"
-        class="w-1/2"
-        @click="navigateToNewAppPage"
-      />
-      <base-button
-        text="Create New Team"
-        :variant="ButtonVariant.PRIMARY"
-        class="w-1/2"
-        @click="navigateToNewTeamPage"
-      />
-    </div>
-  </base-modal>
-</template>

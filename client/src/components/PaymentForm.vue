@@ -2,7 +2,7 @@
   <div class="w-full md:w-1/2 lg:w-1/4">
     <div ref="cardElement" id="card-element"></div>
     <div class="mt-4 w-full flex justify-center items-center">
-      <base-button text="Submit" class="w-1/2" @click="submit" />
+      <BaseButton text="Submit" class="w-1/2" @click="submit" />
     </div>
   </div>
 </template>

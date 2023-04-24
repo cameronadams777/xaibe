@@ -1,3 +1,31 @@
+<template>
+  <BaseModal :is-open="isOpen" class="w-7/12">
+    <div
+      class="relative w-full h-full flex flex-col justify-center items-center"
+    >
+      <BaseFabButton
+        class="absolute top-2 right-2"
+        @click="setIsDeleteApplicationConfirmationModalShown(false)"
+      >
+        <XMarkIcon />
+      </BaseFabButton>
+      <h2 class="text-lg">Are you sure you want to delete this application?</h2>
+      <div class="flex">
+        <BaseButton
+          text="Delete"
+          :variant="ButtonVariant.DANGER"
+          @click="attemptToDeleteApplication"
+        />
+        <BaseButton
+          text="Cancel"
+          :variant="ButtonVariant.WHITE"
+          @click="setIsDeleteApplicationConfirmationModalShown(false)"
+        />
+      </div>
+    </div>
+  </BaseModal>
+</template>
+
 <script lang="ts" setup>
 import { useRoute, useRouter } from "vue-router";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
@@ -37,30 +65,3 @@ const attemptToDeleteApplication = async () => {
 };
 </script>
 
-<template>
-  <base-modal :is-open="isOpen" class="w-7/12">
-    <div
-      class="relative w-full h-full flex flex-col justify-center items-center"
-    >
-      <base-fab-button
-        class="absolute top-2 right-2"
-        @click="setIsDeleteApplicationConfirmationModalShown(false)"
-      >
-        <x-mark-icon />
-      </base-fab-button>
-      <h2 class="text-lg">Are you sure you want to delete this application?</h2>
-      <div class="flex">
-        <base-button
-          text="Delete"
-          :variant="ButtonVariant.DANGER"
-          @click="attemptToDeleteApplication"
-        />
-        <base-button
-          text="Cancel"
-          :variant="ButtonVariant.WHITE"
-          @click="setIsDeleteApplicationConfirmationModalShown(false)"
-        />
-      </div>
-    </div>
-  </base-modal>
-</template>

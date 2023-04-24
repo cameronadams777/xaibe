@@ -1,5 +1,5 @@
 <template>
-  <the-main-layout>
+  <TheMainLayout>
     <div
       class="mt-8 xl:mt-0 px-8 w-full h-full flex flex-col justify-center items-center"
     >
@@ -14,7 +14,7 @@
         @onSubmit="(paymentIntent: PaymentIntent, token: Token) => submitForm(paymentIntent, token)"
       />
     </div>
-  </the-main-layout>
+  </TheMainLayout>
 </template>
 
 <script lang="ts" setup>

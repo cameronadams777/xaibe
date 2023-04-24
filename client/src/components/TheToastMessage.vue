@@ -1,12 +1,3 @@
-<script lang="ts" setup>
-import { storeToRefs } from "pinia";
-import { useToastStore } from "../state";
-import { ToastType } from "../types";
-
-const toastStore = useToastStore();
-const { activeToast, toastTitleByType } = storeToRefs(toastStore);
-</script>
-
 <template>
   <transition name="slide-fade">
     <div
@@ -29,6 +20,16 @@ const { activeToast, toastTitleByType } = storeToRefs(toastStore);
     </div>
   </transition>
 </template>
+
+<script lang="ts" setup>
+import { storeToRefs } from "pinia";
+import { useToastStore } from "../state";
+import { ToastType } from "../types";
+
+const toastStore = useToastStore();
+const { activeToast, toastTitleByType } = storeToRefs(toastStore);
+</script>
+
 
 <style>
 .slide-fade-enter-active {

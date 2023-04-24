@@ -1,19 +1,19 @@
 <template>
-  <the-main-layout>
+  <TheMainLayout>
     <div class="w-full flex flex-col justify-center items-center">
       <h2>Create New Application</h2>
-      <choose-application-step
+      <ChooseApplicationStep
         v-if="applicationType == null"
         @on-continue="(type: ApplicationType) => applicationType = type"
       />
-      <other-application-type-step
+      <OtherApplicationTypeStep
         v-else
         :application-type="applicationType"
         :is-submitting="isSubmitting"
         @on-create="submitForm"
       />
     </div>
-  </the-main-layout>
+  </TheMainLayout>
 </template>
 
 <script lang="ts" setup>

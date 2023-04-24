@@ -30,7 +30,7 @@ const userNavigation = [
         class="w-8 h-8 flex max-w-xs items-center rounded-full bg-white text-sm border-transparent cursor-pointer hover:shadow-md transition-all duration-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2"
       >
         <span class="sr-only">Open user menu</span>
-        <user-icon class="w-4" />
+        <UserIcon class="w-4" />
       </MenuButton>
     </div>
     <transition

@@ -16,19 +16,19 @@
           class="p-0 hover:text-red-500 rounded-full border-none bg-white flex justify-center items-center cursor-pointer"
           @click="displayRemoveUserConfirmationModal(member.id)"
         >
-          <x-mark-icon class="h-full w-4" />
+          <XMarkIcon class="h-full w-4" />
         </button>
       </div>
       <div v-else class="w-full h-full flex justify-center items-center">
         <p>No members</p>
       </div>
-      <base-fab-button
+      <BaseFabButton
         v-if="managerControlsVisible"
         class="absolute bottom-2 right-2 bg-indigo-500 text-white"
         @click="displayAddUserModal"
       >
-        <plus-icon class="h-full w-4" />
-      </base-fab-button>
+        <PlusIcon class="h-full w-4" />
+      </BaseFabButton>
     </div>
   </div>
 </template>

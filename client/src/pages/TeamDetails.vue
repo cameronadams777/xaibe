@@ -1,22 +1,22 @@
 <template>
-  <the-main-layout>
+  <TheMainLayout>
     <div v-if="activeTeam != null" class="w-full h-full p-4">
       <div class="flex justify-between items-center">
         <h2 class="capitalize">{{ activeTeam?.name }}</h2>
-        <base-fab-button
+        <BaseFabButton
           v-if="managerControlsVisible"
           aria-label="Delete Team"
           @click="setIsDeleteTeamConfirmationModalShown(true)"
         >
-          <trash-icon class="w-5 h-5 text-red-500" />
-        </base-fab-button>
+          <TrashIcon class="w-5 h-5 text-red-500" />
+        </BaseFabButton>
       </div>
       <div class="flex">
         <div class="w-full h-48 lg:h-96 lg:w-1/4 mr-4 mb-4">
-          <applications-list :applications="activeTeam?.applications || []" />
+          <ApplicationsList :applications="activeTeam?.applications || []" />
         </div>
         <div class="w-full h-48 lg:h-96 lg:w-1/4 mr-4 mb-4">
-          <team-member-list
+          <TeamMemberList
             :team-id="activeTeam.id"
             :members="activeTeam?.users || []"
             :manager-controls-visible="managerControlsVisible"
@@ -24,7 +24,7 @@
         </div>
       </div>
     </div>
-  </the-main-layout>
+  </TheMainLayout>
 </template>
 
 <script lang="ts" setup>

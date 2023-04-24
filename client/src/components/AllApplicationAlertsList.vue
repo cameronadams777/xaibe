@@ -18,7 +18,7 @@
           target="_blank"
           class="text-gray-400 hover:text-gray-800"
         >
-          <arrow-top-right-on-square-icon class="w-6 h-6" />
+          <ArrowTopRightOnSquareIcon class="w-6 h-6" />
         </a>
       </div>
       <div v-else class="w-full h-full flex justify-center items-center">

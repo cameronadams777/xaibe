@@ -1,17 +1,17 @@
 <template>
-  <the-main-layout :is-loading="isLoading">
+  <TheMainLayout :is-loading="isLoading">
     <div class="p-4 w-full">
       <h2>Hello {{ activeUser?.firstName }}!</h2>
       <div class="flex flex-col lg:flex-row">
         <div class="lg:w-1/2 mr-2">
-          <all-application-alerts-list :alerts="alerts" />
+          <AllApplicationAlertsList :alerts="alerts" />
         </div>
         <div class="lg:w-1/2">
-          <pending-team-invites-list />
+          <PendingTeamInvitesList />
         </div>
       </div>
     </div>
-  </the-main-layout>
+  </TheMainLayout>
 </template>
 
 <script lang="ts" setup>

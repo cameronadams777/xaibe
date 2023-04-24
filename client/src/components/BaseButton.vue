@@ -1,25 +1,3 @@
-<script lang="ts" setup>
-import TheSpinner from "./the-spinner.vue";
-import { ButtonTextSize, ButtonVariant } from "src/types";
-import { useAttrs } from "vue";
-
-withDefaults(
-  defineProps<{
-    text: string;
-    showSpinner?: boolean;
-    textSize?: ButtonTextSize;
-    variant?: ButtonVariant;
-  }>(),
-  {
-    showSpinner: false,
-    textSize: ButtonTextSize.MEDIUM,
-    variant: ButtonVariant.PRIMARY,
-  }
-);
-
-const attrs = useAttrs();
-</script>
-
 <template>
   <button
     role="button"
@@ -45,6 +23,29 @@ const attrs = useAttrs();
       }"
       >{{ text }}</span
     >
-    <the-spinner :show="showSpinner" />
+    <TheSpinner :show="showSpinner" />
   </button>
 </template>
+
+<script lang="ts" setup>
+import TheSpinner from "./TheSpinner.vue";
+import { ButtonTextSize, ButtonVariant } from "src/types";
+import { useAttrs } from "vue";
+
+withDefaults(
+  defineProps<{
+    text: string;
+    showSpinner?: boolean;
+    textSize?: ButtonTextSize;
+    variant?: ButtonVariant;
+  }>(),
+  {
+    showSpinner: false,
+    textSize: ButtonTextSize.MEDIUM,
+    variant: ButtonVariant.PRIMARY,
+  }
+);
+
+const attrs = useAttrs();
+</script>
+

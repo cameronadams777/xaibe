@@ -12,7 +12,7 @@
           class="p-1"
         />
       </div>
-      <base-button
+      <BaseButton
         text="Reset Password"
         :disabled="isSubmitting"
         :aria-disabled="isSubmitting"

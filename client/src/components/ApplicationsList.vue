@@ -12,7 +12,7 @@
         class="p-4 flex justify-between items-center border-b border-gray-300 hover:bg-gray-600 hover:border-gray-600 hover:text-white font-bold text-black no-underline transition-all duration-300"
       >
         {{ application.name }}
-        <chevron-right-icon class="h-full w-4" />
+        <ChevronRightIcon class="h-full w-4" />
       </router-link>
       <div v-else class="w-full h-full flex justify-center items-center">
         <p>No applications</p>

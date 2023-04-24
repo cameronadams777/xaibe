@@ -23,7 +23,7 @@
         Forgot Password?
       </router-link>
     </div>
-    <base-button
+    <BaseButton
       text="Log In"
       class="w-1/4"
       :disabled="isSubmitting"

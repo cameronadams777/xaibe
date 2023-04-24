@@ -1,9 +1,9 @@
 <template>
-  <the-top-nav @on-menu-click="toggleLeftNav" />
+  <TheTopNav @on-menu-click="toggleLeftNav" />
   <div class="relative h-full flex">
-    <the-left-nav :isOpen="isLeftNavOpen" />
+    <TheLeftNav :isOpen="isLeftNavOpen" />
     <slot v-if="!isLoading" />
-    <the-spinner v-else />
+    <TheSpinner v-else />
   </div>
 </template>
 

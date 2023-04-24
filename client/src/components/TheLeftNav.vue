@@ -11,7 +11,7 @@
       to="/"
     >
       <span>All Alerts</span>
-      <chevron-right-icon class="h-full w-4" />
+      <ChevronRightIcon class="h-full w-4" />
     </router-link>
     <h3 class="text-gray-700 py-4 pl-6 m-0">My Applications</h3>
     <router-link
@@ -22,7 +22,7 @@
       :to="`/applications/${application.id}`"
     >
       <span>{{ application.name }}</span>
-      <chevron-right-icon class="h-full w-4" />
+      <ChevronRightIcon class="h-full w-4" />
     </router-link>
     <div
       v-else
@@ -39,7 +39,7 @@
       :to="`/teams/${team.id}`"
     >
       <span>{{ team.name }}</span>
-      <chevron-right-icon class="h-full w-4" />
+      <ChevronRightIcon class="h-full w-4" />
     </router-link>
     <div
       v-else

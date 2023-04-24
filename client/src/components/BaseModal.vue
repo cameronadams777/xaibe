@@ -1,3 +1,17 @@
+<template>
+  <Teleport to="#modal-target">
+    <transition name="bounce">
+      <div
+        v-if="isOpen"
+        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white w-1/2 h-1/3 lg:w-1/4 lg:h-1/4 shadow-md rounded-lg z-10"
+        :class="attrs.class"
+      >
+        <slot />
+      </div>
+    </transition>
+  </Teleport>
+</template>
+
 <script lang="ts" setup>
 import { useAttrs, watch } from "vue";
 
@@ -15,19 +29,6 @@ watch(
 );
 </script>
 
-<template>
-  <Teleport to="#modal-target">
-    <transition name="bounce">
-      <div
-        v-if="isOpen"
-        class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white w-1/2 h-1/3 lg:w-1/4 lg:h-1/4 shadow-md rounded-lg z-10"
-        :class="attrs.class"
-      >
-        <slot />
-      </div>
-    </transition>
-  </Teleport>
-</template>
 
 <style>
 .bounce-enter-active {

@@ -54,7 +54,7 @@
         </option>
       </select>
     </div>
-    <base-button
+    <BaseButton
       text="Create"
       :text-size="ButtonTextSize.LARGE"
       :show-spinner="isSubmitting"

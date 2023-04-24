@@ -1,10 +1,3 @@
-<script lang="ts" setup>
-import { useAttrs } from "vue";
-import { twMerge } from "tailwind-merge";
-
-const attrs = useAttrs();
-</script>
-
 <template>
   <button
     role="button"
@@ -18,3 +11,11 @@ const attrs = useAttrs();
     <slot />
   </button>
 </template>
+
+<script lang="ts" setup>
+import { useAttrs } from "vue";
+import { twMerge } from "tailwind-merge";
+
+const attrs = useAttrs();
+</script>
+
