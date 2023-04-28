@@ -1,6 +1,6 @@
 {
   "name": "xaibe",
-  "version": "0.0.1",
+  "version": "0.3.5",
   "description": "An cross platform application for application monitoring alerts",
   "homepage": "https://galata.app",
   "scripts": {
