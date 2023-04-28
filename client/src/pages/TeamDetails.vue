@@ -7,6 +7,7 @@
           <BaseFabButton
             v-if="managerControlsVisible"
             aria-label="View Team Details"  
+            @click="setTeamSubscriptionDetailsProps({ isOpen: true, team: activeTeam })"
           >
             <EllipsisVerticalIcon class="w-5 h-5 text-gray-700" /> 
           </BaseFabButton>
@@ -43,16 +44,15 @@ import TheMainLayout from "src/layouts/TheMainLayout.vue";
 import ApplicationsList from "src/components/ApplicationsList.vue";
 import TeamMemberList from "src/components/TeamMemberList.vue";
 import { fetchTeamById } from "src/api/teams";
-import { useModalStore } from "src/state/modals";
 import { Team, ToastType } from "src/types";
-import { useActiveUserStore, useToastStore } from "src/state";
+import { useActiveUserStore, useToastStore, useModalStore } from "src/state";
 import { storeToRefs } from "pinia";
 
 const route = useRoute();
 const router = useRouter();
 const activeUserStore = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);
-const { setIsDeleteTeamConfirmationModalShown } = useModalStore();
+const { setIsDeleteTeamConfirmationModalShown, setTeamSubscriptionDetailsProps } = useModalStore();
 const { setActiveToast } = useToastStore();
 
 const managerControlsVisible = computed(

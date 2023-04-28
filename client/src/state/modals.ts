@@ -1,39 +1,53 @@
+import { warn } from "console";
 import { defineStore } from "pinia";
+import { Team } from "src/types";
 
-export const emptyRemoveUserConfirmationProps: IRemoveUserConfirmationProps = {
-  isOpen: false,
-  userId: undefined,
-  teamId: undefined,
-};
-
-interface IRemoveUserConfirmationProps {
+type RemoveUserConfirmationProps = {
   isOpen: boolean;
   userId: string | undefined;
   teamId: string | undefined;
 }
 
-export const emptyAddUserToTeamProps: IAddUserToTeamProps = {
+export const emptyRemoveUserConfirmationProps: RemoveUserConfirmationProps = {
   isOpen: false,
+  userId: undefined,
   teamId: undefined,
 };
 
-interface IAddUserToTeamProps {
+type AddUserToTeamProps = {
   isOpen: boolean;
   teamId: string | undefined;
 }
 
+export const emptyAddUserToTeamProps: AddUserToTeamProps = {
+  isOpen: false,
+  teamId: undefined,
+};
+
+type TeamSubscriptionDetailsProps = {
+  isOpen: boolean;
+  team: Team | undefined;
+}
+
+export const emptyTeamSubscriptionDetailsProps: TeamSubscriptionDetailsProps = {
+  isOpen: false,
+  team: undefined,
+}
+
 interface IModalStoreState {
-  addUserToTeamProps: IAddUserToTeamProps;
+  addUserToTeamProps: AddUserToTeamProps;
+  teamSubscriptionDetailsProps: TeamSubscriptionDetailsProps;
   isNewElementModalShown: boolean;
   isDeleteApplicationConfirmationModalShown: boolean;
   isDeleteTeamConfirmationModalShown: boolean;
-  removeUserConfirmationProps: IRemoveUserConfirmationProps;
+  removeUserConfirmationProps: RemoveUserConfirmationProps;
 }
 
 export const useModalStore = defineStore("modals", {
   state: (): IModalStoreState => {
     return {
       addUserToTeamProps: emptyAddUserToTeamProps,
+      teamSubscriptionDetailsProps: emptyTeamSubscriptionDetailsProps,
       isNewElementModalShown: false,
       isDeleteApplicationConfirmationModalShown: false,
       isDeleteTeamConfirmationModalShown: false,
@@ -41,7 +55,7 @@ export const useModalStore = defineStore("modals", {
     };
   },
   actions: {
-    setAddUserToTeamProps(props: IAddUserToTeamProps): void {
+    setAddUserToTeamProps(props: AddUserToTeamProps): void {
       this.addUserToTeamProps = props;
     },
     setIsNewElementModalShown(newValue: boolean): void {
@@ -53,8 +67,11 @@ export const useModalStore = defineStore("modals", {
     setIsDeleteTeamConfirmationModalShown(newValue: boolean): void {
       this.isDeleteTeamConfirmationModalShown = newValue;
     },
-    setRemoveUserConfirmationProps(props: IRemoveUserConfirmationProps): void {
+    setRemoveUserConfirmationProps(props: RemoveUserConfirmationProps): void {
       this.removeUserConfirmationProps = props;
     },
+    setTeamSubscriptionDetailsProps(props: TeamSubscriptionDetailsProps): void {
+      this.teamSubscriptionDetailsProps = props;
+    }
   },
 });

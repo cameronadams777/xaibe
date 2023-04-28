@@ -31,6 +31,8 @@ export const TeamSchema = z.object({
   updatedAt: z.string(),
   deletedAt: z.string().nullish(),
   name: z.string(),
+  subscriptionId: z.string().nullish(),
+  activeNumberOfSeats: z.number(),
   users: z.lazy(() => z.array(UserSchema)),
   managers: z.lazy(() => z.array(UserSchema)),
   applications: z.any(),

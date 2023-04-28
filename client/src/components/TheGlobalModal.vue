@@ -4,6 +4,11 @@
     :is-open="addUserToTeamProps.isOpen"
     :team-id="addUserToTeamProps.teamId"
   />
+  <TeamSubscriptionDetailsModal
+    v-if="teamSubscriptionDetailsProps.isOpen"
+    :is-open="teamSubscriptionDetailsProps.isOpen"
+    :team="teamSubscriptionDetailsProps.team"
+  />
   <DeleteApplicationConfirmationModal
     v-if="isDeleteApplicationConfirmationModalShown"
     :is-open="isDeleteApplicationConfirmationModalShown"
@@ -31,16 +36,18 @@
  */
 import { storeToRefs } from "pinia";
 import AddUserToTeamModal from "./AddUserToTeamModal.vue";
+import TeamSubscriptionDetailsModal from "./TeamSubscriptionDetailsModal.vue";
 import DeleteApplicationConfirmationModal from "./DeleteApplicationConfirmationModal.vue";
 import DeleteTeamConfirmationModal from "./DeleteTeamConfirmationModal.vue";
 import NewElementModal from "./NewElementModal.vue";
 import RemoveUserConfirmationModal from "./RemoveUserConfirmationModal.vue";
-import { useModalStore } from "../state/modals";
+import { useModalStore } from "src/state/modals";
 
 const modalStore = useModalStore();
 
 const {
   addUserToTeamProps,
+  teamSubscriptionDetailsProps,
   isNewElementModalShown,
   isDeleteApplicationConfirmationModalShown,
   isDeleteTeamConfirmationModalShown,
