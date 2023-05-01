@@ -4,39 +4,72 @@
       <BaseFabButton class="absolute top-2 right-2" @click="close">
         <XMarkIcon class="w-8 h-8" />
       </BaseFabButton>
-      <h2 class="text-2xl m-0 p-0">
-        {{team?.name}}
-      </h2>
-      <div class="flex flex-col items-center">
-        <p><b>Number of Seats:</b></p>
-        <PlusMinusNumberInput :value="updatedNumberOfSeats" @on-update="updateSeats" />
-      </div>
-      <BaseButton :disabled="!hasUpdates" text="Update" class="w-1/2 mt-10 self-center" />
+      <TeamSubscriptionDetailsModalReviewStep
+        v-if="formStep === 'review'"
+        :team="team as Team"
+        @on-continue="updateFormStep"
+      />
+      <TeamSubscriptionDetailsModalConfirmationStep
+        v-else
+        @on-confirm="confirmUpdate"
+        @on-close="close"
+      />
     </div>
   </BaseModal>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
-import { Team } from "src/types";
-import { emptyTeamSubscriptionDetailsProps, useModalStore } from "src/state";
-import PlusMinusNumberInput from "src/components/PlusMinusNumberInput.vue";
+import { Team, ToastType } from "src/types";
+import {
+  emptyTeamSubscriptionDetailsProps,
+  useModalStore,
+  useToastStore,
+} from "src/state";
+import TeamSubscriptionDetailsModalReviewStep from "./TeamSubscriptionDetailsModalReviewStep.vue";
+import TeamSubscriptionDetailsModalConfirmationStep from "./TeamSubscriptionDetailsModalConfirmationStep.vue";
+import { updateTeamSeatCount } from "src/api/teams";
+
+type TeamSubscriptionDetailsFormStep = "review" | "confirm";
 
 const props = defineProps<{
   isOpen: boolean;
   team?: Team;
 }>();
 
-const updatedNumberOfSeats = ref<number>(0);
-const hasUpdates = computed<boolean>(() => updatedNumberOfSeats.value !== props.team?.activeNumberOfSeats);
-
 const router = useRouter();
 const { setTeamSubscriptionDetailsProps } = useModalStore();
+const { setActiveToast } = useToastStore();
 
-const updateSeats = (value: number) => updatedNumberOfSeats.value = value;
-const close = () => setTeamSubscriptionDetailsProps(emptyTeamSubscriptionDetailsProps); 
+const formStep = ref<TeamSubscriptionDetailsFormStep>("review");
+const newSeatCount = ref<number>(0);
+
+const updateFormStep = (updatedSeatCount: number): void => {
+  newSeatCount.value = updatedSeatCount;
+  formStep.value = "confirm";
+};
+
+const confirmUpdate = async (): Promise<void> => {
+  if (!props.team) return;
+  try {
+    await updateTeamSeatCount({
+      teamId: props.team.id,
+      newSeatCount: newSeatCount.value,
+    });
+    close();
+  } catch (error) {
+    console.error(error);
+    setActiveToast({
+      type: ToastType.ERROR,
+      message: "An error occurred while trying to update your subscription.",
+    });
+  }
+};
+
+const close = () =>
+  setTeamSubscriptionDetailsProps(emptyTeamSubscriptionDetailsProps);
 
 onMounted(() => {
   if (!props.team) {
@@ -44,6 +77,5 @@ onMounted(() => {
     close();
     return;
   }
-  updatedNumberOfSeats.value = props.team.activeNumberOfSeats;
 });
 </script>

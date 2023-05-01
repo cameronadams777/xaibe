@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import {
+  UpdateInviteStatusInput,
   fetchPendingTeamInvites,
-  IUpdateInviteStatusInput,
   updateInviteStatus as updateTeamInviteStatus,
 } from "src/api/teams";
 import { Team, TeamInvite } from "src/types";
@@ -22,7 +22,7 @@ export const useTeamsStore = defineStore("teams_store", {
     async updateInviteStatus({
       inviteId,
       status,
-    }: IUpdateInviteStatusInput): Promise<void> {
+    }: UpdateInviteStatusInput): Promise<void> {
       const invite = await updateTeamInviteStatus({ inviteId, status });
       if (!invite) throw new Error("Xaibe Error: Invite not found.");
       const inviteIndex = this.pendingTeamInvites.findIndex(

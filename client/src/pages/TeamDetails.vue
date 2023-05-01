@@ -6,10 +6,15 @@
         <div class="flex">
           <BaseFabButton
             v-if="managerControlsVisible"
-            aria-label="View Team Details"  
-            @click="setTeamSubscriptionDetailsProps({ isOpen: true, team: activeTeam })"
+            aria-label="View Team Details"
+            @click="
+              setTeamSubscriptionDetailsProps({
+                isOpen: true,
+                team: activeTeam,
+              })
+            "
           >
-            <EllipsisVerticalIcon class="w-5 h-5 text-gray-700" /> 
+            <EllipsisVerticalIcon class="w-5 h-5 text-gray-700" />
           </BaseFabButton>
           <BaseFabButton
             v-if="managerControlsVisible"
@@ -52,12 +57,15 @@ const route = useRoute();
 const router = useRouter();
 const activeUserStore = useActiveUserStore();
 const { activeUser } = storeToRefs(activeUserStore);
-const { setIsDeleteTeamConfirmationModalShown, setTeamSubscriptionDetailsProps } = useModalStore();
+const {
+  setIsDeleteTeamConfirmationModalShown,
+  setTeamSubscriptionDetailsProps,
+} = useModalStore();
 const { setActiveToast } = useToastStore();
 
 const managerControlsVisible = computed(
   () =>
-    activeTeam.value?.managers.some(
+    activeTeam.value?.managers?.some(
       (manager) => manager.id === activeUser?.value?.id
     ) || false
 );

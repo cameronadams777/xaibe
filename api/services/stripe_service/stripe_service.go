@@ -88,8 +88,26 @@ func ConfirmCardPayment(payment_intent string, card_token string) error {
 }
 
 // TODO: Fill this in
-func UpdateSubscription() {
+func UpdateSubscription(subscription_id string, metadata SubscriptionData) error {
+  sub, fetch_sub_err := stripe_client.StripeClient.Subscriptions.Get(subscription_id, nil)
 
+  if fetch_sub_err != nil {
+    return fetch_sub_err
+  }
+
+  sub_item := sub.Items.Data[0]
+
+  params := &stripe.SubscriptionItemParams{
+    Quantity: stripe.Int64(int64(metadata.Quantity)),
+  }
+
+  _, update_err := stripe_client.StripeClient.SubscriptionItems.Update(sub_item.ID, params)
+
+  if update_err != nil {
+    return update_err
+  }
+
+  return nil
 }
 
 func CancelSubscription(subscription_id string) error {

@@ -37,6 +37,11 @@ type CreateNewTeamResponse struct {
   ClientSecret    string        `json:"clientSecret"`
 }
 
+type UpdateTeamSubscriptionInput struct {
+  TeamId          string  `json:"teamId" binding:"required"`
+  NewSeatCount    int     `json:"newSeatCount" binding:"required"`
+}
+
 func GetAllTeams(c *gin.Context) {
 	// Fetch paginated teams list
 	teams := teams_service.GetAllTeams()
@@ -234,6 +239,72 @@ func RemoveUserFromTeam(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, updated_team)
+}
+
+func UpdateTeamSubscription(c *gin.Context) {
+  fmt.Println("TEST")
+  var input UpdateTeamSubscriptionInput
+
+	if err := c.BindJSON(&input); err != nil {
+		fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, structs.ErrorMessage{Message: "Invalid request body"})
+		return
+	}
+
+  data, _ := c.Get("authScope")
+	authScope := data.(structs.AuthScope)
+
+  parsed_team_id, team_uuid_err := uuid.Parse(input.TeamId)
+
+  if team_uuid_err != nil {
+    fmt.Println(team_uuid_err)
+    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "Unable to parse team id"})
+    return
+  }
+
+  team, fetch_team_err := teams_service.GetTeamById(parsed_team_id)
+
+  if fetch_team_err != nil {
+    c.AbortWithStatusJSON(http.StatusNotFound, structs.ErrorMessage{Message: "Team not found"})
+    return
+  }
+
+  team_manager_err := assertions.UserIsManagerOfTeam(parsed_team_id, authScope.UserID)
+
+  if team_manager_err != nil {
+		c.AbortWithStatusJSON(http.StatusForbidden, structs.ErrorMessage{Message: "You do not have permission to perform that action."})
+    return
+  }
+ 
+  // Note: We are currently not allowing teams to drop seat count below the current number of users on a team
+  if len(team.Users) > input.NewSeatCount {
+    c.AbortWithStatusJSON(http.StatusForbidden, structs.ErrorMessage{Message: "You cannot reduce your number of seats below the number of users currently on your team"}) 
+    return
+  }
+
+  current_team_seat_count := team.ActiveNumberOfSeats
+
+  updated_team, team_update_err := teams_service.UpdateTeam(parsed_team_id, models.Team{ActiveNumberOfSeats: uint(input.NewSeatCount)})
+
+  if team_update_err != nil {
+    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An unexpected error occurred while updating the team entity"})
+    return
+  }
+
+  stripe_update_err := stripe_service.UpdateSubscription(*team.SubscriptionId, stripe_service.SubscriptionData{
+    Quantity: uint(input.NewSeatCount),
+  })
+
+  if stripe_update_err != nil {
+    fmt.Println(stripe_update_err)
+
+    teams_service.UpdateTeam(parsed_team_id, models.Team{ActiveNumberOfSeats: current_team_seat_count})
+
+    c.AbortWithStatusJSON(http.StatusInternalServerError, structs.ErrorMessage{Message: "An unexpected error occurred while updating the team entity"})
+    return
+  }
+
+  c.JSON(http.StatusOK, updated_team)
 }
 
 func GetTeamInvites(c *gin.Context) {

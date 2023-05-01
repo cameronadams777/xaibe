@@ -16,28 +16,28 @@ export const createNewTeam = async (
   return response;
 };
 
-interface IFetchTeamByIdInput {
+type FetchTeamByIdInput = {
   teamId: string;
-}
+};
 
 export const fetchTeamById = async ({
   teamId,
-}: IFetchTeamByIdInput): Promise<Team> => {
+}: FetchTeamByIdInput): Promise<Team> => {
   const response = await http.get<Team>({
     url: `api/teams/${teamId}`,
   });
   return response;
 };
 
-interface IInviteExistingUserToTeamInput {
+type InviteExistingUserToTeamInput = {
   userId: string;
   teamId: string;
-}
+};
 
 export const inviteExistingUserToTeam = async ({
   userId,
   teamId,
-}: IInviteExistingUserToTeamInput): Promise<void> => {
+}: InviteExistingUserToTeamInput): Promise<void> => {
   return http.post({
     url: "api/teams/invites",
     body: {
@@ -47,25 +47,46 @@ export const inviteExistingUserToTeam = async ({
   });
 };
 
-interface IRemoveUserFromTeamInput {
+type RemoveUserFromTeamInput = {
   teamId: string;
   userId: string;
-}
+};
 
 export const removeUserFromTeam = async (
-  input: IRemoveUserFromTeamInput
+  input: RemoveUserFromTeamInput
 ): Promise<void> => {
   await http.del({ url: `api/teams/${input.teamId}/user/${input.userId}` });
 };
 
-interface IDeleteTeamInput {
+type DeleteTeamInput = {
   teamId: string;
-}
+};
 
 export const deleteTeam = async ({
   teamId,
-}: IDeleteTeamInput): Promise<void> => {
+}: DeleteTeamInput): Promise<void> => {
   await http.del({ url: `api/teams/${teamId}` });
+};
+
+type UpdateTeamSeatCountInput = {
+  teamId: string;
+  newSeatCount: number;
+};
+
+export const updateTeamSeatCount = async ({
+  teamId,
+  newSeatCount,
+}: UpdateTeamSeatCountInput) => {
+  const response = await http.patch({
+    url: "api/teams/subscription",
+    options: {
+      body: Body.json({
+        teamId,
+        newSeatCount,
+      }),
+    },
+  });
+  return response;
 };
 
 export const fetchPendingTeamInvites = async (): Promise<TeamInvite[]> => {
@@ -75,15 +96,15 @@ export const fetchPendingTeamInvites = async (): Promise<TeamInvite[]> => {
   return response;
 };
 
-export interface IUpdateInviteStatusInput {
+export type UpdateInviteStatusInput = {
   inviteId: string;
   status: number;
-}
+};
 
 export const updateInviteStatus = async ({
   inviteId,
   status,
-}: IUpdateInviteStatusInput): Promise<TeamInvite> => {
+}: UpdateInviteStatusInput): Promise<TeamInvite> => {
   const response = await http.patch<TeamInvite>({
     url: "api/teams/invites",
     options: {

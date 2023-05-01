@@ -2,7 +2,7 @@
   <transition name="slide-fade">
     <div
       v-if="activeToast != null"
-      class="absolute top-5 right-5 p-4 bg-white rounded-md shadow-md"
+      class="absolute top-5 right-5 p-4 bg-white rounded-md shadow-md z-10"
     >
       <div class="relative">
         <h3
@@ -29,7 +29,6 @@ import { ToastType } from "../types";
 const toastStore = useToastStore();
 const { activeToast, toastTitleByType } = storeToRefs(toastStore);
 </script>
-
 
 <style>
 .slide-fade-enter-active {
