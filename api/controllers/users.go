@@ -32,7 +32,7 @@ func GetUserDetails(c *gin.Context) {
 	data, _ := c.Get("authScope")
 	authScope := data.(structs.AuthScope)
 
-  current_user, current_user_err := users_service.GetUserById(authScope.UserID)
+	_, current_user_err := users_service.GetUserById(authScope.UserID)
 
 	if current_user_err != nil {
     fmt.Println(current_user_err)
@@ -40,7 +40,15 @@ func GetUserDetails(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, current_user)
+	user, err := users_service.GetUserById(authScope.UserID)
+
+	if err != nil {
+    fmt.Println(err)
+		c.AbortWithStatusJSON(http.StatusNotFound, structs.ErrorMessage{Message: "User not found."})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
 }
 
 func GetAllUsers(c *gin.Context) {
