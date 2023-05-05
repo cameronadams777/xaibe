@@ -52,7 +52,7 @@ jobs:
           sudo apt-get install -y libgtk-3-dev webkit2gtk-4.0 libappindicator3-dev librsvg2-dev patchelf
 
       - name: Install app dependencies from lockfile and build web
-        run: pnpm install --frozen-lockfile && pnpm build -m production
+        run: yarn install --frozen-lockfile && yarn build -m production
 
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
